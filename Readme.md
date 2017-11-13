@@ -5,6 +5,48 @@ This is a simplest application that allows to visualize data that was recorded
 with analog digital converters and saved as a text files
 with two comma separated X, Y columns
 
+The application is based on the next packages:
+-PyQt5
+-Pandas
+-Numpy
+-Pyqtgraph
+
+A single executable file can be produced with Pyinstaller for both Windows and Linux.
+In order to achieve a smaller size of produced file,
+do it inside a separate python virtual environment with only necessary packages installed
+In case you have trouble with Pandas import, try recommendation provided by Zero
+from this post https://stackoverflow.com/questions/33001327/importerror-with-pyinstaller-and-pandas
+
+
+
+
+LICENSING
+---------
+
+ADCViewerPython
+=============
+
+This is a simplest application that allows to visualize data that was recorded
+with analog digital converters and saved as a text files
+with two comma separated X, Y columns
+
+The application is based on the next packages:
+
+-PyQt5
+-Pandas
+-Numpy
+-Pyqtgraph
+
+The interface was created with Qt Designer
+
+A single executable file can be produced with Pyinstaller for both Windows and Linux.
+In order to achieve a smaller size of produced file,
+do it inside a separate python virtual environment with only necessary packages installed
+In case you have trouble with Pandas import, try recommendation provided by Zero
+from this post https://stackoverflow.com/questions/33001327/importerror-with-pyinstaller-and-pandas
+
+
+
 
 LICENSING
 ---------
