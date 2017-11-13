@@ -5,6 +5,11 @@ This is a simplest application that allows to visualize data that was recorded
 with analog digital converters and saved as a text files
 with two comma separated X, Y columns
 
+Screenshot
+==========
+
+![mainLayout](screenshot/mainLayut.jpg)
+
 The application is based on the next packages:
 
 -PyQt5
