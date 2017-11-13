@@ -6,31 +6,6 @@ with analog digital converters and saved as a text files
 with two comma separated X, Y columns
 
 The application is based on the next packages:
--PyQt5
--Pandas
--Numpy
--Pyqtgraph
-
-A single executable file can be produced with Pyinstaller for both Windows and Linux.
-In order to achieve a smaller size of produced file,
-do it inside a separate python virtual environment with only necessary packages installed
-In case you have trouble with Pandas import, try recommendation provided by Zero
-from this post https://stackoverflow.com/questions/33001327/importerror-with-pyinstaller-and-pandas
-
-
-
-
-LICENSING
----------
-
-ADCViewerPython
-=============
-
-This is a simplest application that allows to visualize data that was recorded
-with analog digital converters and saved as a text files
-with two comma separated X, Y columns
-
-The application is based on the next packages:
 
 -PyQt5
 -Pandas
@@ -41,7 +16,7 @@ The interface was created with Qt Designer
 
 A single executable file can be produced with Pyinstaller for both Windows and Linux.
 In order to achieve a smaller size of produced file,
-do it inside a separate python virtual environment with only necessary packages installed
+do it inside a separate python virtual environment with only necessary packages installed.
 In case you have trouble with Pandas import, try recommendation provided by Zero
 from this post https://stackoverflow.com/questions/33001327/importerror-with-pyinstaller-and-pandas
 
@@ -56,7 +31,7 @@ All rights reserved
 
 github: https://github.com/alekseybeletskii
 
-The ADCDataViewer software serves for visualization and simple processing
+The ADCViewerPython software serves for visualization and simple processing
 of any data recorded with Analog Digital Converters in binary or text form.
 
 Commercial support is available. To find out more contact the author directly.
@@ -72,7 +47,7 @@ modification, are permitted provided that the following conditions are met:
 
 The software is distributed to You under terms of the GNU General Public
 License. This means it is "free software". However, any program, using
-ADCDataViewer _MUST_ be the "free software" as well.
+ADCViewerPython _MUST_ be the "free software" as well.
 See the GNU General Public License for more details
 (file ./COPYING in the root of the distribution
 or website <http://www.gnu.org/licenses/>)
