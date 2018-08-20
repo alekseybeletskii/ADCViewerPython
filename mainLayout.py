@@ -2,55 +2,9 @@
 
 # Form implementation generated from reading ui file 'mainLayout.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
-
-"""
-/*
- * 	********************* BEGIN LICENSE BLOCK *********************************
- * 	ADCViewerPython
- * 	Copyright (c) 2016 onward, Aleksey Beletskii  <beletskiial@gmail.com>
- * 	All rights reserved
- *
- * 	github: https://github.com/alekseybeletskii
- *
- * 	The ADCViewerPython software serves for visualization and simple processing
- * 	of any data recorded with Analog Digital Converters in binary or text form.
- *
- * 	Commercial support is available. To find out more contact the author directly.
- *
- * 	Redistribution and use in source and binary forms, with or without
- * 	modification, are permitted provided that the following conditions are met:
- *
- * 	  1. Redistributions of source code must retain the above copyright notice, this
- * 	     list of conditions and the following disclaimer.
- * 	  2. Redistributions in binary form must reproduce the above copyright notice,
- * 	     this list of conditions and the following disclaimer in the documentation
- * 	     and/or other materials provided with the distribution.
- *
- * 	The software is distributed to You under terms of the GNU General Public
- * 	License. This means it is "free software". However, any program, using
- * 	ADCViewerPython _MUST_ be the "free software" as well.
- * 	See the GNU General Public License for more details
- * 	(file ./COPYING in the root of the distribution
- * 	or website <http://www.gnu.org/licenses/>)
- *
- * 	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * 	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * 	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * 	DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * 	ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * 	(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * 	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * 	ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * 	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * 	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * 	********************* END LICENSE BLOCK ***********************************
- */
-
-"""
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -102,7 +56,10 @@ class Ui_MainWindow(object):
         self.actionExit.setObjectName("actionExit")
         self.actionAbout = QtWidgets.QAction(MainWindow)
         self.actionAbout.setObjectName("actionAbout")
+        self.actionExport_to_csv = QtWidgets.QAction(MainWindow)
+        self.actionExport_to_csv.setObjectName("actionExport_to_csv")
         self.menuFile.addAction(self.actionOpen)
+        self.menuFile.addAction(self.actionExport_to_csv)
         self.menuFile.addAction(self.actionClear)
         self.menuFile.addAction(self.actionExit)
         self.menu.addAction(self.actionAbout)
@@ -121,11 +78,16 @@ class Ui_MainWindow(object):
         self.actionClear.setText(_translate("MainWindow", "Clear"))
         self.actionExit.setText(_translate("MainWindow", "Exit"))
         self.actionAbout.setText(_translate("MainWindow", "about"))
+        self.actionExport_to_csv.setText(_translate("MainWindow", "Export_to_csv"))
 
-#from pyqtgraph import PlotWidget
-#import os, sys
-#lib_path = os.path.abspath(os.path.join('pyqtgraph-0.10.0','pyqtgraph','widgets'))
-#sys.path.append('pyqtgraph-0.10.0')
 from pyqtgraph import PlotWidget
-   
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
 

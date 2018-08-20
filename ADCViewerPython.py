@@ -61,14 +61,20 @@ import pandas as pd
 class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
 
      def __init__(self):
-#        self.df=pd
+        self.fileNames = []
         super(self.__class__, self).__init__()
         self.setupUi(self)  # This is defined in design.py file automatically
                             # It sets up layout and widgets that are defined
 
         self.actionOpen.triggered.connect(self.openFiles)
+        self.actionExport_to_csv.triggered.connect(self.export_to_csv)
         self.actionClear.triggered.connect(self.clearPlots)
-        
+        self.actionExit.triggered.connect(self.exitApp)
+
+
+
+
+
 #        plotexample(self)
 
 
@@ -78,22 +84,39 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
 
     
      def openFiles(self):
-    
-    #        files, _ = QFileDialog.getOpenFileNames()
-            options = QFileDialog.Options()
-            options |= QFileDialog.DontUseNativeDialog
-    #        files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "","All Files (*);;Python Files (*.py)", options=options)
-    #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
-            files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "All Files (*)","All Files (*)", options=options)
-            if files:
-                for i in range(len(files)):
-    #            print(files)
-                 df=pd.read_csv(files[i],names=['x', 'y'],header=None)
-    #            self.plot.plot(df['x'],df['y'])
-                 self.plot.plot(df['x'],df['y'],pen=(i,len(files)))
+
+
+         #        files, _ = QFileDialog.getOpenFileNames()
+         options = QFileDialog.Options()
+         options |= QFileDialog.DontUseNativeDialog
+         #        files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "","All Files (*);;Python Files (*.py)", options=options)
+         #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
+         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "All Files (*)","All Files (*)", options=options)
+
+         self.fileNames=[None]*len(files)
+         if files:
+             for i in range(len(files)):
+                 self.fileNames[i] = files[i]
+                 print(files)
+                 self.df=pd.read_csv(files[i],names=['x', 'y'],header=None)
+                 #            self.plot.plot(df['x'],df['y'])
+                 self.plot.plot(self.df['x'],self.df['y'],pen=(i,len(files)))
         #            print(df['x'])
-       
-            
+
+
+     def exitApp(self):
+         sys.exit()
+
+     def export_to_csv(self):
+
+         # output to file
+         for i in range(len(self.fileNames)):
+             filename = self.fileNames[i] + "_"  + ".csv"
+             # np.savetxt(filename, np.array([self.df['x'], self.df['y']]).T, header="x, y", delimiter=', ')
+             np.savetxt(filename, np.array([self.df['x'], self.df['y']]).T,  delimiter=', ')
+
+
+
 
 def main():
     app = QtGui.QApplication(sys.argv)
