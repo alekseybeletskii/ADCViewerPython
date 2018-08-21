@@ -67,6 +67,7 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         super(self.__class__, self).__init__()
         self.files = []
         self.d = []
+        self.t = []
         self.nextPen = 0
 
 
@@ -87,7 +88,8 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
     def clearPlots(self):
         self.plot.clear()
         self.files.clear()
-        self.d = 0
+        self.d.clear()
+        self.t.clear()
         self.nextPen = 0
 
     def openCsv(self):
@@ -119,10 +121,11 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
     def openMdsplus(self):
         # c = m.Connection('mds-data-1')
         c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
-        c.get('SETTIMECONTEXT(*,*,10000Q)')
+        c.get('SETTIMECONTEXT(*,*,100000000Q)')
         #                c.get('SETTIMECONTEXT(*,*,10000Q)')
-        c.openTree('qxt1', 171123027)
-        #                c.openTree('qxt1',171123034)
+        c.openTree('qxt1', 180816020)
+        # c.openTree('qxt1', 171123027)
+        # c.openTree('qxt1',171123034)
 
         # self.d = np.array(c.get('DATA:CH82'))
         # np.append(self.d,
@@ -132,27 +135,51 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
 
         self.d.append(c.get('DATA:CH82'))
         self.d.append(c.get('DATA:CH83'))
-        self.d.append(c.get('DATA:CH84'))
+        # self.d.append(c.get('DATA:CH84'))
 
+        self.t.append(c.get('DIM_OF(DATA:CH82)'))
+        self.t.append(c.get('DIM_OF(DATA:CH83)'))
 
-
+        print('data loaded from mdsplus')
 
 
 
     def export_to_csv(self):
         # output to file
+
+        axX = self.plot.plotItem.getAxis('bottom')
+        xLeft = int(axX.range.pop(0))
+        xRight = int(axX.range.pop(0))
+        # print(xLeft)
+        # print(xRight)
+
         for i in range(len(self.d)):
-            filename = self.files[i] + "_" + ".csv"
-            # time array
+            filename = str(i)  + ".csv"
             signal = self.d[i]
-            time = (i, len(self.d[i]))
-            np.savetxt(filename, np.array([time, signal]).T, delimiter=', ')
+            time = self.t[i]
+
+            xLeft = xLeft if xLeft > 0 else 0
+            xRight = xRight if xRight < len(signal) else len(signal)-1
+            np.savetxt(filename, np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T, delimiter=', ')
+        print(xLeft)
+        print(xRight)
+        print('data exported to csv files')
 
 
     def drawPlotsFromMdsplus(self):
         for i in range(len(self.d)):
+            signal = self.d[i]
+            time = list(range(len(signal)))
+            # time = self.t[i]
             self.nextPen = self.nextPen + 1
-            self.plot.plot(self.d[i], pen=(self.nextPen))
+            # self.plot.plot(time,signal, pen=(self.nextPen))
+            # self.plot.plot(time[0:len(signal)],signal, pen=(self.nextPen))
+            self.plot.plot(time,signal, pen=(self.nextPen))
+
+        axX = self.plot.plotItem.getAxis('bottom')
+        print('x axis range: {}'.format(axX.range))  # <------- get range of x axis
+        axY = self.plot.plotItem.getAxis('left')
+        print('y axis range: {}'.format(axY.range))  # <------- get range of y axis
 
 
 def main():
