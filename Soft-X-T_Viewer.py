@@ -37,6 +37,8 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         self.actionDrawPlotsFromMdsplus.triggered.connect(self.drawPlotsFromMdsplus)
         self.actionExport_to_csv.triggered.connect(self.export_to_csv_v2)
 
+
+
         self.actionClear.triggered.connect(self.clearPlots)
         self.actionExit.triggered.connect(self.exitApp)
 
@@ -69,9 +71,14 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         sys.exit()
 
     def openMdsplus(self):
+
+        tQ = self.timeScale.text()
+        tQ = tQ+'Q' if len(tQ) > 0 else '1000000000'+'Q'
+        tQ = "SETTIMECONTEXT(*,*,"+tQ+")"
+
         # c = m.Connection('mds-data-1')
         c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
-        c.get('SETTIMECONTEXT(*,*,1000000000Q)')
+        c.get(tQ)
         # c.get('SETTIMECONTEXT(*,*,10000Q)')
         # c.openTree('qxt1', 180816020)
         # c.openTree('qxt1', 171123034)
