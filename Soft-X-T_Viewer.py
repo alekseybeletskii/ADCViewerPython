@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-
 from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
 
 import mainLayout  # This file holds our MainWindow and all design related things
@@ -25,8 +24,8 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         self.files = []
         self.d = []
         self.t = []
+        self.channelsList = []
         self.nextPen = 0
-
 
         self.setupUi(self)  # This is defined in design.py file automatically
         # It sets up layout and widgets that are defined
@@ -35,14 +34,18 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         self.actionDrawPlotsFromCsv.triggered.connect(self.drawPlotsFromCsv)
         self.actionOpen_mdsplus.triggered.connect(self.openMdsplus)
         self.actionDrawPlotsFromMdsplus.triggered.connect(self.drawPlotsFromMdsplus)
-        self.actionExport_to_csv.triggered.connect(self.export_to_csv_v2)
-
-
+        self.actionExport_to_csv.triggered.connect(self.export_to_csv_v1)
+        self.actionExport_time_to_separate_file.triggered.connect(self.export_to_csv_v2)
 
         self.actionClear.triggered.connect(self.clearPlots)
         self.actionExit.triggered.connect(self.exitApp)
 
     #        plotexample(self)
+
+    def readChannelsList(self):
+
+        text_file = open("channelslist.txt", "r")
+        self.channelsList = text_file.readlines()
 
     def clearPlots(self):
         self.plot.clear()
@@ -50,6 +53,7 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         self.d.clear()
         self.t.clear()
         self.nextPen = 0
+        self.channelsList.clear()
 
     def openCsv(self):
         options = QFileDialog.Options()
@@ -72,9 +76,11 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
 
     def openMdsplus(self):
 
+        self.readChannelsList()
+
         tQ = self.timeScale.text()
-        tQ = tQ+'Q' if len(tQ) > 0 else '1000000000'+'Q'
-        tQ = "SETTIMECONTEXT(*,*,"+tQ+")"
+        tQ = tQ + 'Q' if len(tQ) > 0 else '1000000000' + 'Q'
+        tQ = "SETTIMECONTEXT(*,*," + tQ + ")"
 
         # c = m.Connection('mds-data-1')
         c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
@@ -84,36 +90,38 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         # c.openTree('qxt1', 171123034)
         c.openTree('qxt1', 171123027)
 
+        for i in range(len(self.channelsList)):
+            self.d.append(c.get(f'{self.channelsList[i]}'))
+            self.t.append(c.get(f'DIM_OF({self.channelsList[i]})'))
 
-
-# менять каналы и время здесь
-# ==============================================
-# data
-        self.d.append(c.get('DATA:CH83'))
-        # self.d.append(c.get('DATA:CH83'))
-# time
-        self.t.append(c.get('DIM_OF(DATA:CH83)'))
-#         self.t.append(c.get('DIM_OF(DATA:CH83)'))
-
-
-# ==============================================
         print('data loaded from mdsplus')
+
+    # # менять каналы и время можно здесь
+    # # ==============================================
+    # # data
+    #         self.d.append(c.get('DATA:CH83'))
+    #         # self.d.append(c.get('DATA:CH83'))
+    # # time
+    #         self.t.append(c.get('DIM_OF(DATA:CH83)'))
+    # #         self.t.append(c.get('DIM_OF(DATA:CH83)'))
+    # # ==============================================
+
     def export_to_csv_v1(self):
         # output to file
 
         axX = self.plot.plotItem.getAxis('bottom')
-        xLeft = int(axX.range.pop(0))
-        xRight = int(axX.range.pop(0))
+        xLeft = int(axX.range[0])
+        xRight = int(axX.range[1])
         # print(xLeft)
         # print(xRight)
 
         for i in range(len(self.d)):
-            filename = str(i)  + ".csv"
+            filename = str(i) + ".csv"
             signal = self.d[i]
             time = self.t[i]
 
             xLeft = xLeft if xLeft > 0 else 0
-            xRight = xRight if xRight < len(signal) else len(signal)-1
+            xRight = xRight if xRight < len(signal) else len(signal) - 1
             np.savetxt(filename, np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T, delimiter=', ')
         print(xLeft)
         print(xRight)
@@ -123,8 +131,8 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         # output to file
 
         axX = self.plot.plotItem.getAxis('bottom')
-        xLeft = int(axX.range.pop(0))
-        xRight = int(axX.range.pop(0))
+        xLeft = int(axX.range[0])
+        xRight = int(axX.range[1])
         # print(xLeft)
         # print(xRight)
 
@@ -134,21 +142,17 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
             time = self.t[i]
 
             xLeft = xLeft if xLeft > 0 else 0
-            xRight = xRight if xRight < len(signal) else len(signal)-1
+            xRight = xRight if xRight < len(signal) else len(signal) - 1
 
-            np.savetxt(filename+"_data_"+".csv", time[xLeft:xRight])
-            np.savetxt(filename+"_time_"+".csv", signal[xLeft:xRight])
+            np.savetxt(filename + "_data_" + ".csv", time[xLeft:xRight])
+            np.savetxt(filename + "_time_" + ".csv", signal[xLeft:xRight])
 
             # df = pd.DataFrame(np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T,index=None, columns=None)
             # df.to_csv(filename, header=None, index=None)
 
-
-
-
         print(xLeft)
         print(xRight)
         print('data exported to csv files')
-
 
     def drawPlotsFromMdsplus(self):
         for i in range(len(self.d)):
@@ -158,7 +162,7 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
             self.nextPen = self.nextPen + 1
             # self.plot.plot(time,signal, pen=(self.nextPen))
             # self.plot.plot(time[0:len(signal)],signal, pen=(self.nextPen))
-            self.plot.plot(time,signal, pen=(self.nextPen))
+            self.plot.plot(time, signal, pen=(self.nextPen))
 
         axX = self.plot.plotItem.getAxis('bottom')
         print('x axis range: {}'.format(axX.range))  # <------- get range of x axis

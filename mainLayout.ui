@@ -86,12 +86,13 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionOpen_csv"/>
-    <addaction name="actionDrawPlotsFromCsv"/>
-    <addaction name="separator"/>
     <addaction name="actionOpen_mdsplus"/>
     <addaction name="actionDrawPlotsFromMdsplus"/>
+    <addaction name="actionExport_time_to_separate_file"/>
     <addaction name="actionExport_to_csv"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpen_csv"/>
+    <addaction name="actionDrawPlotsFromCsv"/>
     <addaction name="separator"/>
     <addaction name="actionClear"/>
     <addaction name="actionExit"/>
@@ -136,6 +137,11 @@
   <action name="actionDrawPlotsFromMdsplus">
    <property name="text">
     <string>DrawPlotsFromMdsplus</string>
+   </property>
+  </action>
+  <action name="actionExport_time_to_separate_file">
+   <property name="text">
+    <string>Export time to separate file</string>
    </property>
   </action>
  </widget>

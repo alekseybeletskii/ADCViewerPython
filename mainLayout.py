@@ -63,12 +63,15 @@ class Ui_MainWindow(object):
         self.actionOpen_mdsplus.setObjectName("actionOpen_mdsplus")
         self.actionDrawPlotsFromMdsplus = QtWidgets.QAction(MainWindow)
         self.actionDrawPlotsFromMdsplus.setObjectName("actionDrawPlotsFromMdsplus")
-        self.menuFile.addAction(self.actionOpen_csv)
-        self.menuFile.addAction(self.actionDrawPlotsFromCsv)
-        self.menuFile.addSeparator()
+        self.actionExport_time_to_separate_file = QtWidgets.QAction(MainWindow)
+        self.actionExport_time_to_separate_file.setObjectName("actionExport_time_to_separate_file")
         self.menuFile.addAction(self.actionOpen_mdsplus)
         self.menuFile.addAction(self.actionDrawPlotsFromMdsplus)
+        self.menuFile.addAction(self.actionExport_time_to_separate_file)
         self.menuFile.addAction(self.actionExport_to_csv)
+        self.menuFile.addSeparator()
+        self.menuFile.addAction(self.actionOpen_csv)
+        self.menuFile.addAction(self.actionDrawPlotsFromCsv)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionClear)
         self.menuFile.addAction(self.actionExit)
@@ -89,6 +92,7 @@ class Ui_MainWindow(object):
         self.actionDrawPlotsFromCsv.setText(_translate("MainWindow", "DrawPlotsFromCsv"))
         self.actionOpen_mdsplus.setText(_translate("MainWindow", "Open_mdsplus"))
         self.actionDrawPlotsFromMdsplus.setText(_translate("MainWindow", "DrawPlotsFromMdsplus"))
+        self.actionExport_time_to_separate_file.setText(_translate("MainWindow", "Export time to separate file"))
 
 from pyqtgraph import PlotWidget
 
