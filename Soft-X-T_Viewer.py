@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 
+import os.path as ospath
+
 from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
 
 import mainLayout  # This file holds our MainWindow and all design related things
@@ -44,8 +46,12 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
 
     def readChannelsList(self):
 
-        text_file = open("channelslist.txt", "r")
-        self.channelsList = text_file.readlines()
+        # text_file = open("channelslist.txt", "r")
+        # self.channelsList = text_file.readlines()
+
+        with open('channelslist.txt', 'r') as text_file:
+            self.channelsList = text_file.read().splitlines()
+
 
     def clearPlots(self):
         self.plot.clear()
@@ -88,7 +94,10 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         # c.get('SETTIMECONTEXT(*,*,10000Q)')
         # c.openTree('qxt1', 180816020)
         # c.openTree('qxt1', 171123034)
-        c.openTree('qxt1', 171123027)
+
+        shotNumber = self.shot.text()
+        shotNumber = int(shotNumber) if len(shotNumber)==9 else 171123034
+        c.openTree('qxt1', shotNumber)
 
         for i in range(len(self.channelsList)):
             self.d.append(c.get(f'{self.channelsList[i]}'))
@@ -115,14 +124,20 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         # print(xLeft)
         # print(xRight)
 
+        # get the current script path.
+        here = ospath.dirname(ospath.realpath(__file__))
+        subdir = "exported"
+
         for i in range(len(self.d)):
-            filename = str(i) + ".csv"
+            # filename = str(i) + ".csv"
+            filename = self.channelsList[i] + ".csv"
+            filepath = ospath.join(here, subdir, filename)
             signal = self.d[i]
             time = self.t[i]
 
             xLeft = xLeft if xLeft > 0 else 0
             xRight = xRight if xRight < len(signal) else len(signal) - 1
-            np.savetxt(filename, np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T, delimiter=', ')
+            np.savetxt(filepath, np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T, delimiter=', ')
         print(xLeft)
         print(xRight)
         print('data exported to csv files')
@@ -136,16 +151,21 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         # print(xLeft)
         # print(xRight)
 
+        # get the current script path.
+        here = ospath.dirname(ospath.realpath(__file__))
+        subdir = "exported"
+
         for i in range(len(self.d)):
-            filename = str(i)
+            filename = self.channelsList[i]
+            filepath = ospath.join(here, subdir, filename)
             signal = self.d[i]
             time = self.t[i]
 
             xLeft = xLeft if xLeft > 0 else 0
             xRight = xRight if xRight < len(signal) else len(signal) - 1
 
-            np.savetxt(filename + "_data_" + ".csv", time[xLeft:xRight])
-            np.savetxt(filename + "_time_" + ".csv", signal[xLeft:xRight])
+            np.savetxt(filepath + "_data_" + ".csv", time[xLeft:xRight])
+            np.savetxt(filepath + "_time_" + ".csv", signal[xLeft:xRight])
 
             # df = pd.DataFrame(np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T,index=None, columns=None)
             # df.to_csv(filename, header=None, index=None)
