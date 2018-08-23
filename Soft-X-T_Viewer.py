@@ -51,6 +51,8 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
 
         with open('channelslist.txt', 'r') as text_file:
             self.channelsList = text_file.read().splitlines()
+            # for i in range(len(self.channelsList)):
+            #     self.channelsList[i]=self.channelsList[i].replace(":","-")
 
 
     def clearPlots(self):
@@ -88,8 +90,8 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         tQ = tQ + 'Q' if len(tQ) > 0 else '1000000000' + 'Q'
         tQ = "SETTIMECONTEXT(*,*," + tQ + ")"
 
-        # c = m.Connection('mds-data-1')
-        c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
+        c = m.Connection('mds-data-1')
+        # c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
         c.get(tQ)
         # c.get('SETTIMECONTEXT(*,*,10000Q)')
         # c.openTree('qxt1', 180816020)
@@ -131,7 +133,7 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         for i in range(len(self.d)):
             # filename = str(i) + ".csv"
             filename = self.channelsList[i] + ".csv"
-            filepath = ospath.join(here, subdir, filename)
+            filepath = ospath.join(here, subdir, filename.replace(":","-"))
             signal = self.d[i]
             time = self.t[i]
 
@@ -157,7 +159,7 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
 
         for i in range(len(self.d)):
             filename = self.channelsList[i]
-            filepath = ospath.join(here, subdir, filename)
+            filepath = ospath.join(here, subdir, filename.replace(":","-"))
             signal = self.d[i]
             time = self.t[i]
 
