@@ -137,8 +137,6 @@
      </widget>
     </item>
    </layout>
-   <zorder>horizontalLayoutWidget</zorder>
-   <zorder>plot</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QMenuBar" name="menubar">
@@ -154,13 +152,14 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionOpen_mdsplus"/>
+    <addaction name="actionOpen_mdsplus_QXT"/>
+    <addaction name="actionOpen_mdsplus_QOC"/>
     <addaction name="actionDrawPlotsFromMdsplus"/>
     <addaction name="actionExport_time_to_separate_file"/>
-    <addaction name="actionExport_to_csv"/>
     <addaction name="separator"/>
     <addaction name="actionOpen_csv"/>
     <addaction name="actionDrawPlotsFromCsv"/>
+    <addaction name="actionExport_to_csv"/>
     <addaction name="separator"/>
     <addaction name="actionClear"/>
     <addaction name="actionExit"/>
@@ -197,9 +196,9 @@
     <string>DrawPlotsFromCsv</string>
    </property>
   </action>
-  <action name="actionOpen_mdsplus">
+  <action name="actionOpen_mdsplus_QXT">
    <property name="text">
-    <string>Open_mdsplus</string>
+    <string>Open_mdsplus_QXT</string>
    </property>
   </action>
   <action name="actionDrawPlotsFromMdsplus">
@@ -210,6 +209,11 @@
   <action name="actionExport_time_to_separate_file">
    <property name="text">
     <string>Export time to separate file</string>
+   </property>
+  </action>
+  <action name="actionOpen_mdsplus_QOC">
+   <property name="text">
+    <string>Open_mdsplus_QOC</string>
    </property>
   </action>
  </widget>

@@ -34,7 +34,8 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
 
         self.actionOpen_csv.triggered.connect(self.openCsv)
         self.actionDrawPlotsFromCsv.triggered.connect(self.drawPlotsFromCsv)
-        self.actionOpen_mdsplus.triggered.connect(self.openMdsplus)
+        self.actionOpen_mdsplus_QXT.triggered.connect(self.openMdsplusQXT)
+        self.actionOpen_mdsplus_QOC.triggered.connect(self.openMdsplusQOC)
         self.actionDrawPlotsFromMdsplus.triggered.connect(self.drawPlotsFromMdsplus)
         self.actionExport_to_csv.triggered.connect(self.export_to_csv_v1)
         self.actionExport_time_to_separate_file.triggered.connect(self.export_to_csv_v2)
@@ -82,16 +83,16 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
     def exitApp(self):
         sys.exit()
 
-    def openMdsplus(self):
-
+    def openMdsplusQXT(self):
+        self.clearPlots()
         self.readChannelsList()
 
         tQ = self.timeScale.text()
-        tQ = tQ + 'Q' if len(tQ) > 0 else '1000000000' + 'Q'
+        tQ = tQ + 'Q' if int(tQ) > 0 else '1000000000' + 'Q'
         tQ = "SETTIMECONTEXT(*,*," + tQ + ")"
 
-        c = m.Connection('mds-data-1')
-        # c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
+        # c = m.Connection('mds-data-1')
+        c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
         c.get(tQ)
         # c.get('SETTIMECONTEXT(*,*,10000Q)')
         # c.openTree('qxt1', 180816020)
@@ -102,20 +103,47 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         c.openTree('qxt1', shotNumber)
 
         for i in range(len(self.channelsList)):
-            self.d.append(c.get(f'{self.channelsList[i]}'))
-            self.t.append(c.get(f'DIM_OF({self.channelsList[i]})'))
+            self.d.append(c.get(f'DATA:{self.channelsList[i]}'))
+            self.t.append(c.get(f'DIM_OF(DATA:{self.channelsList[i]})'))
 
         print('data loaded from mdsplus')
 
-    # # менять каналы и время можно здесь
-    # # ==============================================
-    # # data
-    #         self.d.append(c.get('DATA:CH83'))
-    #         # self.d.append(c.get('DATA:CH83'))
-    # # time
-    #         self.t.append(c.get('DIM_OF(DATA:CH83)'))
-    # #         self.t.append(c.get('DIM_OF(DATA:CH83)'))
-    # # ==============================================
+    def openMdsplusQOC(self):
+        self.clearPlots()
+        # mdpid = 171207017  # PCI saw activity here
+        # mdpid = 180823005
+
+        self.readChannelsList()
+
+        tQ = self.timeScale.text()
+        tQ = tQ + 'Q' if int(tQ) > 0 else '1000000000' + 'Q'
+        tQ = "SETTIMECONTEXT(*,*," + tQ + ")"
+
+        shotNumber = self.shot.text()
+        shotNumber = int(shotNumber) if len(shotNumber)==9 else 180823005
+
+        # c = m.Connection('mds-data-1')
+        c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
+
+        c.get(tQ)
+
+        c.openTree('qoc', shotNumber)
+        fs = np.int(c.get('HARDWARE:ACQ2106_064:CLOCK'))
+
+        for i in range(len(self.channelsList)):
+            # MDSraw = c.get('DATA:DET2CH16')
+            # MDSraw = c.get(f'DATA:{self.channelsList[i]}')
+            # dat_raw = MDSraw.data()
+            # t_raw = np.double(MDSraw.dim_of().data()) / fs
+
+            dat_raw = c.get(f'DATA:{self.channelsList[i]}')
+            t_raw = c.get(f'DIM_OF(DATA:{self.channelsList[i]})')
+
+            self.d.append(dat_raw)
+            self.t.append(t_raw)
+
+        print('data loaded from mdsplus')
+        print('fs: ',fs)
 
     def export_to_csv_v1(self):
         # output to file
@@ -140,8 +168,8 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
             xLeft = xLeft if xLeft > 0 else 0
             xRight = xRight if xRight < len(signal) else len(signal) - 1
             np.savetxt(filepath, np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T, delimiter=', ')
-        print(xLeft)
-        print(xRight)
+        print('xLeft: ',xLeft)
+        print('xRight: ',xRight)
         print('data exported to csv files')
 
     def export_to_csv_v2(self):
@@ -166,14 +194,14 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
             xLeft = xLeft if xLeft > 0 else 0
             xRight = xRight if xRight < len(signal) else len(signal) - 1
 
-            np.savetxt(filepath + "_data_" + ".csv", time[xLeft:xRight])
-            np.savetxt(filepath + "_time_" + ".csv", signal[xLeft:xRight])
+            np.savetxt(filepath + "_time_" + ".csv", time[xLeft:xRight])
+            np.savetxt(filepath + "_data_" + ".csv", signal[xLeft:xRight])
 
             # df = pd.DataFrame(np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T,index=None, columns=None)
             # df.to_csv(filename, header=None, index=None)
 
-        print(xLeft)
-        print(xRight)
+        print('xLeft: ',xLeft)
+        print('xRight: ',xRight)
         print('data exported to csv files')
 
     def drawPlotsFromMdsplus(self):
