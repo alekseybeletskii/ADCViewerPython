@@ -88,11 +88,12 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         self.readChannelsList()
 
         tQ = self.timeScale.text()
-        tQ = tQ + 'Q' if int(tQ) > 0 else '1000000000' + 'Q'
-        tQ = "SETTIMECONTEXT(*,*," + tQ + ")"
+        tQ = tQ if int(tQ) > 0 else '1000000000'
+        self.timeScale.setText(tQ)
+        tQ = "SETTIMECONTEXT(*,*," + tQ + "Q)"
 
-        # c = m.Connection('mds-data-1')
-        c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
+        c = m.Connection('mds-data-1')
+        # c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
         c.get(tQ)
         # c.get('SETTIMECONTEXT(*,*,10000Q)')
         # c.openTree('qxt1', 180816020)
@@ -100,6 +101,7 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
 
         shotNumber = self.shot.text()
         shotNumber = int(shotNumber) if len(shotNumber)==9 else 171123034
+        self.shot.setText(str(shotNumber))
         c.openTree('qxt1', shotNumber)
 
         for i in range(len(self.channelsList)):
@@ -116,14 +118,16 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         self.readChannelsList()
 
         tQ = self.timeScale.text()
-        tQ = tQ + 'Q' if int(tQ) > 0 else '1000000000' + 'Q'
-        tQ = "SETTIMECONTEXT(*,*," + tQ + ")"
+        tQ = tQ if int(tQ) > 0 else '1000000000'
+        self.timeScale.setText(tQ)
+        tQ = "SETTIMECONTEXT(*,*," + tQ + "Q)"
 
         shotNumber = self.shot.text()
         shotNumber = int(shotNumber) if len(shotNumber)==9 else 180823005
+        self.shot.setText(str(shotNumber))
 
-        # c = m.Connection('mds-data-1')
-        c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
+        c = m.Connection('mds-data-1')
+#        c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
 
         c.get(tQ)
 
