@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>730</width>
+    <width>910</width>
     <height>667</height>
    </rect>
   </property>
@@ -39,6 +39,19 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
+       <widget class="QPushButton" name="redraw">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>draw</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="label">
         <property name="maximumSize">
          <size>
@@ -58,13 +71,13 @@
        <widget class="QLineEdit" name="shot">
         <property name="minimumSize">
          <size>
-          <width>0</width>
+          <width>80</width>
           <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>200</width>
+          <width>100</width>
           <height>15</height>
          </size>
         </property>
@@ -87,7 +100,7 @@
       <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>timeScaling</string>
+         <string>resampling</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -95,16 +108,16 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="timeScale">
+       <widget class="QLineEdit" name="resampling">
         <property name="minimumSize">
          <size>
-          <width>0</width>
+          <width>80</width>
           <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>200</width>
+          <width>100</width>
           <height>15</height>
          </size>
         </property>
@@ -114,13 +127,146 @@
          </font>
         </property>
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;timeScaling&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;set &amp;quot;1&amp;quot; for no resampling&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
-         <string>1000000000</string>
+         <string>1</string>
         </property>
         <property name="placeholderText">
          <string extracomment="timeScale"/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>samplingRate_kHz</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="samplingRate_kHz">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>15</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>1000</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="SGFilt">
+        <property name="text">
+         <string>Filt</string>
+        </property>
+        <property name="tristate">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="subtrFilt">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>15</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>subtrFilt</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>windowLength</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="winLength">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>15</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>must be odd!</string>
+        </property>
+        <property name="text">
+         <string>1001</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>polyOrder</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="polyOrder">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>15</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>15</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEdit_3">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>15</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>15</height>
+         </size>
         </property>
        </widget>
       </item>
@@ -144,8 +290,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>730</width>
-     <height>20</height>
+     <width>910</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -156,10 +302,10 @@
     <addaction name="actionOpen_mdsplus_QOC"/>
     <addaction name="actionDrawPlotsFromMdsplus"/>
     <addaction name="actionExport_time_to_separate_file"/>
+    <addaction name="actionExport_to_csv"/>
     <addaction name="separator"/>
     <addaction name="actionOpen_csv"/>
     <addaction name="actionDrawPlotsFromCsv"/>
-    <addaction name="actionExport_to_csv"/>
     <addaction name="separator"/>
     <addaction name="actionClear"/>
     <addaction name="actionExit"/>
@@ -188,7 +334,7 @@
   </action>
   <action name="actionExport_to_csv">
    <property name="text">
-    <string>Export_to_csv</string>
+    <string>Export to csv</string>
    </property>
   </action>
   <action name="actionDrawPlotsFromCsv">
