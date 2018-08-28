@@ -174,19 +174,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="subtrFilt">
-        <property name="minimumSize">
-         <size>
-          <width>50</width>
-          <height>15</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>80</width>
-          <height>20</height>
-         </size>
-        </property>
+       <widget class="QCheckBox" name="subtrFilt">
         <property name="text">
          <string>subtrFilt</string>
         </property>
@@ -250,12 +238,12 @@
       <item>
        <widget class="QLabel" name="label_6">
         <property name="text">
-         <string>TextLabel</string>
+         <string>mouseXY</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_3">
+       <widget class="QLineEdit" name="mouseXY">
         <property name="minimumSize">
          <size>
           <width>80</width>

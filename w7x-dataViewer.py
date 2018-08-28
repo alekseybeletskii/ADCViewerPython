@@ -4,12 +4,15 @@
 
 import os.path as ospath
 
-from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
+# from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import  QtGui, QtWidgets
+
+# from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
 
 import mainLayout  # This file holds our MainWindow and all design related things
 # it also keeps events etc that we defined in Qt Design
 import sys
-from PyQt5 import QtGui
+# from PyQt5 import QtGui
 
 import numpy as np
 
@@ -17,9 +20,12 @@ import pandas as pd
 
 import MDSplus as m
 
+import pyqtgraph as pg
+
+
 from scipy.signal import savgol_filter
 
-class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
+class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
 
     def __init__(self):
 
@@ -41,7 +47,7 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         self.actionExport_to_csv.triggered.connect(self.export_to_csv_v1)
         self.actionExport_time_to_separate_file.triggered.connect(self.export_to_csv_v2)
 
-        self.actionClear.triggered.connect(self.clearPlots)
+        self.actionClear.triggered.connect(self.clearAll)
         self.actionExit.triggered.connect(self.exitApp)
         self.xLeft=0
         self.xRight=0
@@ -51,7 +57,7 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
 
 
     #        plotexample(self)
-
+    #
     def readChannelsList(self):
 
         # text_file = open("channelslist.txt", "r")
@@ -63,7 +69,7 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
             #     self.channelsList[i]=self.channelsList[i].replace(":","-")
 
 
-    def clearPlots(self):
+    def clearAll(self):
         self.plot.clear()
         self.files.clear()
         self.d.clear()
@@ -72,11 +78,12 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         self.channelsList.clear()
 
     def openCsv(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
+        self.clearAll()
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
         #        files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "","All Files (*);;Python Files (*.py)", options=options)
         #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
-        self.files, _ = QFileDialog.getOpenFileNames(self, None, "QFileDialog.getOpenFileNames()", "All Files (*)",
+        self.files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, None, "QFileDialog.getOpenFileNames()", "All Files (*)",
                                                      "All Files (*)", options=options)
 
     def drawPlotsFromCsv(self):
@@ -87,11 +94,10 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
             # print(self.files[i])
             # print(type(self.df))
 
-    def exitApp(self):
-        sys.exit()
+
 
     def openMdsplusQXT(self):
-        # self.clearPlots()
+        self.clearAll()
         self.readChannelsList()
 
         c = m.Connection('mds-data-1')
@@ -140,7 +146,7 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         # fs = np.int(conn.get('\W7X::TOP.QOC.HARDWARE:ACQ2106_064:CLOCK'))
         # t_raw = np.double(MDSraw.dim_of().data()) / fs
 
-        # self.clearPlots()
+        self.clearAll()
         self.readChannelsList()
 
         shotNumber = self.shot.text()
@@ -225,19 +231,40 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
         print('data exported to csv files, time separated')
 
     def drawPlotsFromMdsplus(self):
+        self.getXaxisLimits()
+
         self.plot.clear()
+        self.nextPen=0
         for i in range(len(self.d)):
             signal = self.d[i]
             # time = list(range(len(signal)))
             time = self.t[i]
             self.nextPen = self.nextPen + 1
-            # self.plot.plot(time,signal, pen=(self.nextPen))
+            self.plot.plot(time,signal, pen=(self.nextPen))
             # self.plot.plot(time[0:len(signal)],signal, pen=(self.nextPen))
-            self.plot.plot(time, signal, pen=(self.nextPen),)
-            if self.SGFilt.checkState():
-               smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
-               self.plot.plot(time, smoothed, pen=0)
+            xLeft = self.xLeft if self.xLeft > 0 else 0
+            xRight = self.xRight if self.xRight < len(signal) else len(signal) - 1
+            signal = signal[xLeft:xRight]
+            time = time[xLeft:xRight]
+            if self.SGFilt.checkState() and not self.subtrFilt.checkState():
+                self.plot.clear()
+                # self.plot.plot(time, signal, pen=(self.nextPen),)
+                # signal=signal[xLeft:xRight]
+                # time=time[xLeft:xRight]
+                self.plot.plot(time, signal, pen=(self.nextPen),)
+                smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
+                self.plot.plot(time, smoothed, pen=0)
+            if self.SGFilt.checkState() and  self.subtrFilt.checkState():
+                self.plot.clear()
+                smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
+                self.d[i][xLeft:xRight] = signal = signal-smoothed
+                self.plot.plot(time, signal, pen=(self.nextPen),)
+                smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
+                self.plot.plot(time, smoothed, pen=0)
 
+
+
+    def getXaxisLimits(self):
         axX = self.plot.plotItem.getAxis('bottom')
         self.xLeft = int(axX.range[0])
         self.xRight = int(axX.range[1])
@@ -247,6 +274,11 @@ class mainApp(QtGui.QMainWindow, mainLayout.Ui_MainWindow):
 
     def savitzky_golay_filt(self,data, window_length=1001, polyorder=0, deriv=0, delta=1.0, axis=-1, mode='interp'):
         return savgol_filter(data,window_length,polyorder,mode=mode)
+
+
+    def exitApp(self):
+        sys.exit()
+
 
 def main():
     app = QtGui.QApplication(sys.argv)
