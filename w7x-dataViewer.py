@@ -23,6 +23,8 @@ import MDSplus as m
 import pyqtgraph as pg
 
 
+from w7xDataSpectrogram import w7xSpectrogram
+
 from scipy.signal import savgol_filter
 
 class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
@@ -53,11 +55,18 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         self.xRight=0
 
         self.redraw.clicked.connect(self.drawPlotsFromMdsplus)
+        self.redrawSpectrogramUI.clicked.connect(self.drawSpectrogram)
+
+
+    def drawSpectrogram(self):
+        w7xSpectr = w7xSpectrogram()
+        signalIn = w7xSpectr.generateData()
+        w7xSpectr.drawSpectrogram(signalIn)
 
 
 
-    #        plotexample(self)
-    #
+
+
     def readChannelsList(self):
 
         # text_file = open("channelslist.txt", "r")
@@ -268,9 +277,9 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         axX = self.plot.plotItem.getAxis('bottom')
         self.xLeft = int(axX.range[0])
         self.xRight = int(axX.range[1])
-        print('x axis range: {}'.format(axX.range))  # <------- get range of x axis
-        axY = self.plot.plotItem.getAxis('left')
-        print('y axis range: {}'.format(axY.range))  # <------- get range of y axis
+        # axY = self.plot.plotItem.getAxis('left')
+        # print('x axis range: {}'.format(axX.range))  # <------- get range of x axis
+        # print('y axis range: {}'.format(axY.range))  # <------- get range of y axis
 
     def savitzky_golay_filt(self,data, window_length=1001, polyorder=0, deriv=0, delta=1.0, axis=-1, mode='interp'):
         return savgol_filter(data,window_length,polyorder,mode=mode)
@@ -281,7 +290,7 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
 
 
 def main():
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     window = mainApp()
     window.show()
     sys.exit(app.exec_())

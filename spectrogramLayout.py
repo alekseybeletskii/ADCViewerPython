@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'mainLayout.ui'
+# Form implementation generated from reading ui file 'spectrogramLayout.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
@@ -28,7 +28,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.redraw = QtWidgets.QPushButton(self.centralwidget)
         self.redraw.setMinimumSize(QtCore.QSize(50, 20))
-        self.redraw.setMaximumSize(QtCore.QSize(50, 20))
         self.redraw.setObjectName("redraw")
         self.horizontalLayout.addWidget(self.redraw)
         self.label = QtWidgets.QLabel(self.centralwidget)
@@ -89,16 +88,11 @@ class Ui_MainWindow(object):
         self.polyOrder.setMaximumSize(QtCore.QSize(80, 15))
         self.polyOrder.setObjectName("polyOrder")
         self.horizontalLayout.addWidget(self.polyOrder)
-        self.redrawSpectrogramUI = QtWidgets.QPushButton(self.centralwidget)
-        self.redrawSpectrogramUI.setMinimumSize(QtCore.QSize(50, 20))
-        self.redrawSpectrogramUI.setMaximumSize(QtCore.QSize(50, 20))
-        self.redrawSpectrogramUI.setObjectName("redrawSpectrogramUI")
-        self.horizontalLayout.addWidget(self.redrawSpectrogramUI)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        self.plot = PlotWidget(self.centralwidget)
-        self.plot.setBaseSize(QtCore.QSize(0, 0))
-        self.plot.setObjectName("plot")
-        self.verticalLayout.addWidget(self.plot)
+        self.spectrogram_UI = GraphicsLayoutWidget(self.centralwidget)
+        self.spectrogram_UI.setBaseSize(QtCore.QSize(0, 0))
+        self.spectrogram_UI.setObjectName("spectrogram_UI")
+        self.verticalLayout.addWidget(self.spectrogram_UI)
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -164,7 +158,6 @@ class Ui_MainWindow(object):
         self.winLength.setText(_translate("MainWindow", "1001"))
         self.label_5.setText(_translate("MainWindow", "polyOrder"))
         self.polyOrder.setText(_translate("MainWindow", "0"))
-        self.redrawSpectrogramUI.setText(_translate("MainWindow", "spectr"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.actionOpen_csv.setText(_translate("MainWindow", "Open_csv"))
         self.actionClear.setText(_translate("MainWindow", "ClearPlots"))
@@ -177,7 +170,7 @@ class Ui_MainWindow(object):
         self.actionExport_time_to_separate_file.setText(_translate("MainWindow", "Export time to separate file"))
         self.actionOpen_mdsplus_QOC.setText(_translate("MainWindow", "Open_mdsplus_QOC"))
 
-from pyqtgraph import PlotWidget
+from pyqtgraph import GraphicsLayoutWidget
 
 if __name__ == "__main__":
     import sys
