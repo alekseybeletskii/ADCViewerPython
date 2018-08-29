@@ -5,7 +5,7 @@
 import os.path as ospath
 
 # from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5 import  QtGui, QtWidgets
+from PyQt5 import QtGui, QtWidgets
 
 # from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
 
@@ -28,52 +28,146 @@ import pyqtgraph
 
 from scipy.signal import savgol_filter
 
-class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow, spectrogramLayout.GraphicsLayoutWidget):
-    # Interpret image data as row-major instead of col-major
+
+class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
+
+    @classmethod
+    def generateTestData(cls):
+        # Create the data
+        fs = 10e3
+        N = 1e5
+        amp = 2 * np.sqrt(2)
+        noise_power = 0.01 * fs / 2
+        time = np.arange(N) / float(fs)
+        mod = 500 * np.cos(2 * np.pi * 0.25 * time)
+        carrier = amp * np.sin(2 * np.pi * 3e3 * time + mod)
+        noise = np.random.normal(scale=np.sqrt(noise_power), size=time.shape)
+        noise *= np.exp(-time / 5)
+        return  carrier + noise
+    def __init__(self, parent):
+        super(self.__class__, self).__init__(parent)
+        # Interpret image data as row-major instead of col-major
+        # pg.setConfigOptions(imageAxisOrder='row-major')
+        # pg.mkQApp()
 
 
-    def __init__(self):
-        super(self.__class__, self).__init__()
-        self.signalIn = np.ndarray
-        self.t = np.ndarray
-        self.f = np.ndarray
-        self.Sxx = np.ndarray
-        self.fs = np.float64(10e3)
 
+
+
+        # nfft : int, optional.
+        #  Length of the FFT used, if a zero padded FFT is desired. If None, the FFT length is nperseg. Defaults to None.
+        self.nfft = 256
+        # fs : float, optional.
+        #  Sampling frequency of the x time series. Defaults to 1.0.
+        self.fs = 1000
+        # window : str or tuple or array_like, optional.
+        #  Desired window to use. Defaults to a Tukey window with shape parameter of 0.25
+        # Window types: boxcar, triang, blackman, hamming, hann, bartlett, flattop, parzen,
+        # bohman, blackmanharris, nuttall, barthann (and some others that needs parameters)
+        self.window = 'Tukey(0.25)'
+        # nperseg : int, optional.
+        #  Length of each segment. Defaults to None, but if window is str or tuple,
+        # is set to 256, and if window is array_like, is set to the length of the window.
+        self.nperseg = 256
+        # noverlap : int, optional.
+        #  Number of points to overlap between segments. If None, noverlap = nperseg // 8. Defaults to None.
+        self.noverlap = 32
+        # detrend : str or function or False, optional
+        # Specifies how to detrend each segment. If detrend is a string, it is passed as the type argument
+        # to the detrend function. If it is a function, it takes a segment and returns a detrended segment.
+        # If detrend is False, no detrending is done. Defaults to ‘constant’.
+        #  If type == 'constant', only the mean of data is subtracted.
+        self.detrend = False
+        # self.detrend = 'constant'
+
+        # scaling : { ‘density’, ‘spectrum’ }, optional
+        # Selects between computing the power spectral density (‘density’)
+        # where Sxx has units of V**2/Hz and computing the power spectrum (‘spectrum’) where Sxx has units of V**2,
+        # if x is measured in V and fs is measured in Hz. Defaults to ‘density’.
+        self.scaling = 'density'
+
+        # mode : str, optional
+        # Defines what kind of return values are expected. Options are [‘psd’, ‘complex’, ‘magnitude’, ‘angle’, ‘phase’].
+        # ‘complex’ is equivalent to the output of stft with no padding or boundary extension.
+        # ‘magnitude’ returns the absolute magnitude of the STFT. ‘angle’ and ‘phase’ return the complex angle of the STFT,
+        #  with and without unwrapping, respectively.
+        self.mode = 'psd'
 
         self.setupUi(self)  # This is defined in design.py file automatically
         # It sets up layout and widgets that are defined
 
-        self.fs = self.samplingRate_kHz.text()
-        self.actionClear.triggered.connect(self.clearAll)
+        self.resetParams_ui.clicked.connect(self.setDefaultParams)
+
+        self.dataToSpectrogram = w7xSpectrogram.generateTestData()
+
+        self.redrawSpectrogramBtn.clicked.connect(self.drawSpectrogram)
+        self.actionClearAll.triggered.connect(self.clearAll)
+
+        self.actionGenerateTestData.triggered.connect(self.generateData)
         self.actionExit.triggered.connect(self.exitApp)
-        self.xLeft=0
-        self.xRight=0
+        self.xLeft = 0
+        self.xRight = 0
 
+    def clearAll(self):
+        self.spectrogram_UI.clear()
 
-
-
+    def setDefaultParams(self):
+        self.nfft = 256
+        self.nfft_ui.setText('256')
+        self.fs = 1000
+        self.fs_kHz_ui.setText('1000')
+        self.window = 'Tukey(0.25)'
+        self.window_ui.setText('Tukey(0.25)')
+        self.nperseg = 256
+        self.nperseg_ui.setText('256')
+        self.noverlap = 32
+        self.noverlap_ui.setText('32')
+        self.detrend = 'constant'
+        self.detrend_ui.setText('constant')
+        self.scaling = 'density'
+        self.scaling_ui.setText('density')
+        self.mode = 'psd'
+        self.mode_ui.setText('psd')
+    def setParamsValues(self):
+        self.nfft = int(self.nfft_ui.text())
+        self.fs = float(self.fs_kHz_ui.text())*1000.0
+        self.window = self.window_ui.text()
+        self.nperseg = int(self.nperseg_ui.text())
+        self.noverlap = int(self.noverlap_ui.text())
+        detrend = self.detrend_ui.text()
+        self.detrend = False if detrend.capitalize() =='FALSE' else detrend
+        self.scaling = self.scaling_ui.text()
+        self.mode = self.mode_ui.text()
     def generateData(self):
         # Create the data
         fs = 10e3
         N = 1e5
         amp = 2 * np.sqrt(2)
         noise_power = 0.01 * fs / 2
-        time = np.arange(N) / float(self.fs)
+        time = np.arange(N) / float(fs)
         mod = 500 * np.cos(2 * np.pi * 0.25 * time)
         carrier = amp * np.sin(2 * np.pi * 3e3 * time + mod)
         noise = np.random.normal(scale=np.sqrt(noise_power), size=time.shape)
         noise *= np.exp(-time / 5)
-        return carrier + noise
+        self.dataToSpectrogram = carrier + noise
+        return  carrier + noise
 
+    def setDataToSpectrogram(self,signalIn):
+        self.dataToSpectrogram = signalIn
+    # def drawSpectrogram(self,signalIn):
+    def drawSpectrogram(self):
+        self.spectrogram_UI.clear()
+        # signalIn = self.generateData()
+        self.setParamsValues()
+        # f, t, Sxx = signal.spectrogram(self.generateData(), 10000)
+        f, t, Sxx = signal.spectrogram(self.dataToSpectrogram, fs=self.fs, window='hamming',nperseg=self.nperseg, noverlap=self.noverlap, nfft=self.nfft,
+                                       detrend=self.detrend, scaling=self.scaling, mode=self.mode)
 
-    def drawSpectrogram(self,signalIn):
-        pg.setConfigOptions(imageAxisOrder='row-major')
-        pg.mkQApp()
-
-        f, t, Sxx = signal.spectrogram(signalIn, 10e3)
+        # Interpret image data as row-major instead of col-major
+        pyqtgraph.setConfigOptions(imageAxisOrder='row-major')
+        # pyqtgraph.mkQApp()
+        # win = pyqtgraph.GraphicsLayoutWidget()
         win = self.spectrogram_UI
-        # win = pg.GraphicsLayoutWidget
         # A plot area (ViewBox + axes) for displaying the image
         p1 = win.addPlot()
 
@@ -109,38 +203,26 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow, spe
         # If you include the units, Pyqtgraph automatically scales the axis and adjusts the SI prefix (in this case kHz)
         p1.setLabel('left', "Frequency", units='Hz')
 
+        pyqtgraph.Qt.QtWidgets.QApplication.instance().exec_()
 
 
-    def clearAll(self):
-        self.plot.clear()
-        self.files.clear()
-        self.nextPen = 0
-        self.channelsList.clear()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        # Plotting with Matplotlib in comparison
+        plt.pcolormesh(t, f, Sxx)
+        plt.ylabel('Frequency [Hz]')
+        plt.xlabel('Time [sec]')
+        plt.colorbar()
+        plt.show()
 
     def exitApp(self):
-        sys.exit()
+        if __name__ == '__main__':
+            sys.exit()
+        else:
+            self.close()
 
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    window = w7xSpectrogram()
+    window = w7xSpectrogram(parent=None)
     window.show()
     sys.exit(app.exec_())
 

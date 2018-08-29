@@ -1,6 +1,9 @@
 ADCViewerPython
 =============
 
+convert firstgui.ui to Python code:
+pyuic5 -x name.ui -o name.py
+
 This is a simplest application that allows to visualize data that was recorded
 with analog digital converters and saved as a text files
 with two comma separated X, Y columns

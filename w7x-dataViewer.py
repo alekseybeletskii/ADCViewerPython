@@ -59,11 +59,13 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
 
 
     def drawSpectrogram(self):
-        w7xSpectr = w7xSpectrogram()
-        signalIn = w7xSpectr.generateData()
-        w7xSpectr.drawSpectrogram(signalIn)
+        w7xSpectr = w7xSpectrogram(self)
+        w7xSpectr.show()
+        w7xSpectr.setDataToSpectrogram(self.d[0][self.xLeft:self.xRight])
+        w7xSpectr.drawSpectrogram()
 
-
+        # for i in self.d:
+        #       w7xSpectr.drawSpectrogram(self.d[i][self.xLeft:self.xRight])
 
 
 
@@ -85,6 +87,8 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         self.t.clear()
         self.nextPen = 0
         self.channelsList.clear()
+        self.xLeft=0
+        self.xRight=0
 
     def openCsv(self):
         self.clearAll()
@@ -240,21 +244,22 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         print('data exported to csv files, time separated')
 
     def drawPlotsFromMdsplus(self):
-        self.getXaxisLimits()
 
         self.plot.clear()
         self.nextPen=0
         for i in range(len(self.d)):
+
             signal = self.d[i]
             # time = list(range(len(signal)))
             time = self.t[i]
             self.nextPen = self.nextPen + 1
             self.plot.plot(time,signal, pen=(self.nextPen))
+            self.getXaxisLimits()
             # self.plot.plot(time[0:len(signal)],signal, pen=(self.nextPen))
-            xLeft = self.xLeft if self.xLeft > 0 else 0
-            xRight = self.xRight if self.xRight < len(signal) else len(signal) - 1
-            signal = signal[xLeft:xRight]
-            time = time[xLeft:xRight]
+            self.xLeft = self.xLeft if self.xLeft > 0 else 0
+            self.xRight = self.xRight if self.xRight < len(signal) else len(signal) - 1
+            signal = signal[self.xLeft:self.xRight]
+            time = time[self.xLeft:self.xRight]
             if self.SGFilt.checkState() and not self.subtrFilt.checkState():
                 self.plot.clear()
                 # self.plot.plot(time, signal, pen=(self.nextPen),)
@@ -266,7 +271,7 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
             if self.SGFilt.checkState() and  self.subtrFilt.checkState():
                 self.plot.clear()
                 smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
-                self.d[i][xLeft:xRight] = signal = signal-smoothed
+                self.d[i][self.xLeft:self.xRight] = signal = signal-smoothed
                 self.plot.plot(time, signal, pen=(self.nextPen),)
                 smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
                 self.plot.plot(time, smoothed, pen=0)
@@ -278,7 +283,7 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         self.xLeft = int(axX.range[0])
         self.xRight = int(axX.range[1])
         # axY = self.plot.plotItem.getAxis('left')
-        # print('x axis range: {}'.format(axX.range))  # <------- get range of x axis
+        print('x axis range: {}'.format(axX.range))  # <------- get range of x axis
         # print('y axis range: {}'.format(axY.range))  # <------- get range of y axis
 
     def savitzky_golay_filt(self,data, window_length=1001, polyorder=0, deriv=0, delta=1.0, axis=-1, mode='interp'):

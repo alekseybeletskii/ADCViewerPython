@@ -3,15 +3,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pyqtgraph
 import sys
-from PyQt5 import  QtGui, QtWidgets
+from PyQt5 import QtGui, QtWidgets
 
 
 class w7xSpectrogram(QtWidgets.QMainWindow):
 
-    def __init__(self, flags, *args, **kwargs):
+    def __init__(self):
+        super(self.__class__, self).__init__()
 
-
-        super().__init__(flags, *args, **kwargs)
         self.createData()
 
 
@@ -73,23 +72,23 @@ class w7xSpectrogram(QtWidgets.QMainWindow):
         # If you include the units, Pyqtgraph automatically scales the axis and adjusts the SI prefix (in this case kHz)
         p1.setLabel('left', "Frequency", units='Hz')
 
-        # pyqtgraph.Qt.QtWidgets.QApplication.instance().exec_()
+        pyqtgraph.Qt.QtWidgets.QApplication.instance().exec_()
 
         # Plotting with Matplotlib in comparison
-        # plt.pcolormesh(t, f, Sxx)
-        # plt.ylabel('Frequency [Hz]')
-        # plt.xlabel('Time [sec]')
-        # plt.colorbar()
-        # plt.show()
+        plt.pcolormesh(t, f, Sxx)
+        plt.ylabel('Frequency [Hz]')
+        plt.xlabel('Time [sec]')
+        plt.colorbar()
+        plt.show()
 
-        def main():
-            app = QtWidgets.QApplication(sys.argv)
+def main():
+    app = QtWidgets.QApplication(sys.argv)
 
-            window = w7xSpectrogram()
-            window.show()
-            sys.exit(app.exec_())
+    window = w7xSpectrogram()
+    window.show()
+    sys.exit(app.exec_())
 
-        if __name__ == '__main__':  # if we're running file directly and not importing it
-            main()  # run the main function
+if __name__ == '__main__':  # if we're running file directly and not importing it
+    main()  # run the main function
 
 # pyqtgraph.Qt.QtWidgets.QApplication.instance().exec_()
