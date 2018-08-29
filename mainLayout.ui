@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>992</width>
+    <width>1008</width>
     <height>667</height>
    </rect>
   </property>
@@ -54,6 +54,25 @@
         </property>
         <property name="text">
          <string>draw</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="redrawSpectrogramUI">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>spectr</string>
         </property>
        </widget>
       </item>
@@ -263,25 +282,6 @@
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QPushButton" name="redrawSpectrogramUI">
-        <property name="minimumSize">
-         <size>
-          <width>50</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>50</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>spectr</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
     <item>
@@ -302,7 +302,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>992</width>
+     <width>1008</width>
      <height>21</height>
     </rect>
    </property>

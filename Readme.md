@@ -1,24 +1,25 @@
-ADCViewerPython
+w7x-dataViewer
 =============
 
-convert firstgui.ui to Python code:
-pyuic5 -x name.ui -o name.py
 
-This is a simplest application that allows to visualize data that was recorded
-with analog digital converters and saved as a text files
-with two comma separated X, Y columns
+
+This is an  application that allows to visualize and process data that was recorded
+with analog digital converters of different diagnostics
+and saved as a text files or fetched directly from the Wendelstein-7X MDSPlus database
 
 Screenshot
 ==========
 
-![mainLayout](screenshot/mainLayut.jpg)
+![mainLayout](screenshot/mainWindow.png)
+![mainLayout](screenshot/spectrogram.png)
 
 The application is based on the next packages:
 
--PyQt5
--Pandas
--Numpy
--Pyqtgraph
+* PyQt5
+* Pandas
+* Numpy
+* SciPy
+* Pyqtgraph
 
 The interface was created with Qt Designer
 
@@ -28,9 +29,6 @@ do it inside a separate python virtual environment with only necessary packages 
 In case you have trouble with Pandas import, try recommendation provided by Zero
 from this post https://stackoverflow.com/questions/33001327/importerror-with-pyinstaller-and-pandas
 
-
-
-
 LICENSING
 ---------
 
@@ -39,7 +37,7 @@ All rights reserved
 
 github: https://github.com/alekseybeletskii
 
-The ADCViewerPython software serves for visualization and simple processing
+The w7x-dataViewer software serves for visualization and simple processing
 of any data recorded with Analog Digital Converters in binary or text form.
 
 Commercial support is available. To find out more contact the author directly.
