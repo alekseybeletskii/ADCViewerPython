@@ -63,6 +63,10 @@ class w7xSpectrogram(QtWidgets.QMainWindow):
         # Sxx contains the amplitude for each pixel
         img.setImage(Sxx)
         # Scale the X and Y Axis to time and frequency (standard is pixels)
+
+        # xScale=t[-1]/np.size(Sxx, axis=1)
+        # yScale= f[-1]/np.size(Sxx, axis=0)
+
         img.scale(t[-1]/np.size(Sxx, axis=1),
                   f[-1]/np.size(Sxx, axis=0))
         # Limit panning/zooming to the spectrogram

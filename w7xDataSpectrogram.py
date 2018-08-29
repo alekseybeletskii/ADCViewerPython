@@ -181,7 +181,7 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         # If you don't add the histogram to the window, it stays invisible, but I find it useful.
         win.addItem(hist)
         # Show the window
-        win.show()
+        # self.show()
         # Fit the min and max levels of the histogram to the data available
         hist.setLevels(np.min(Sxx), np.max(Sxx))
         # This gradient is roughly comparable to the gradient used by Matplotlib
@@ -195,15 +195,15 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         img.setImage(Sxx)
         # Scale the X and Y Axis to time and frequency (standard is pixels)
         img.scale(t[-1] / np.size(Sxx, axis=1),
-                  t[-1] / np.size(Sxx, axis=0))
+                  f[-1] / np.size(Sxx, axis=0))
         # Limit panning/zooming to the spectrogram
-        p1.setLimits(xMin=0, xMax=t[-1], yMin=0, yMax=t[-1])
+        p1.setLimits(xMin=0, xMax=t[-1], yMin=0, yMax=f[-1])
         # Add labels to the axis
         p1.setLabel('bottom', "Time", units='s')
         # If you include the units, Pyqtgraph automatically scales the axis and adjusts the SI prefix (in this case kHz)
         p1.setLabel('left', "Frequency", units='Hz')
 
-        pyqtgraph.Qt.QtWidgets.QApplication.instance().exec_()
+        self.show()
 
 
         # Plotting with Matplotlib in comparison
