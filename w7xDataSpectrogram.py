@@ -170,6 +170,7 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.scaling_ui.setText('density')
         self.mode = 'psd'
         self.mode_ui.setText('psd')
+        self.scaleLinLogSqrt.setCurrentText('linear')
     def setParamsValues(self):
         self.nfft = int(self.nfft_ui.text())
         self.fs = float(self.fs_kHz_ui.text())*1000.0
