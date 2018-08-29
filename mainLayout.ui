@@ -172,7 +172,7 @@
       <item>
        <widget class="QCheckBox" name="SGFilt">
         <property name="text">
-         <string>Filt</string>
+         <string>showSGF</string>
         </property>
         <property name="tristate">
          <bool>false</bool>
@@ -182,14 +182,36 @@
       <item>
        <widget class="QCheckBox" name="subtrFilt">
         <property name="text">
-         <string>subtrFilt</string>
+         <string>-SGF</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="replaceWithSGFilt">
+        <property name="minimumSize">
+         <size>
+          <width>95</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>95</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>=SGF</string>
+        </property>
+        <property name="tristate">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>windowLength</string>
+         <string>winLength</string>
         </property>
        </widget>
       </item>

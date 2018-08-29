@@ -32,6 +32,9 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
     def __init__(self):
 
         super(self.__class__, self).__init__()
+
+        pg.setConfigOption('background', 'w')
+        pg.setConfigOption('foreground', 'k')
         self.files = []
         self.d = []
         self.t = []
@@ -260,7 +263,7 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
             self.xRight = self.xRight if self.xRight < len(signal) else len(signal) - 1
             signal = signal[self.xLeft:self.xRight]
             time = time[self.xLeft:self.xRight]
-            if self.SGFilt.checkState() and not self.subtrFilt.checkState():
+            if self.SGFilt.checkState() and not self.subtrFilt.checkState() and not self.replaceWithSGFilt.checkState():
                 self.plot.clear()
                 # self.plot.plot(time, signal, pen=(self.nextPen),)
                 # signal=signal[xLeft:xRight]
@@ -268,13 +271,22 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
                 self.plot.plot(time, signal, pen=(self.nextPen),)
                 smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
                 self.plot.plot(time, smoothed, pen=0)
-            if self.SGFilt.checkState() and  self.subtrFilt.checkState():
+            if self.SGFilt.checkState() and  self.subtrFilt.checkState() and not self.replaceWithSGFilt.checkState():
                 self.plot.clear()
                 smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
                 self.d[i][self.xLeft:self.xRight] = signal = signal-smoothed
                 self.plot.plot(time, signal, pen=(self.nextPen),)
                 smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
                 self.plot.plot(time, smoothed, pen=0)
+            if self.SGFilt.checkState() and self.replaceWithSGFilt.checkState():
+                self.replaceWithSGFilt.setChecked(False)
+                self.plot.clear()
+                smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
+                self.d[i][self.xLeft:self.xRight] = signal = smoothed
+                self.plot.plot(time, signal, pen=(self.nextPen),)
+                smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
+                self.plot.plot(time, smoothed, pen=0)
+
 
 
 

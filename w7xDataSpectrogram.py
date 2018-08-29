@@ -6,7 +6,7 @@ import os.path as ospath
 
 # from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import QtGui, QtWidgets
-
+from ast import literal_eval as make_tuple
 # from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
 
 import spectrogramLayout  # This file holds our MainWindow and all design related things
@@ -46,13 +46,6 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         return  carrier + noise
     def __init__(self, parent):
         super(self.__class__, self).__init__(parent)
-        # Interpret image data as row-major instead of col-major
-        # pg.setConfigOptions(imageAxisOrder='row-major')
-        # pg.mkQApp()
-
-
-
-
 
         # nfft : int, optional.
         #  Length of the FFT used, if a zero padded FFT is desired. If None, the FFT length is nperseg. Defaults to None.
@@ -64,7 +57,8 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         #  Desired window to use. Defaults to a Tukey window with shape parameter of 0.25
         # Window types: boxcar, triang, blackman, hamming, hann, bartlett, flattop, parzen,
         # bohman, blackmanharris, nuttall, barthann (and some others that needs parameters)
-        self.window = 'Tukey(0.25)'
+        # self.window = ''.join(('tukey', '0.25'))
+        self.window = 'hamming'
         # nperseg : int, optional.
         #  Length of each segment. Defaults to None, but if window is str or tuple,
         # is set to 256, and if window is array_like, is set to the length of the window.
@@ -78,20 +72,22 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         # If detrend is False, no detrending is done. Defaults to ‘constant’.
         #  If type == 'constant', only the mean of data is subtracted.
         self.detrend = False
-        # self.detrend = 'constant'
-
         # scaling : { ‘density’, ‘spectrum’ }, optional
         # Selects between computing the power spectral density (‘density’)
         # where Sxx has units of V**2/Hz and computing the power spectrum (‘spectrum’) where Sxx has units of V**2,
         # if x is measured in V and fs is measured in Hz. Defaults to ‘density’.
         self.scaling = 'density'
-
         # mode : str, optional
         # Defines what kind of return values are expected. Options are [‘psd’, ‘complex’, ‘magnitude’, ‘angle’, ‘phase’].
         # ‘complex’ is equivalent to the output of stft with no padding or boundary extension.
         # ‘magnitude’ returns the absolute magnitude of the STFT. ‘angle’ and ‘phase’ return the complex angle of the STFT,
         #  with and without unwrapping, respectively.
         self.mode = 'psd'
+
+         # ‘linear’ is no scaling
+        # 'log' is 10*np.log10(Sxx)
+        # 'sqrt' is np.sqrt(Sxx)
+        self.scale = 'linear'
 
         self.setupUi(self)  # This is defined in design.py file automatically
         # It sets up layout and widgets that are defined
@@ -116,8 +112,8 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.nfft_ui.setText('256')
         self.fs = 1000
         self.fs_kHz_ui.setText('1000')
-        self.window = 'Tukey(0.25)'
-        self.window_ui.setText('Tukey(0.25)')
+        self.window = 'hamming'
+        self.window_ui.setText('hamming')
         self.nperseg = 256
         self.nperseg_ui.setText('256')
         self.noverlap = 32
@@ -131,11 +127,12 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
     def setParamsValues(self):
         self.nfft = int(self.nfft_ui.text())
         self.fs = float(self.fs_kHz_ui.text())*1000.0
+        # self.window = make_tuple(self.window_ui.text())
         self.window = self.window_ui.text()
         self.nperseg = int(self.nperseg_ui.text())
         self.noverlap = int(self.noverlap_ui.text())
         detrend = self.detrend_ui.text()
-        self.detrend = False if detrend.capitalize() =='FALSE' else detrend
+        self.detrend = False if detrend.casefold() =='false' else detrend
         self.scaling = self.scaling_ui.text()
         self.mode = self.mode_ui.text()
     def generateData(self):
@@ -160,8 +157,14 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         # signalIn = self.generateData()
         self.setParamsValues()
         # f, t, Sxx = signal.spectrogram(self.generateData(), 10000)
-        f, t, Sxx = signal.spectrogram(self.dataToSpectrogram, fs=self.fs, window='hamming',nperseg=self.nperseg, noverlap=self.noverlap, nfft=self.nfft,
+        f, t, Sxx = signal.spectrogram(self.dataToSpectrogram, fs=self.fs, window = self.window, nperseg=self.nperseg, noverlap=self.noverlap, nfft=self.nfft,
                                        detrend=self.detrend, scaling=self.scaling, mode=self.mode)
+
+        if str(self.scaleLinLogSqrt.currentText()).casefold() == 'log10':
+            Sxx = 10 * np.log10(Sxx)
+        elif str(self.scaleLinLogSqrt.currentText()).casefold() == 'sqrt':
+            Sxx = np.sqrt(Sxx)
+
 
         # Interpret image data as row-major instead of col-major
         pyqtgraph.setConfigOptions(imageAxisOrder='row-major')
@@ -207,11 +210,11 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
 
 
         # Plotting with Matplotlib in comparison
-        plt.pcolormesh(t, f, Sxx)
-        plt.ylabel('Frequency [Hz]')
-        plt.xlabel('Time [sec]')
-        plt.colorbar()
-        plt.show()
+        # plt.pcolormesh(t, f, Sxx)
+        # plt.ylabel('Frequency [Hz]')
+        # plt.xlabel('Time [sec]')
+        # plt.colorbar()
+        # plt.show()
 
     def exitApp(self):
         if __name__ == '__main__':
