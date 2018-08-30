@@ -39,7 +39,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="redraw">
+       <widget class="QPushButton" name="drawUI">
         <property name="minimumSize">
          <size>
           <width>50</width>
@@ -58,7 +58,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="redrawSpectrogramUI">
+       <widget class="QPushButton" name="drawSpectrogramUI">
         <property name="minimumSize">
          <size>
           <width>50</width>
@@ -189,41 +189,59 @@
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="SGFilt">
-        <property name="text">
-         <string>showSGF</string>
+       <widget class="QCheckBox" name="applySGF">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>20</height>
+         </size>
         </property>
-        <property name="tristate">
-         <bool>false</bool>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>SGF</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="subtrFilt">
+       <widget class="QPushButton" name="subtractSGF">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>20</height>
+         </size>
+        </property>
         <property name="text">
          <string>-SGF</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="replaceWithSGFilt">
+       <widget class="QPushButton" name="replaceWithSGF">
         <property name="minimumSize">
          <size>
-          <width>95</width>
-          <height>0</height>
+          <width>50</width>
+          <height>20</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>95</width>
-          <height>16777215</height>
+          <width>50</width>
+          <height>20</height>
          </size>
         </property>
         <property name="text">
          <string>=SGF</string>
-        </property>
-        <property name="tristate">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -312,13 +330,12 @@
     </property>
     <addaction name="actionOpen_mdsplus_QXT"/>
     <addaction name="actionOpen_mdsplus_QOC"/>
-    <addaction name="actionDrawPlotsFromMdsplus"/>
+    <addaction name="actionOpen_csv"/>
+    <addaction name="separator"/>
     <addaction name="actionExport_time_to_separate_file"/>
     <addaction name="actionExport_to_csv"/>
     <addaction name="separator"/>
-    <addaction name="actionOpen_csv"/>
-    <addaction name="actionDrawPlotsFromCsv"/>
-    <addaction name="separator"/>
+    <addaction name="actionDrawPlots"/>
     <addaction name="actionClear"/>
     <addaction name="actionExit"/>
    </widget>
@@ -359,14 +376,14 @@
     <string>Open_mdsplus_QXT</string>
    </property>
   </action>
-  <action name="actionDrawPlotsFromMdsplus">
+  <action name="actionDrawPlots">
    <property name="text">
-    <string>DrawPlotsFromMdsplus</string>
+    <string>Draw</string>
    </property>
   </action>
   <action name="actionExport_time_to_separate_file">
    <property name="text">
-    <string>Export time to separate file</string>
+    <string>Export to csv (time separate)</string>
    </property>
   </action>
   <action name="actionOpen_mdsplus_QOC">

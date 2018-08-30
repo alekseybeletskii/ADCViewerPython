@@ -69,7 +69,7 @@ import pandas as pd
 import MDSplus as m
 
 import pyqtgraph as pg
-
+from CsvTxtReader import CsvTxtReader
 
 from w7xDataSpectrogram import w7xSpectrogram
 
@@ -93,10 +93,10 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
 
         self.fs = self.samplingRate_kHz.text()
         self.actionOpen_csv.triggered.connect(self.openCsv)
-        self.actionDrawPlotsFromCsv.triggered.connect(self.drawPlotsFromCsv)
+        # self.actionDrawPlotsFromCsv.triggered.connect(self.drawPlotsFromCsv)
         self.actionOpen_mdsplus_QXT.triggered.connect(self.openMdsplusQXT)
         self.actionOpen_mdsplus_QOC.triggered.connect(self.openMdsplusQOC)
-        self.actionDrawPlotsFromMdsplus.triggered.connect(self.drawPlotsFromMdsplus)
+        self.actionDrawPlots.triggered.connect(self.drawPlots)
         self.actionExport_to_csv.triggered.connect(self.export_to_csv_v1)
         self.actionExport_time_to_separate_file.triggered.connect(self.export_to_csv_v2)
 
@@ -105,15 +105,18 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         self.xLeft=0
         self.xRight=0
 
-        self.redraw.clicked.connect(self.drawPlotsFromMdsplus)
-        self.redrawSpectrogramUI.clicked.connect(self.drawSpectrogram)
+        self.drawUI.clicked.connect(self.drawPlots)
+        self.drawSpectrogramUI.clicked.connect(self.drawSpectrogram)
+        self.subtractSGF.clicked.connect(self.subtractSGFilter)
+        self.replaceWithSGF.clicked.connect(self.replaceWithSGFilter)
 
 
     def drawSpectrogram(self):
-        w7xSpectr = w7xSpectrogram(self)
-        w7xSpectr.show()
-        w7xSpectr.setDataToSpectrogram(self.d[0][self.xLeft:self.xRight])
-        w7xSpectr.drawSpectrogram()
+        for sig in self.d:
+            w7xSpectr = w7xSpectrogram(self)
+            w7xSpectr.show()
+            w7xSpectr.setDataToSpectrogram(sig[self.xLeft:self.xRight])
+            w7xSpectr.drawSpectrogram()
 
         # for i in self.d:
         #       w7xSpectr.drawSpectrogram(self.d[i][self.xLeft:self.xRight])
@@ -141,22 +144,37 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         self.xLeft=0
         self.xRight=0
 
-    def openCsv(self):
-        self.clearAll()
-        options = QtWidgets.QFileDialog.Options()
-        options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        #        files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "","All Files (*);;Python Files (*.py)", options=options)
-        #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
-        self.files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, None, "QFileDialog.getOpenFileNames()", "All Files (*)",
-                                                     "All Files (*)", options=options)
 
-    def drawPlotsFromCsv(self):
-        for i in range(len(self.files)):
-            self.nextPen = self.nextPen + 1
-            self.df = pd.read_csv(self.files[i], names=['x', 'y'], header=None)
-            self.plot.plot(self.df['x'], self.df['y'], pen=self.nextPen)
-            # print(self.files[i])
-            # print(type(self.df))
+    def openCsv(self):
+        CsvTxtR = CsvTxtReader()
+        dataXY=CsvTxtR.openCsvTxt()
+        self.d = dataXY[1]
+        self.t = dataXY[0]
+
+    # def openCsv(self):
+    #     self.clearAll()
+    #     options = QtWidgets.QFileDialog.Options()
+    #     options |= QtWidgets.QFileDialog.DontUseNativeDialog
+    #     #        files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "","All Files (*);;Python Files (*.py)", options=options)
+    #     #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
+    #     self.files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, None, "QFileDialog.getOpenFileNames()", "All Files (*)",
+    #                                                  "All Files (*)", options=options)
+    #     for i in range(len(self.files)):
+    #         self.nextPen = self.nextPen + 1
+    #         dataTxt = pd.read_csv(self.files[i], names=['x', 'y'], header=None)
+    #         self.d.append(np.double(dataTxt['y']))
+    #         self.t.append(np.double(dataTxt['x']))
+    #     print('data loaded from csv')
+
+    #
+    # def drawPlotsFromCsv(self):
+    #     for i in range(len(self.files)):
+    #         self.nextPen = self.nextPen + 1
+    #         dataTxt = pd.read_csv(self.files[i], names=['x', 'y'], header=None)
+    #         self.d.append(dataTxt['x'])
+    #         self.t.append(dataTxt['y'])
+    #         self.plot.plot(self.d[i],  self.t[i] , pen=self.nextPen)
+    #         # print(self.files[i])
 
 
 
@@ -294,48 +312,51 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
 
         print('data exported to csv files, time separated')
 
-    def drawPlotsFromMdsplus(self):
-
+    def drawPlots(self):
         self.plot.clear()
         self.nextPen=0
         for i in range(len(self.d)):
-
             signal = self.d[i]
-            # time = list(range(len(signal)))
-            time = self.t[i]
+            time = np.arange(len(signal))
+            # time = self.t[i]
             self.nextPen = self.nextPen + 1
             self.plot.plot(time,signal, pen=(self.nextPen))
             self.getXaxisLimits()
+            # if not self.SGFilt.checkState() and not self.subtrFilt.checkState() and not self.replaceWithSGFilt.checkState():
+            #     self.plot.plot(time, signal, pen=(self.nextPen))
             # self.plot.plot(time[0:len(signal)],signal, pen=(self.nextPen))
             self.xLeft = self.xLeft if self.xLeft > 0 else 0
             self.xRight = self.xRight if self.xRight < len(signal) else len(signal) - 1
             signal = signal[self.xLeft:self.xRight]
             time = time[self.xLeft:self.xRight]
-            if self.SGFilt.checkState() and not self.subtrFilt.checkState() and not self.replaceWithSGFilt.checkState():
-                self.plot.clear()
+            if self.applySGF.checkState():
+                # self.plot.clear()
                 # self.plot.plot(time, signal, pen=(self.nextPen),)
                 # signal=signal[xLeft:xRight]
                 # time=time[xLeft:xRight]
-                self.plot.plot(time, signal, pen=(self.nextPen),)
+                # self.plot.plot(time, signal, pen=(self.nextPen))
                 smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
-                self.plot.plot(time, smoothed, pen=0)
-            if self.SGFilt.checkState() and  self.subtrFilt.checkState() and not self.replaceWithSGFilt.checkState():
-                self.plot.clear()
-                smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
-                self.d[i][self.xLeft:self.xRight] = signal = signal-smoothed
-                self.plot.plot(time, signal, pen=(self.nextPen),)
-                smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
-                self.plot.plot(time, smoothed, pen=0)
-            if self.SGFilt.checkState() and self.replaceWithSGFilt.checkState():
-                self.replaceWithSGFilt.setChecked(False)
-                self.plot.clear()
-                smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
-                self.d[i][self.xLeft:self.xRight] = signal = smoothed
-                self.plot.plot(time, signal, pen=(self.nextPen),)
-                smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
-                self.plot.plot(time, smoothed, pen=0)
+                self.plot.plot(time, smoothed, pen=pg.mkPen(color='k'))
 
+            # if self.SGFilt.checkState() and self.replaceWithSGFilt.checkState():
+            #     self.replaceWithSGFilt.setChecked(False)
+            #     # self.plot.clear()
+            #     smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
+            #     self.d[i][self.xLeft:self.xRight] = signal = smoothed
+            #     self.plot.plot(time, signal, pen=(self.nextPen))
+            #     smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
+            #     self.plot.plot(time, smoothed, pen=0)
 
+    def subtractSGFilter(self):
+        for i in range(len(self.d)):
+            smoothed = self.savitzky_golay_filt(self.d[i][self.xLeft:self.xRight], int(self.winLength.text()), int(self.polyOrder.text()))
+            self.d[i][self.xLeft:self.xRight] = self.d[i][self.xLeft:self.xRight] - smoothed
+        self.drawPlots()
+    def replaceWithSGFilter(self):
+        for i in range(len(self.d)):
+            smoothed = self.savitzky_golay_filt(self.d[i][self.xLeft:self.xRight], int(self.winLength.text()), int(self.polyOrder.text()))
+            self.d[i][self.xLeft:self.xRight] =  smoothed
+        self.drawPlots()
 
 
     def getXaxisLimits(self):

@@ -92,7 +92,8 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         return  carrier + noise
     def __init__(self, parent):
         super(self.__class__, self).__init__(parent)
-
+        pg.setConfigOption('background', 'w')
+        pg.setConfigOption('foreground', 'k')
         # nfft : int, optional.
         #  Length of the FFT used, if a zero padded FFT is desired. If None, the FFT length is nperseg. Defaults to None.
         self.nfft = 256
