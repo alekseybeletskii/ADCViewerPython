@@ -183,8 +183,8 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         fileName = 'QXTchList.txt'
         self.readChannelsList(fileName)
 
-        c = m.Connection('mds-data-1')
-        # c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
+        # c = m.Connection('mds-data-1')
+        c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
         c.get(self.setTimeContext())
         # c.get('SETTIMECONTEXT(*,*,10000Q)')
         # c.openTree('qxt1', 180816020)
@@ -238,8 +238,8 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         shotNumber = int(shotNumber) if len(shotNumber)==9 else 180823005
         self.shot.setText(str(shotNumber))
 
-        c = m.Connection('mds-data-1')
-        #        c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
+        # c = m.Connection('mds-data-1')
+        c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
 
         c.get(self.setTimeContext())
 
