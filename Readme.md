@@ -1,4 +1,4 @@
-w7x-dataViewer
+w7x-PyViewer
 =============
 
 
@@ -37,7 +37,7 @@ All rights reserved
 
 github: https://github.com/alekseybeletskii
 
-The w7x-dataViewer software serves for visualization and simple processing
+The w7x-PyViewer software serves for visualization and simple processing
 of any data recorded with Analog Digital Converters in binary or text form.
 
 Commercial support is available. To find out more contact the author directly.
@@ -53,7 +53,7 @@ modification, are permitted provided that the following conditions are met:
 
 The software is distributed to You under terms of the GNU General Public
 License. This means it is "free software". However, any program, using
-ADCViewerPython _MUST_ be the "free software" as well.
+w7x-PyViewer _MUST_ be the "free software" as well.
 See the GNU General Public License for more details
 (file ./COPYING in the root of the distribution
 or website <http://www.gnu.org/licenses/>)

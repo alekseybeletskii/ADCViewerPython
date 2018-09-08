@@ -171,6 +171,9 @@
       </item>
       <item>
        <widget class="QLineEdit" name="samplingRate_kHz">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="minimumSize">
          <size>
           <width>80</width>
@@ -326,7 +329,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>Data</string>
     </property>
     <addaction name="actionOpen_mdsplus_QXT"/>
     <addaction name="actionOpen_mdsplus_QOC"/>

@@ -71,7 +71,7 @@ import MDSplus as m
 import pyqtgraph as pg
 from CsvTxtReader import CsvTxtReader
 
-from w7xDataSpectrogram import w7xSpectrogram
+from w7xSpectrogram import w7xSpectrogram
 
 from scipy.signal import savgol_filter
 
@@ -123,12 +123,12 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
 
 
 
-    def readChannelsList(self):
+    def readChannelsList(self,fileName):
 
         # text_file = open("channelslist.txt", "r")
         # self.channelsList = text_file.readlines()
 
-        with open('channelslist.txt', 'r') as text_file:
+        with open(fileName, 'r') as text_file:
             self.channelsList = text_file.read().splitlines()
             # for i in range(len(self.channelsList)):
             #     self.channelsList[i]=self.channelsList[i].replace(":","-")
@@ -180,13 +180,15 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
 
     def openMdsplusQXT(self):
         self.clearAll()
-        self.readChannelsList()
+        fileName = 'QXTchList.txt'
+        self.readChannelsList(fileName)
 
         c = m.Connection('mds-data-1')
         # c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
         c.get(self.setTimeContext())
         # c.get('SETTIMECONTEXT(*,*,10000Q)')
         # c.openTree('qxt1', 180816020)
+        # c.openTree('qxt1', 171123027)
         # c.openTree('qxt1', 171123034)
 
         shotNumber = self.shot.text()
@@ -207,7 +209,7 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         # print('fs: ',self.fs)
 
     def setTimeContext(self):
-        resample = int(self.resampling.text())
+        resample = int(self.resampling.text()) if self.resampling.text().isnumeric() else 1
         settimecontext = "SETTIMECONTEXT(*,*," + str(resample) + "Q)"
         if resample < 0:
             resample = '1000000'
@@ -229,7 +231,8 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         # t_raw = np.double(MDSraw.dim_of().data()) / fs
 
         self.clearAll()
-        self.readChannelsList()
+        fileName = 'QOCchList.txt'
+        self.readChannelsList(fileName)
 
         shotNumber = self.shot.text()
         shotNumber = int(shotNumber) if len(shotNumber)==9 else 180823005
