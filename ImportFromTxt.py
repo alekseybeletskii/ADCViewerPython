@@ -1,13 +1,13 @@
 # /*
 #  * ******************** BEGIN LICENSE BLOCK *********************************
 #  *
-#  * w7x-dataViewer
+#  * w7x-PyViewer
 #  * Copyright (c) 2017 onward, Aleksey Beletskii  <beletskiial@gmail.com>
 #  * All rights reserved
 #  *
 #  * github: https://github.com/alekseybeletskii
 #  *
-#  * The w7x-dataViewer software serves for visualization and simple processing
+#  * The w7x-PyViewer software serves for visualization and simple processing
 #  * of any data recorded with Analog Digital Converters in binary or text form.
 #  *
 #  * Commercial support is available. To find out more contact the author directly.
@@ -47,47 +47,31 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
-import os.path as ospath
-
-from PyQt5 import QtGui, QtWidgets
-
-
-import sys
-
-import numpy as np
+from PyQt5 import QtWidgets
 
 import pandas as pd
-
-import MDSplus as m
-
-import pyqtgraph as pg
-
-from scipy import signal
-import matplotlib.pyplot as plt
-import pyqtgraph
-
-from scipy.signal import savgol_filter
+from os import path
 
 
-class CsvTxtReader(QtWidgets.QMainWindow):
+class ImportFromTxt(QtWidgets.QMainWindow):
 
-   def __init__(self,  *args, **kwargs):
+   def __init__(self,callingObj,  *args, **kwargs):
        super().__init__(*args, **kwargs)
+       self.callingObj = callingObj
 
    def openCsvTxt(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        #        files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "","All Files (*);;Python Files (*.py)", options=options)
         #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
         files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, None, "QFileDialog.getOpenFileNames()", "All Files (*)",
                                                      "All Files (*)", options=options)
-        d = []
-        t = []
+
         for i in range(len(files)):
             dataTxt = pd.read_csv(files[i], names=['x', 'y'], header=None)
-            d.append(dataTxt['y'])
-            t.append(dataTxt['x'])
-        return t, d
+            self.callingObj.t.append(dataTxt['x'])
+            self.callingObj.d.append(dataTxt['y'])
+            filename_and_ext = path.basename(files[i])
+            filename, _ = path.splitext(filename_and_ext)
+            self.callingObj.channelsList.append(filename)
 
 

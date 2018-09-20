@@ -1,5 +1,6 @@
 #general
 *.zip
+exported/
 
 
 .idea/

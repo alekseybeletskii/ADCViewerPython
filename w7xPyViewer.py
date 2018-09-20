@@ -1,13 +1,13 @@
 # /*
 #  * ******************** BEGIN LICENSE BLOCK *********************************
 #  *
-#  * w7x-dataViewer
+#  * w7x-PyViewer
 #  * Copyright (c) 2017 onward, Aleksey Beletskii  <beletskiial@gmail.com>
 #  * All rights reserved
 #  *
 #  * github: https://github.com/alekseybeletskii
 #  *
-#  * The w7x-dataViewer software serves for visualization and simple processing
+#  * The w7x-PyViewer software serves for visualization and simple processing
 #  * of any data recorded with Analog Digital Converters in binary or text form.
 #  *
 #  * Commercial support is available. To find out more contact the author directly.
@@ -50,30 +50,22 @@
 # convert firstgui.ui to Python code:
 # pyuic5 -x name.ui -o name.py
 
-import os.path as ospath
 
-# from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5 import  QtGui, QtWidgets
-
-# from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
+from PyQt5 import QtWidgets
 
 import mainLayout  # This file holds our MainWindow and all design related things
 # it also keeps events etc that we defined in Qt Design
 import sys
-# from PyQt5 import QtGui
-
 import numpy as np
-
-import pandas as pd
-
-import MDSplus as m
-
 import pyqtgraph as pg
-from CsvTxtReader import CsvTxtReader
+from ImportFromTxt import ImportFromTxt
+from ImportFromMdsplus import ImportFromMdsplus
+from XYPlotter import XYPlotter
+from ExportToTxt import ExportToTxt
+from XYFiltering import XYFiltering
 
 from w7xSpectrogram import w7xSpectrogram
 
-from scipy.signal import savgol_filter
 
 class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
 
@@ -93,7 +85,6 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
 
         self.fs = self.samplingRate_kHz.text()
         self.actionOpen_csv.triggered.connect(self.openCsv)
-        # self.actionDrawPlotsFromCsv.triggered.connect(self.drawPlotsFromCsv)
         self.actionOpen_mdsplus_QXT.triggered.connect(self.openMdsplusQXT)
         self.actionOpen_mdsplus_QOC.triggered.connect(self.openMdsplusQOC)
         self.actionDrawPlots.triggered.connect(self.drawPlots)
@@ -118,22 +109,6 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
             w7xSpectr.setDataToSpectrogram(sig[self.xLeft:self.xRight])
             w7xSpectr.drawSpectrogram()
 
-        # for i in self.d:
-        #       w7xSpectr.drawSpectrogram(self.d[i][self.xLeft:self.xRight])
-
-
-
-    def readChannelsList(self,fileName):
-
-        # text_file = open("channelslist.txt", "r")
-        # self.channelsList = text_file.readlines()
-
-        with open(fileName, 'r') as text_file:
-            self.channelsList = text_file.read().splitlines()
-            # for i in range(len(self.channelsList)):
-            #     self.channelsList[i]=self.channelsList[i].replace(":","-")
-
-
     def clearAll(self):
         self.plot.clear()
         self.files.clear()
@@ -146,233 +121,39 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
 
 
     def openCsv(self):
-        CsvTxtR = CsvTxtReader()
-        dataXY=CsvTxtR.openCsvTxt()
-        self.d = dataXY[1]
-        self.t = dataXY[0]
-
-    # def openCsv(self):
-    #     self.clearAll()
-    #     options = QtWidgets.QFileDialog.Options()
-    #     options |= QtWidgets.QFileDialog.DontUseNativeDialog
-    #     #        files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "","All Files (*);;Python Files (*.py)", options=options)
-    #     #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
-    #     self.files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, None, "QFileDialog.getOpenFileNames()", "All Files (*)",
-    #                                                  "All Files (*)", options=options)
-    #     for i in range(len(self.files)):
-    #         self.nextPen = self.nextPen + 1
-    #         dataTxt = pd.read_csv(self.files[i], names=['x', 'y'], header=None)
-    #         self.d.append(np.double(dataTxt['y']))
-    #         self.t.append(np.double(dataTxt['x']))
-    #     print('data loaded from csv')
-
-    #
-    # def drawPlotsFromCsv(self):
-    #     for i in range(len(self.files)):
-    #         self.nextPen = self.nextPen + 1
-    #         dataTxt = pd.read_csv(self.files[i], names=['x', 'y'], header=None)
-    #         self.d.append(dataTxt['x'])
-    #         self.t.append(dataTxt['y'])
-    #         self.plot.plot(self.d[i],  self.t[i] , pen=self.nextPen)
-    #         # print(self.files[i])
-
-
+        CsvTxtR = ImportFromTxt(self)
+        CsvTxtR.openCsvTxt()
 
     def openMdsplusQXT(self):
-        self.clearAll()
-        fileName = 'QXTchList.txt'
-        self.readChannelsList(fileName)
-
-        # c = m.Connection('mds-data-1')
-        c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
-        c.get(self.setTimeContext())
-        # c.get('SETTIMECONTEXT(*,*,10000Q)')
-        # c.openTree('qxt1', 180816020)
-        # c.openTree('qxt1', 171123027)
-        # c.openTree('qxt1', 171123034)
-
-        shotNumber = self.shot.text()
-        shotNumber = int(shotNumber) if len(shotNumber)==9 else 171123034
-        self.shot.setText(str(shotNumber))
-        c.openTree('qxt1', shotNumber)
-
-        for i in range(len(self.channelsList)):
-            # dat_raw = c.get('DATA:CH84')
-            dat_raw = c.get(f'DATA:{self.channelsList[i]}')
-            # t_raw = c.get(f'DIM_OF(DATA:{self.channelsList[i]})')
-            t_raw = np.double(dat_raw.dim_of().data())
-
-            self.d.append(dat_raw)
-            self.t.append(t_raw)
-
-        print('data loaded from mdsplus')
-        # print('fs: ',self.fs)
-
-    def setTimeContext(self):
-        resample = int(self.resampling.text()) if self.resampling.text().isnumeric() else 1
-        settimecontext = "SETTIMECONTEXT(*,*," + str(resample) + "Q)"
-        if resample < 0:
-            resample = '1000000'
-            settimecontext = "SETTIMECONTEXT(*,*," + str(resample) + "Q)"
-            self.timeScale.setText(str(resample))
-        if resample == 1:
-            settimecontext = "SETTIMECONTEXT(*,*,*)"
-        return settimecontext
+        openQxt = ImportFromMdsplus(self)
+        openQxt.openQXT()
 
     def openMdsplusQOC(self):
-        # mdpid = 171207017  # PCI saw activity here
-        # mdpid = 180823005
-        #
-        # conn = MDSplus.Connection(MDSconnect)
-        # conn.openTree('w7x', mdpid)
-        # MDSraw = conn.get('\W7X::TOP.QOC.DATAET2CH16')
-        # dat_raw = MDSraw.data()
-        # fs = np.int(conn.get('\W7X::TOP.QOC.HARDWARE:ACQ2106_064:CLOCK'))
-        # t_raw = np.double(MDSraw.dim_of().data()) / fs
-
-        self.clearAll()
-        fileName = 'QOCchList.txt'
-        self.readChannelsList(fileName)
-
-        shotNumber = self.shot.text()
-        shotNumber = int(shotNumber) if len(shotNumber)==9 else 180823005
-        self.shot.setText(str(shotNumber))
-
-        # c = m.Connection('mds-data-1')
-        c = m.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
-
-        c.get(self.setTimeContext())
-
-
-        c.openTree('qoc', shotNumber)
-        # fs = np.int(c.get('HARDWARE:ACQ2106_064:CLOCK'))
-
-        for i in range(len(self.channelsList)):
-            # MDSraw = c.get('DATA:DET2CH16')
-            dat_raw = c.get(f'DATA:{self.channelsList[i]}')
-            # dat_raw = MDSraw.data()
-            t_raw = np.double(dat_raw.dim_of())
-            # t_raw = np.double(dat_raw.dim_of())/fs
-
-            # dat_raw = c.get(f'DATA:{self.channelsList[i]}')
-            # t_raw = c.get(f'DIM_OF(DATA:{self.channelsList[i]})')
-
-            self.d.append(dat_raw)
-            self.t.append(t_raw)
-
-        print('data loaded from mdsplus')
-        # print('fs: ',fs)
+        openQoc = ImportFromMdsplus(self)
+        openQoc.openQOC()
 
     def export_to_csv_v1(self):
-        # output to file
-
-
-        # print(xLeft)
-        # print(xRight)
-
-        # get the current script path.
-        here = ospath.dirname(ospath.realpath(__file__))
-        subdir = "exported"
-
-        for i in range(len(self.d)):
-            # filename = str(i) + ".csv"
-            filename = self.channelsList[i] + ".csv"
-            filepath = ospath.join(here, subdir, filename.replace(":","-"))
-            signal = self.d[i]
-            time = self.t[i]
-
-            xLeft = self.xLeft if self.xLeft > 0 else 0
-            xRight = self.xRight if self.xRight < len(signal) else len(signal) - 1
-            np.savetxt(filepath, np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T, delimiter=', ')
-
-        print('data exported to csv files')
+        toTxt = ExportToTxt(self)
+        toTxt.export_to_csv_v1()
 
     def export_to_csv_v2(self):
-        # output to file
-
-
-        # print(xLeft)
-        # print(xRight)
-
-        # get the current script path.
-        here = ospath.dirname(ospath.realpath(__file__))
-        subdir = "exported"
-
-        for i in range(len(self.d)):
-            filename = self.channelsList[i]
-            filepath = ospath.join(here, subdir, filename.replace(":","-"))
-            signal = self.d[i]
-            time = self.t[i]
-
-            xLeft = self.xLeft if self.xLeft > 0 else 0
-            xRight = self.xRight if self.xRight < len(signal) else len(signal) - 1
-
-            np.savetxt(filepath + "_time_" + ".csv", time[xLeft:xRight])
-            np.savetxt(filepath + "_data_" + ".csv", signal[xLeft:xRight])
-
-            # df = pd.DataFrame(np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T,index=None, columns=None)
-            # df.to_csv(filename, header=None, index=None)
-
-        print('data exported to csv files, time separated')
+        toTxt = ExportToTxt(self)
+        toTxt.export_to_csv_v2()
 
     def drawPlots(self):
-        self.plot.clear()
-        self.nextPen=0
-        for i in range(len(self.d)):
-            signal = self.d[i]
-            time = np.arange(len(signal))
-            # time = self.t[i]
-            self.nextPen = self.nextPen + 1
-            self.plot.plot(time,signal, pen=(self.nextPen))
-            self.getXaxisLimits()
-            # if not self.SGFilt.checkState() and not self.subtrFilt.checkState() and not self.replaceWithSGFilt.checkState():
-            #     self.plot.plot(time, signal, pen=(self.nextPen))
-            # self.plot.plot(time[0:len(signal)],signal, pen=(self.nextPen))
-            self.xLeft = self.xLeft if self.xLeft > 0 else 0
-            self.xRight = self.xRight if self.xRight < len(signal) else len(signal) - 1
-            signal = signal[self.xLeft:self.xRight]
-            time = time[self.xLeft:self.xRight]
-            if self.applySGF.checkState():
-                # self.plot.clear()
-                # self.plot.plot(time, signal, pen=(self.nextPen),)
-                # signal=signal[xLeft:xRight]
-                # time=time[xLeft:xRight]
-                # self.plot.plot(time, signal, pen=(self.nextPen))
-                smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
-                self.plot.plot(time, smoothed, pen=pg.mkPen(color='k'))
-
-            # if self.SGFilt.checkState() and self.replaceWithSGFilt.checkState():
-            #     self.replaceWithSGFilt.setChecked(False)
-            #     # self.plot.clear()
-            #     smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
-            #     self.d[i][self.xLeft:self.xRight] = signal = smoothed
-            #     self.plot.plot(time, signal, pen=(self.nextPen))
-            #     smoothed = self.savitzky_golay_filt(signal,int(self.winLength.text()),int(self.polyOrder.text()))
-            #     self.plot.plot(time, smoothed, pen=0)
+        xyPlotter = XYPlotter(self)
+        xyPlotter.drawPlots()
 
     def subtractSGFilter(self):
-        for i in range(len(self.d)):
-            smoothed = self.savitzky_golay_filt(self.d[i][self.xLeft:self.xRight], int(self.winLength.text()), int(self.polyOrder.text()))
-            self.d[i][self.xLeft:self.xRight] = self.d[i][self.xLeft:self.xRight] - smoothed
+
+        xyFilt = XYFiltering(self)
+        xyFilt.subtractSGFilter()
         self.drawPlots()
+
     def replaceWithSGFilter(self):
-        for i in range(len(self.d)):
-            smoothed = self.savitzky_golay_filt(self.d[i][self.xLeft:self.xRight], int(self.winLength.text()), int(self.polyOrder.text()))
-            self.d[i][self.xLeft:self.xRight] =  smoothed
+        xyFilt = XYFiltering(self)
+        xyFilt.replaceWithSGFilter()
         self.drawPlots()
-
-
-    def getXaxisLimits(self):
-        axX = self.plot.plotItem.getAxis('bottom')
-        self.xLeft = int(axX.range[0])
-        self.xRight = int(axX.range[1])
-        # axY = self.plot.plotItem.getAxis('left')
-        print('x axis range: {}'.format(axX.range))  # <------- get range of x axis
-        # print('y axis range: {}'.format(axY.range))  # <------- get range of y axis
-
-    def savitzky_golay_filt(self,data, window_length=1001, polyorder=0, deriv=0, delta=1.0, axis=-1, mode='interp'):
-        return savgol_filter(data,window_length,polyorder,mode=mode)
-
 
     def exitApp(self):
         sys.exit()

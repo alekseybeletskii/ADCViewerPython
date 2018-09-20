@@ -1,13 +1,13 @@
 # /*
 #  * ******************** BEGIN LICENSE BLOCK *********************************
 #  *
-#  * w7x-dataViewer
+#  * w7x-PyViewer
 #  * Copyright (c) 2017 onward, Aleksey Beletskii  <beletskiial@gmail.com>
 #  * All rights reserved
 #  *
 #  * github: https://github.com/alekseybeletskii
 #  *
-#  * The w7x-dataViewer software serves for visualization and simple processing
+#  * The w7x-PyViewer software serves for visualization and simple processing
 #  * of any data recorded with Analog Digital Converters in binary or text form.
 #  *
 #  * Commercial support is available. To find out more contact the author directly.
