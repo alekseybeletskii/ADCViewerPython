@@ -16,8 +16,8 @@ class ExportToTxt:
             filename = self.callingObj.channelsList[i] + ".csv"
             filepath = ospath.join(here, subdir, filename.replace(":","-"))
             signal = self.callingObj.d[i]
-            time = self.callingObj.t[i]
-
+            # time = self.callingObj.t[i]
+            time = np.arange(0, (len(signal)) * self.callingObj.t[i], self.callingObj.t[i])
             xLeft = self.callingObj.xLeft if self.callingObj.xLeft > 0 else 0
             xRight = self.callingObj.xRight if self.callingObj.xRight < len(signal) else len(signal) - 1
             np.savetxt(filepath, np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T, delimiter=', ')
@@ -33,7 +33,8 @@ class ExportToTxt:
             filename = self.callingObj.channelsList[i]
             filepath = ospath.join(here, subdir, filename.replace(":","-"))
             signal = self.callingObj.d[i]
-            time = self.callingObj.t[i]
+            # time = self.callingObj.t[i]
+            time = np.arange(0, (len(signal)) * self.callingObj.t[i], self.callingObj.t[i])
 
             xLeft = self.callingObj.xLeft if self.callingObj.xLeft > 0 else 0
             xRight = self.callingObj.xRight if self.callingObj.xRight < len(signal) else len(signal) - 1
