@@ -50,6 +50,7 @@
 from PyQt5 import QtWidgets
 
 import pandas as pd
+import numpy as np
 from os import path
 
 
@@ -68,8 +69,11 @@ class ImportFromTxt(QtWidgets.QMainWindow):
 
         for i in range(len(files)):
             dataTxt = pd.read_csv(files[i], names=['x', 'y'], header=None)
-            self.callingObj.t.append(dataTxt['x'])
-            self.callingObj.d.append(dataTxt['y'])
+            dataX = dataTxt['x']
+            dti = abs(np.double(dataX[len(dataX)-1]-dataX[len(dataX)-2]))*1e-9
+            self.callingObj.dti.append(dti)
+            self.callingObj.fqs.append(int(1/dti))
+            self.callingObj.dataIn.append(dataTxt['y'])
             filename_and_ext = path.basename(files[i])
             filename, _ = path.splitext(filename_and_ext)
             self.callingObj.channelsList.append(filename)

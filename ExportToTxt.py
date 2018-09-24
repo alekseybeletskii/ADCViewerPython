@@ -11,13 +11,13 @@ class ExportToTxt:
         here = ospath.dirname(ospath.realpath(__file__))
         subdir = "exported"
 
-        for i in range(len(self.callingObj.d)):
+        for i in range(len(self.callingObj.dataIn)):
             # filename = str(i) + ".csv"
             filename = self.callingObj.channelsList[i] + ".csv"
             filepath = ospath.join(here, subdir, filename.replace(":","-"))
-            signal = self.callingObj.d[i]
-            # time = self.callingObj.t[i]
-            time = np.arange(0, (len(signal)) * self.callingObj.t[i], self.callingObj.t[i])
+            signal = self.callingObj.dataIn[i]
+            # time = self.callingObj.dti[i]
+            time = np.arange(0, (len(signal)) * self.callingObj.dti[i], self.callingObj.dti[i])
             xLeft = self.callingObj.xLeft if self.callingObj.xLeft > 0 else 0
             xRight = self.callingObj.xRight if self.callingObj.xRight < len(signal) else len(signal) - 1
             np.savetxt(filepath, np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T, delimiter=', ')
@@ -29,12 +29,12 @@ class ExportToTxt:
         here = ospath.dirname(ospath.realpath(__file__))
         subdir = "exported"
 
-        for i in range(len(self.callingObj.d)):
+        for i in range(len(self.callingObj.dataIn)):
             filename = self.callingObj.channelsList[i]
             filepath = ospath.join(here, subdir, filename.replace(":","-"))
-            signal = self.callingObj.d[i]
-            # time = self.callingObj.t[i]
-            time = np.arange(0, (len(signal)) * self.callingObj.t[i], self.callingObj.t[i])
+            signal = self.callingObj.dataIn[i]
+            # time = self.callingObj.dti[i]
+            time = np.arange(0, (len(signal)) * self.callingObj.dti[i], self.callingObj.dti[i])
 
             xLeft = self.callingObj.xLeft if self.callingObj.xLeft > 0 else 0
             xRight = self.callingObj.xRight if self.callingObj.xRight < len(signal) else len(signal) - 1

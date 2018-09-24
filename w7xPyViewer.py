@@ -63,7 +63,7 @@ from ImportFromMdsplus import ImportFromMdsplus
 from XYPlotter import XYPlotter
 from ExportToTxt import ExportToTxt
 from XYFiltering import XYFiltering
-
+from DataResample import DataResample
 from w7xSpectrogram import w7xSpectrogram
 
 
@@ -76,14 +76,13 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         pg.setConfigOption('background', 'w')
         pg.setConfigOption('foreground', 'k')
         self.files = []
-        self.d = []
-        self.t = []
+        self.dataIn = []
+        self.dti = []
+        self.frq = []
         self.channelsList = []
         self.nextPen = 0
         self.setupUi(self)  # This is defined in design.py file automatically
         # It sets up layout and widgets that are defined
-
-        self.fs = self.samplingRate_kHz.text()
         self.actionOpen_csv.triggered.connect(self.openCsv)
         self.actionOpen_mdsplus_QXT.triggered.connect(self.openMdsplusQXT)
         self.actionOpen_mdsplus_QOC.triggered.connect(self.openMdsplusQOC)
@@ -95,15 +94,20 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         self.actionExit.triggered.connect(self.exitApp)
         self.xLeft=0
         self.xRight=0
-
         self.drawUI.clicked.connect(self.drawPlots)
         self.drawSpectrogramUI.clicked.connect(self.drawSpectrogram)
+        self.resample_btn.clicked.connect(self.resampleData)
         self.subtractSGF.clicked.connect(self.subtractSGFilter)
         self.replaceWithSGF.clicked.connect(self.replaceWithSGFilter)
 
+    def resampleData(self):
+        resampler = DataResample(self)
+        # print('np.double(self.NewSamplingRate_kHz.text())*1000', np.double(self.NewSamplingRate_kHz.text())*1000)
+        newSampleRateHz = int(np.double(self.NewSamplingRate_kHz.text())*1000) if np.double(self.NewSamplingRate_kHz.text())>0.01 else 1000000
+        resampler.downSample(newSampleRateHz)
 
     def drawSpectrogram(self):
-        for sig in self.d:
+        for sig in self.dataIn:
             w7xSpectr = w7xSpectrogram(self)
             w7xSpectr.show()
             w7xSpectr.setDataToSpectrogram(sig[self.xLeft:self.xRight])
@@ -112,8 +116,9 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
     def clearAll(self):
         self.plot.clear()
         self.files.clear()
-        self.d.clear()
-        self.t.clear()
+        self.dataIn.clear()
+        self.dti.clear()
+        self.frq.clear()
         self.nextPen = 0
         self.channelsList.clear()
         self.xLeft=0

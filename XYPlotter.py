@@ -9,14 +9,15 @@ class XYPlotter:
 
     def drawPlots(self):
         self.callingObj.plot.clear()
-        for i in range(len(self.callingObj.d)):
-            signal = self.callingObj.d[i]
+        for i in range(len(self.callingObj.dataIn)):
+            signal = self.callingObj.dataIn[i]
             # time = np.arange(len(signal))
-            # time = self.callingObj.t[i]
-            time = np.arange(0, (len(signal)) * self.callingObj.t[i], self.callingObj.t[i])
-            dti = self.callingObj.t[i]
+            # time = self.callingObj.dti[i]
+            time = np.arange(0, (len(signal)) * self.callingObj.dti[i], self.callingObj.dti[i])
+            dti = self.callingObj.dti[i]
             self.nextPen = self.nextPen + 1
-
+            # self.callingObj.plot.plot(time, signal, pen=None, symbol='t' + str(i + 1), symbolBrush=self.nextPen,
+            #                symbolPen=self.nextPen + 3, symbolSize=10 + 3 * i)
             self.callingObj.plot.plot(time,signal, pen=(self.nextPen))
             self.getXaxisLimits(dti)
             # if not self.SGFilt.checkState() and not self.subtrFilt.checkState() and not self.replaceWithSGFilt.checkState():
@@ -31,6 +32,7 @@ class XYPlotter:
 
                 smoothed = xyFilt.savitzky_golay_filt(signal,int(self.callingObj.winLength.text()),int(self.callingObj.polyOrder.text()))
                 self.callingObj.plot.plot(time, smoothed, pen=pg.mkPen(color='k'))
+            print('samplingRate,Hz: ', np.double(self.callingObj.frq[i]))
 
     def getXaxisLimits(self, dti):
         axX = self.callingObj.plot.plotItem.getAxis('bottom')

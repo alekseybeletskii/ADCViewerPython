@@ -20,7 +20,7 @@ class ImportFromMdsplus:
         # c.openTree('qxt1', 171123034)
 
         for i in range(len(self.callingObj.channelsList)):
-            dat_raw = c.get(f'DATA:{self.callingObj.channelsList[i]}')
+            dat_raw = np.asarray(c.get(f'DATA:{self.callingObj.channelsList[i]}'))
             t_raw = c.get(f'DIM_OF(DATA:{self.callingObj.channelsList[i]})')
             # dat_raw = c.get('DATA:CH84')
             # signal = c.get(f'DATA:{self.callingObj.channelsList[i]}')
@@ -29,9 +29,10 @@ class ImportFromMdsplus:
             # startDataTime = datetime.utcfromtimestamp(t_raw[0] // 1000000000).second
             # startDataTime = datetime.utcfromtimestamp(t_raw[0] // 1000000000)
             # print(startDataTime.strftime('%Y-%m-%d %H:%M:%S'))
-            dti = abs(np.double(t_raw[2]-t_raw[1]))*1e-9
-            self.callingObj.d.append(dat_raw)
-            self.callingObj.t.append(dti)
+            dti = abs(np.double(t_raw[len(t_raw)-1]-t_raw[len(t_raw)-2]))*1e-9
+            self.callingObj.dataIn.append(dat_raw)
+            self.callingObj.dti.append(dti)
+            self.callingObj.frq.append(int(round(np.power(dti,-1))))
 
         print('data loaded from mdsplus QXT')
 
@@ -58,13 +59,14 @@ class ImportFromMdsplus:
 
         # fs = np.int(c.get('HARDWARE:ACQ2106_064:CLOCK'))
 
+
         for i in range(len(self.callingObj.channelsList)):
-            dat_raw = c.get(f'DATA:{self.callingObj.channelsList[i]}')
+            dat_raw = np.asarray(c.get(f'DATA:{self.callingObj.channelsList[i]}'))
             t_raw = c.get(f'DIM_OF(DATA:{self.callingObj.channelsList[i]})')
-            print(len(t_raw))
             dti = abs(np.double(t_raw[len(t_raw)-1]-t_raw[len(t_raw)-2]))*1e-9
-            self.callingObj.t.append(dti)
-            self.callingObj.d.append(dat_raw)
+            self.callingObj.dataIn.append(dat_raw)
+            self.callingObj.dti.append(dti)
+            self.callingObj.frq.append(int(round(np.power(dti,-1))))
             # MDSraw = c.get('DATA:DET2CH16')
             # dat_raw = MDSraw.data()
             # t_raw = np.double(dat_raw.dim_of())/fs
@@ -72,12 +74,12 @@ class ImportFromMdsplus:
         print('data loaded from mdsplus QOC')
 
     def setTimeContext(self):
-        resample = int(self.callingObj.resampling.text()) if self.callingObj.resampling.text().isnumeric() else 1
+        resample = int(self.callingObj.MDSresampling.text()) if self.callingObj.MDSresampling.text().isnumeric() else 1
         settimecontext = "SETTIMECONTEXT(*,*," + str(resample) + "Q)"
         if resample < 0:
             resample = '1000000'
             settimecontext = "SETTIMECONTEXT(*,*," + str(resample) + "Q)"
-            self.callingObj.timeScale.setText(str(resample))
+            self.callingObj.MDSresampling.setText(str(resample))
         if resample == 1:
             settimecontext = "SETTIMECONTEXT(*,*,*)"
         return settimecontext
