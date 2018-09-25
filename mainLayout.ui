@@ -125,7 +125,7 @@
       <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>MDSresampl</string>
+         <string>MDSresamp</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -359,6 +359,7 @@
     <addaction name="separator"/>
     <addaction name="actionDrawPlots"/>
     <addaction name="actionClear"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuFile"/>

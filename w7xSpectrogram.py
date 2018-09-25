@@ -155,16 +155,16 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.spectrogram_UI.clear()
 
     def setDefaultParams(self):
-        self.nfft = 256
-        self.nfft_ui.setText('256')
-        self.fs = 1000
-        self.fs_kHz_ui.setText('1000')
+        self.nfft = 1024
+        self.nfft_ui.setText('1024')
+        self.fs = 500
+        self.fs_kHz_ui.setText('500')
         self.window = 'hamming'
         self.window_ui.setText('hamming')
-        self.nperseg = 256
-        self.nperseg_ui.setText('256')
-        self.noverlap = 32
-        self.noverlap_ui.setText('32')
+        self.nperseg = 1024
+        self.nperseg_ui.setText('1024')
+        self.noverlap = 500
+        self.noverlap_ui.setText('500')
         self.detrend = 'constant'
         self.detrend_ui.setText('constant')
         self.scaling = 'density'
