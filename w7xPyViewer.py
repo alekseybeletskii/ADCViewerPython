@@ -160,8 +160,22 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         xyFilt.replaceWithSGFilter()
         self.drawPlots()
 
+    def closeEvent(self, event):
+        close = QtWidgets.QMessageBox()
+        close.setWindowTitle('closing...')
+        close.setText("Sure?!")
+        close.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
+        close = close.exec()
+
+        if close == QtWidgets.QMessageBox.Yes:
+            event.accept()
+            sys.exit()
+        else:
+            event.ignore()
+
     def exitApp(self):
-        sys.exit()
+        # sys.exit()
+        self.close()
 
 
 def main():

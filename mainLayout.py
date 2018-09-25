@@ -152,6 +152,7 @@ class Ui_MainWindow(object):
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionDrawPlots)
         self.menuFile.addAction(self.actionClear)
+        self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionExit)
         self.menubar.addAction(self.menuFile.menuAction())
 
@@ -166,7 +167,7 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "shot"))
         self.shot.setToolTip(_translate("MainWindow", "<html><head/><body><p>shot number</p></body></html>"))
         self.shot.setText(_translate("MainWindow", "180816020"))
-        self.label_2.setText(_translate("MainWindow", "MDSresampl"))
+        self.label_2.setText(_translate("MainWindow", "MDSresamp"))
         self.MDSresampling.setToolTip(_translate("MainWindow", "<html><head/><body><p>set &quot;1&quot; for no resampling</p></body></html>"))
         self.MDSresampling.setText(_translate("MainWindow", "1"))
         self.label_3.setText(_translate("MainWindow", "NewSampling_kHz"))
