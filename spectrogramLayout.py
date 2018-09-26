@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1052, 587)
+        MainWindow.resize(1108, 587)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -31,6 +31,11 @@ class Ui_MainWindow(object):
         self.redrawSpectrogramBtn.setMaximumSize(QtCore.QSize(50, 20))
         self.redrawSpectrogramBtn.setObjectName("redrawSpectrogramBtn")
         self.horizontalLayout.addWidget(self.redrawSpectrogramBtn)
+        self.peaks_btn = QtWidgets.QPushButton(self.centralwidget)
+        self.peaks_btn.setMinimumSize(QtCore.QSize(40, 20))
+        self.peaks_btn.setMaximumSize(QtCore.QSize(50, 20))
+        self.peaks_btn.setObjectName("peaks_btn")
+        self.horizontalLayout.addWidget(self.peaks_btn)
         self.resetParams_ui = QtWidgets.QPushButton(self.centralwidget)
         self.resetParams_ui.setMinimumSize(QtCore.QSize(50, 20))
         self.resetParams_ui.setMaximumSize(QtCore.QSize(50, 20))
@@ -175,7 +180,7 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1052, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1108, 21))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -215,6 +220,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.redrawSpectrogramBtn.setText(_translate("MainWindow", "draw"))
+        self.peaks_btn.setText(_translate("MainWindow", "peaks"))
         self.resetParams_ui.setText(_translate("MainWindow", "reset"))
         self.scaleLinLogSqrt.setItemText(0, _translate("MainWindow", "linear"))
         self.scaleLinLogSqrt.setItemText(1, _translate("MainWindow", "log10"))

@@ -62,28 +62,31 @@ import sys
 
 import numpy as np
 
-import pandas as pd
+# import pandas as pd
 
-import MDSplus as m
+# import MDSplus as m
 
 import pyqtgraph as pg
 
 from scipy import signal
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import pyqtgraph
+from TestDataGenerator import TestDataGenerator
+from SpectrogramPeaksDetection import SpectrogramPeaksDetection
 
-from scipy.signal import savgol_filter
+# from scipy.signal import savgol_filter
 
 
 class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
 
-    @classmethod
-    def generateTestData(cls):
+    @staticmethod
+    def generateTestData():
         # Create the data
-        fs = 10e3
+        fs = 1e4
         N = 1e5
         amp = 2 * np.sqrt(2)
         noise_power = 0.01 * fs / 2
+        # noise_power = 0.001 * fs / 2
         time = np.arange(N) / float(fs)
         mod = 500 * np.cos(2 * np.pi * 0.25 * time)
         carrier = amp * np.sin(2 * np.pi * 3e3 * time + mod)
@@ -94,6 +97,8 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         super(self.__class__, self).__init__(parent)
         pg.setConfigOption('background', 'w')
         pg.setConfigOption('foreground', 'k')
+
+
         # nfft : int, optional.
         #  Length of the FFT used, if a zero padded FFT is desired. If None, the FFT length is nperseg. Defaults to None.
         self.nfft = 256
@@ -121,7 +126,7 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.detrend = False
         # scaling : { ‘density’, ‘spectrum’ }, optional
         # Selects between computing the power spectral density (‘density’)
-        # where Sxx has units of V**2/Hz and computing the power spectrum (‘spectrum’) where Sxx has units of V**2,
+        # where self.Sxx has units of V**2/Hz and computing the power spectrum (‘spectrum’) where self.Sxx has units of V**2,
         # if x is measured in V and fs is measured in Hz. Defaults to ‘density’.
         self.scaling = 'density'
         # mode : str, optional
@@ -132,8 +137,8 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.mode = 'psd'
 
          # ‘linear’ is no scaling
-        # 'log' is 10*np.log10(Sxx)
-        # 'sqrt' is np.sqrt(Sxx)
+        # 'log' is 10*np.log10(self.Sxx)
+        # 'sqrt' is np.sqrt(self.Sxx)
         self.scale = 'linear'
 
         self.setupUi(self)  # This is defined in design.py file automatically
@@ -144,6 +149,7 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.dataToSpectrogram = w7xSpectrogram.generateTestData()
 
         self.redrawSpectrogramBtn.clicked.connect(self.drawSpectrogram)
+        self.peaks_btn.clicked.connect(self.findSpectroPeaks)
         self.actionClearAll.triggered.connect(self.clearAll)
 
         self.actionGenerateTestData.triggered.connect(self.generateData)
@@ -151,8 +157,20 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.xLeft = 0
         self.xRight = 0
 
+        self.Sxx = np.ndarray
+
+        self.win = self.spectrogram_UI
+        self.spectrPlot = None
+        self.f = None
+        self.t = None
+
+    def findSpectroPeaks(self):
+        spectrPeaksDetection = SpectrogramPeaksDetection(self)
+        spectrPeaksDetection.findSpectroPeaks()
+
     def clearAll(self):
         self.spectrogram_UI.clear()
+        self.Sxx = np.ndarray
 
     def setDefaultParams(self):
         self.nfft = 1024
@@ -184,18 +202,8 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.scaling = self.scaling_ui.text()
         self.mode = self.mode_ui.text()
     def generateData(self):
-        # Create the data
-        fs = 10e3
-        N = 1e5
-        amp = 2 * np.sqrt(2)
-        noise_power = 0.01 * fs / 2
-        time = np.arange(N) / float(fs)
-        mod = 500 * np.cos(2 * np.pi * 0.25 * time)
-        carrier = amp * np.sin(2 * np.pi * 3e3 * time + mod)
-        noise = np.random.normal(scale=np.sqrt(noise_power), size=time.shape)
-        noise *= np.exp(-time / 5)
-        self.dataToSpectrogram = carrier + noise
-        return  carrier + noise
+        testDataGenerator = TestDataGenerator(self)
+        self.dataToSpectrogram = testDataGenerator.nightingaleSongSpectr()
 
     def setDataToSpectrogram(self,signalIn):
         self.dataToSpectrogram = signalIn
@@ -204,37 +212,44 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.spectrogram_UI.clear()
         # signalIn = self.generateData()
         self.setParamsValues()
-        # f, t, Sxx = signal.spectrogram(self.generateData(), 10000)
-        f, t, Sxx = signal.spectrogram(self.dataToSpectrogram, fs=self.fs, window = self.window, nperseg=self.nperseg, noverlap=self.noverlap, nfft=self.nfft,
-                                       detrend=self.detrend, scaling=self.scaling, mode=self.mode)
+        # f, t, self.Sxx = signal.spectrogram(self.generateData(), 10000)
 
+        self.f, self.t, self.Sxx = signal.spectrogram(self.dataToSpectrogram, fs=self.fs, window = self.window, nperseg=self.nperseg, noverlap=self.noverlap, nfft=self.nfft,
+                                                      detrend=self.detrend, scaling=self.scaling, mode=self.mode)
         if str(self.scaleLinLogSqrt.currentText()).casefold() == 'log10':
-            Sxx = 10 * np.log10(Sxx)
+            self.Sxx = 10 * np.log10(self.Sxx)
         elif str(self.scaleLinLogSqrt.currentText()).casefold() == 'sqrt':
-            Sxx = np.sqrt(Sxx)
+            self.Sxx = np.sqrt(self.Sxx)
 
 
         # Interpret image data as row-major instead of col-major
         pyqtgraph.setConfigOptions(imageAxisOrder='row-major')
         # pyqtgraph.mkQApp()
         # win = pyqtgraph.GraphicsLayoutWidget()
-        win = self.spectrogram_UI
         # A plot area (ViewBox + axes) for displaying the image
-        p1 = win.addPlot()
 
         # Item for displaying image data
         img = pyqtgraph.ImageItem()
-        p1.addItem(img)
+        self.spectrPlot = self.win.addPlot()
+
+
+        self.spectrPlot.addItem(img)
+
+        # x =  np.linspace(0.01,0.05,10)
+        # y =  np.linspace(100000,200000,10)
+        # self.spectrPlot.plot(x, y, pen=pg.mkPen(color=(255,0,0), width=5), name="Red curve", symbol='o' , symbolBrush = "k", symbolPen = "k", symbolSize=18)
+
+
         # Add a histogram with which to control the gradient of the image
         hist = pyqtgraph.HistogramLUTItem()
         # Link the histogram to the image
         hist.setImageItem(img)
         # If you don't add the histogram to the window, it stays invisible, but I find it useful.
-        win.addItem(hist)
+        self.win.addItem(hist)
         # Show the window
         # self.show()
         # Fit the min and max levels of the histogram to the data available
-        hist.setLevels(np.min(Sxx), np.max(Sxx))
+        hist.setLevels(np.min(self.Sxx), np.max(self.Sxx))
         # This gradient is roughly comparable to the gradient used by Matplotlib
         # You can adjust it and then save it using hist.gradient.saveState()
         hist.gradient.restoreState(
@@ -242,45 +257,50 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
              'ticks': [(0.5, (0, 182, 188, 255)),
                        (1.0, (246, 111, 0, 255)),
                        (0.0, (75, 0, 113, 255))]})
-        # Sxx contains the amplitude for each pixel
-        img.setImage(Sxx)
+        # self.Sxx contains the amplitude for each pixel
+        img.setImage(self.Sxx)
         # Scale the X and Y Axis to time and frequency (standard is pixels)
-        img.scale(t[-1] / np.size(Sxx, axis=1),
-                  f[-1] / np.size(Sxx, axis=0))
+        img.scale(self.t[-1] / np.size(self.Sxx, axis=1),
+                  self.f[-1] / np.size(self.Sxx, axis=0))
         # Limit panning/zooming to the spectrogram
-        p1.setLimits(xMin=0, xMax=t[-1], yMin=0, yMax=f[-1])
+        self.spectrPlot.setLimits(xMin=0, xMax=self.t[-1], yMin=0, yMax=self.f[-1])
         # Add labels to the axis
-        p1.setLabel('bottom', "Time", units='s')
+        self.spectrPlot.setLabel('bottom', "Time", units='s')
         # If you include the units, Pyqtgraph automatically scales the axis and adjusts the SI prefix (in this case kHz)
-        p1.setLabel('left', "Frequency", units='Hz')
+        self.spectrPlot.setLabel('left', "Frequency", units='Hz')
+
+
+
 
         self.show()
 
 
         # Plotting with Matplotlib in comparison
-        # plt.pcolormesh(t, f, Sxx)
+        # plt.pcolormesh(t, f, self.Sxx)
         # plt.ylabel('Frequency [Hz]')
         # plt.xlabel('Time [sec]')
         # plt.colorbar()
         # plt.show()
 
     def exitApp(self):
-            # sys.exit()
-            self.close()
+            sys.exit()
+            # self.close()
 
     def closeEvent(self, event):
-        close = QtWidgets.QMessageBox()
-        close.setWindowTitle('closing...')
-        close.setText("Sure?!")
-        close.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
-        close = close.exec()
-
-        if close == QtWidgets.QMessageBox.Yes:
-            event.accept()
-            if __name__ == '__main__':
-                sys.exit()
-        else:
-            event.ignore()
+        event.accept()
+        sys.exit()
+        # close = QtWidgets.QMessageBox()
+        # close.setWindowTitle('closing...')
+        # close.setText("Sure?!")
+        # close.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
+        # close = close.exec()
+        #
+        # if close == QtWidgets.QMessageBox.Yes:
+        #     event.accept()
+        #     if __name__ == '__main__':
+        #         sys.exit()
+        # else:
+        #     event.ignore()
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

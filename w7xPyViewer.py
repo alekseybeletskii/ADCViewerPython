@@ -169,7 +169,8 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
 
         if close == QtWidgets.QMessageBox.Yes:
             event.accept()
-            sys.exit()
+            if __name__ == '__main__':
+                sys.exit()
         else:
             event.ignore()
 
