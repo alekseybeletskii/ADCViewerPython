@@ -157,9 +157,14 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
 
         self.horizontalLayout_spectr.addWidget(self.peakSlider)
 
-        # self.peaksCurve = pg.PlotDataItem
+        # Interpret image data as row-major instead of col-major
+        pyqtgraph.setConfigOptions(imageAxisOrder='row-major')
+
+        self.peaksCurve = pg.PlotDataItem()
+
 
     def findSpectroPeaks(self):
+
         spectrPeaksDetection = SpectrogramPeaksDetection(self)
         spectrPeaksDetection.findSpectroPeaks()
 
@@ -208,8 +213,14 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.dataToSpectrogram = signalIn
     # def drawSpectrogram(self,signalIn):
     def drawSpectrogram(self):
-        self.spectrogram_UI.clear()
         # signalIn = self.generateData()
+
+        self.spectrogram_UI.clear()
+
+        self.spectrPlot = self.win.addPlot()
+
+
+
         self.setParamsValues()
         # f, t, self.Sxx = signal.spectrogram(self.generateData(), 10000)
 
@@ -223,15 +234,13 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.SxxMin = np.min(self.Sxx)
         self.SxxMax = np.max(self.Sxx)
 
-        # Interpret image data as row-major instead of col-major
-        pyqtgraph.setConfigOptions(imageAxisOrder='row-major')
+
         # pyqtgraph.mkQApp()
         # win = pyqtgraph.GraphicsLayoutWidget()
         # A plot area (ViewBox + axes) for displaying the image
 
         # Item for displaying image data
         img = pyqtgraph.ImageItem()
-        self.spectrPlot = self.win.addPlot()
 
         self.peakSlider.setSliderMaxMin(self.SxxMax, self.SxxMin)
         self.peakSlider.slider.setValue(self.peakSlider.slider.maximum())

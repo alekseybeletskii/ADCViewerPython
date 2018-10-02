@@ -21,7 +21,10 @@ class SpectrogramPeaksDetection:
             if self.callingObj:
                 # self.callingObj.spectrPlot.plot(peaksX, peaksY, pen=None, name="Red curve", symbol='o' , symbolBrush = "r", symbolPen = "r", symbolSize=9)
 
-                peaksCurve = pg.PlotDataItem(peaksX, peaksY, pen=None, name="Red curve", symbol='o' , symbolBrush = "r", symbolPen = "r", symbolSize=9)
-                self.callingObj.spectrPlot.addItem(peaksCurve)
+                # peaksCurve = pg.PlotDataItem(peaksX, peaksY, pen=None, name="Red curve", symbol='o' , symbolBrush = "r", symbolPen = "r", symbolSize=9)
+                # self.callingObj.spectrPlot.addItem(peaksCurve)
 
-                # self.callingObj.peaksCurve.appendData(peaksX, peaksY, pen=None, name="Red curve", symbol='o' , symbolBrush = "r", symbolPen = "r", symbolSize=9)
+                self.callingObj.spectrPlot.removeItem(self.callingObj.peaksCurve)
+                self.callingObj.peaksCurve = pg.PlotDataItem()
+                self.callingObj.spectrPlot.addItem(self.callingObj.peaksCurve)
+                self.callingObj.peaksCurve.setData(peaksX, peaksY, pen=None, name="Red curve", symbol='o' , symbolBrush = "r", symbolPen = "r", symbolSize=5)
