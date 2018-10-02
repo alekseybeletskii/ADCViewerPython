@@ -72,7 +72,7 @@ class ImportFromTxt(QtWidgets.QMainWindow):
             dataX = dataTxt['x']
             dti = abs(np.double(dataX[len(dataX)-1]-dataX[len(dataX)-2]))*1e-9
             self.callingObj.dti.append(dti)
-            self.callingObj.fqs.append(int(1/dti))
+            self.callingObj.frq.append(int(1/dti))
             self.callingObj.dataIn.append(dataTxt['y'])
             filename_and_ext = path.basename(files[i])
             filename, _ = path.splitext(filename_and_ext)

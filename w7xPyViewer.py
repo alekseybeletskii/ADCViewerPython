@@ -53,17 +53,17 @@
 
 from PyQt5 import QtWidgets
 
-import mainLayout  # This file holds our MainWindow and all design related things
+from GUIs import mainLayout
 # it also keeps events etc that we defined in Qt Design
 import sys
 import numpy as np
 import pyqtgraph as pg
-from ImportFromTxt import ImportFromTxt
-from ImportFromMdsplus import ImportFromMdsplus
-from XYPlotter import XYPlotter
-from ExportToTxt import ExportToTxt
-from XYFiltering import XYFiltering
-from DataResample import DataResample
+from importExport.ImportFromTxt import ImportFromTxt
+from importExport.ImportFromMdsplus import ImportFromMdsplus
+from utils.XYPlotter import XYPlotter
+from importExport.ExportToTxt import ExportToTxt
+from utils.XYFiltering import XYFiltering
+from utils.DataResample import DataResample
 from w7xSpectrogram import w7xSpectrogram
 
 
@@ -160,23 +160,25 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         xyFilt.replaceWithSGFilter()
         self.drawPlots()
 
-    def closeEvent(self, event):
-        close = QtWidgets.QMessageBox()
-        close.setWindowTitle('closing...')
-        close.setText("Sure?!")
-        close.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
-        close = close.exec()
-
-        if close == QtWidgets.QMessageBox.Yes:
-            event.accept()
-            if __name__ == '__main__':
-                sys.exit()
-        else:
-            event.ignore()
-
     def exitApp(self):
-        # sys.exit()
-        self.close()
+            sys.exit()
+            # self.close()
+
+    def closeEvent(self, event):
+        event.accept()
+        sys.exit()
+        # close = QtWidgets.QMessageBox()
+        # close.setWindowTitle('closing...')
+        # close.setText("Sure?!")
+        # close.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
+        # close = close.exec()
+        #
+        # if close == QtWidgets.QMessageBox.Yes:
+        #     event.accept()
+        #     if __name__ == '__main__':
+        #         sys.exit()
+        # else:
+        #     event.ignore()
 
 
 def main():

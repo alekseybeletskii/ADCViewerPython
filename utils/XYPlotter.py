@@ -1,6 +1,6 @@
 import pyqtgraph as pg
 import numpy as np
-from XYFiltering import  XYFiltering
+from utils.XYFiltering import  XYFiltering
 class XYPlotter:
     def __init__(self, callingObj):
 

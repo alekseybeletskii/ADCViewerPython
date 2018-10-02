@@ -48,14 +48,11 @@
 # -*- coding: utf-8 -*-
 
 
-import os.path as ospath
-
 # from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5 import QtGui, QtWidgets
-from ast import literal_eval as make_tuple
+from PyQt5 import QtWidgets
 # from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
 
-import spectrogramLayout  # This file holds our MainWindow and all design related things
+from GUIs import spectrogramLayout
 # it also keeps events etc that we defined in Qt Design
 import sys
 # from PyQt5 import QtGui
@@ -71,28 +68,15 @@ import pyqtgraph as pg
 from scipy import signal
 # import matplotlib.pyplot as plt
 import pyqtgraph
-from TestDataGenerator import TestDataGenerator
-from SpectrogramPeaksDetection import SpectrogramPeaksDetection
+from utils.TestDataGenerator import TestDataGenerator
+from utils.SpectrogramPeaksDetection import SpectrogramPeaksDetection
 
 # from scipy.signal import savgol_filter
-
+from GUIs.SliderWidget import SliderWidget
 
 class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
 
-    @staticmethod
-    def generateTestData():
-        # Create the data
-        fs = 1e4
-        N = 1e5
-        amp = 2 * np.sqrt(2)
-        noise_power = 0.01 * fs / 2
-        # noise_power = 0.001 * fs / 2
-        time = np.arange(N) / float(fs)
-        mod = 500 * np.cos(2 * np.pi * 0.25 * time)
-        carrier = amp * np.sin(2 * np.pi * 3e3 * time + mod)
-        noise = np.random.normal(scale=np.sqrt(noise_power), size=time.shape)
-        noise *= np.exp(-time / 5)
-        return  carrier + noise
+
     def __init__(self, parent):
         super(self.__class__, self).__init__(parent)
         pg.setConfigOption('background', 'w')
@@ -164,13 +148,28 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.f = None
         self.t = None
 
+        self.SxxMax = None
+        self.SxxMin = None
+
+        self.peakSlider = SliderWidget(0.1, 1)
+
+        self.peakSlider.slider.valueChanged.connect(self.findSpectroPeaks)
+
+        self.horizontalLayout_spectr.addWidget(self.peakSlider)
+
+        # self.peaksCurve = pg.PlotDataItem
+
     def findSpectroPeaks(self):
         spectrPeaksDetection = SpectrogramPeaksDetection(self)
         spectrPeaksDetection.findSpectroPeaks()
 
+
     def clearAll(self):
         self.spectrogram_UI.clear()
         self.Sxx = np.ndarray
+        self.SxxMax = None
+        self.SxxMin = None
+
 
     def setDefaultParams(self):
         self.nfft = 1024
@@ -221,6 +220,8 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         elif str(self.scaleLinLogSqrt.currentText()).casefold() == 'sqrt':
             self.Sxx = np.sqrt(self.Sxx)
 
+        self.SxxMin = np.min(self.Sxx)
+        self.SxxMax = np.max(self.Sxx)
 
         # Interpret image data as row-major instead of col-major
         pyqtgraph.setConfigOptions(imageAxisOrder='row-major')
@@ -232,8 +233,11 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         img = pyqtgraph.ImageItem()
         self.spectrPlot = self.win.addPlot()
 
+        self.peakSlider.setSliderMaxMin(self.SxxMax, self.SxxMin)
+        self.peakSlider.slider.setValue(self.peakSlider.slider.maximum())
 
         self.spectrPlot.addItem(img)
+
 
         # x =  np.linspace(0.01,0.05,10)
         # y =  np.linspace(100000,200000,10)
@@ -241,7 +245,7 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
 
 
         # Add a histogram with which to control the gradient of the image
-        hist = pyqtgraph.HistogramLUTItem()
+        hist = pyqtgraph.HistogramLUTItem(fillHistogram=False)
         # Link the histogram to the image
         hist.setImageItem(img)
         # If you don't add the histogram to the window, it stays invisible, but I find it useful.
@@ -249,7 +253,8 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         # Show the window
         # self.show()
         # Fit the min and max levels of the histogram to the data available
-        hist.setLevels(np.min(self.Sxx), np.max(self.Sxx))
+
+        hist.setLevels(self.SxxMin, self.SxxMax)
         # This gradient is roughly comparable to the gradient used by Matplotlib
         # You can adjust it and then save it using hist.gradient.saveState()
         hist.gradient.restoreState(
@@ -301,6 +306,21 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         #         sys.exit()
         # else:
         #     event.ignore()
+
+    @staticmethod
+    def generateTestData():
+        # Create the data
+        fs = 1e4
+        N = 1e5
+        amp = 2 * np.sqrt(2)
+        noise_power = 0.01 * fs / 2
+        # noise_power = 0.001 * fs / 2
+        time = np.arange(N) / float(fs)
+        mod = 500 * np.cos(2 * np.pi * 0.25 * time)
+        carrier = amp * np.sin(2 * np.pi * 3e3 * time + mod)
+        noise = np.random.normal(scale=np.sqrt(noise_power), size=time.shape)
+        noise *= np.exp(-time / 5)
+        return  carrier + noise
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
