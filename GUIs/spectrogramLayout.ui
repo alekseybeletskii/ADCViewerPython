@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1154</width>
+    <width>1314</width>
     <height>587</height>
    </rect>
   </property>
@@ -58,21 +58,52 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="peaks_btn">
+       <widget class="QComboBox" name="scaleLinLogSqrt">
         <property name="minimumSize">
          <size>
-          <width>40</width>
+          <width>55</width>
           <height>20</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>50</width>
+          <width>55</width>
+          <height>20</height>
+         </size>
+        </property>
+        <item>
+         <property name="text">
+          <string>linear</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>log10</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>sqrt</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="settings_btn">
+        <property name="minimumSize">
+         <size>
+          <width>55</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>55</width>
           <height>20</height>
          </size>
         </property>
         <property name="text">
-         <string>peaks</string>
+         <string>settings</string>
         </property>
        </widget>
       </item>
@@ -93,37 +124,6 @@
         <property name="text">
          <string>reset</string>
         </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="scaleLinLogSqrt">
-        <property name="minimumSize">
-         <size>
-          <width>50</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>50</width>
-          <height>20</height>
-         </size>
-        </property>
-        <item>
-         <property name="text">
-          <string>linear</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>log10</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>sqrt</string>
-         </property>
-        </item>
        </widget>
       </item>
       <item>
@@ -545,7 +545,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1154</width>
+     <width>1314</width>
      <height>20</height>
     </rect>
    </property>
