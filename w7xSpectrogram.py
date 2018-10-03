@@ -49,7 +49,7 @@
 
 
 # from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5 import QtWidgets
+from PyQt5 import QtGui, QtWidgets
 # from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
 
 from GUIs import spectrogramLayout
@@ -73,6 +73,7 @@ from utils.SpectrogramPeaksDetection import SpectrogramPeaksDetection
 
 # from scipy.signal import savgol_filter
 from GUIs.SliderWidget import SliderWidget
+from utils.SpectgrogramSettings import SpectgrogramSettings
 
 class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
 
@@ -130,12 +131,12 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.setupUi(self)  # This is defined in design.py file automatically
         # It sets up layout and widgets that are defined
 
-        self.resetParams_ui.clicked.connect(self.setDefaultParams)
+        # self.resetParams_ui.clicked.connect(self.setDefaultParams)
 
         self.dataToSpectrogram = w7xSpectrogram.generateTestData()
 
         self.redrawSpectrogramBtn.clicked.connect(self.drawSpectrogram)
-        self.peaks_btn.clicked.connect(self.findSpectroPeaks)
+        self.settings_btn.clicked.connect(self.settingsUi)
         self.actionClearAll.triggered.connect(self.clearAll)
 
         self.actionGenerateTestData.triggered.connect(self.generateData)
@@ -170,6 +171,19 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.hist = pyqtgraph.HistogramLUTItem(fillHistogram=False)
         # If don't add the histogram to the window, it stays invisible
         self.win.addItem(self.hist)
+        self.hotkey = {}
+        self.ui_hotkey('ajustSettings', "Shift+s", self.settingsUi)
+
+    def ui_hotkey(self, key_name, key_combo, func):
+        self.hotkey[key_name] = QtWidgets.QShortcut(QtGui.QKeySequence(key_combo), self)
+        self.hotkey[key_name].activated.connect(func)
+
+    def settingsUi(self):
+        spectrSettings = SpectgrogramSettings(self)
+        spectrSettings.show()
+
+
+
 
     def updatePeakSliderRange(self):
         self.spectrPeaksDetection.findSpectroLimits()
