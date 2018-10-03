@@ -22,6 +22,7 @@ class XYPlotter:
             #                symbolPen=self.nextPen + 3, symbolSize=10 + 3 * i)
             self.callingObj.mainPlotWidget.plot(time,signal, pen=(self.nextPen))
 
+
             # self.getXaxisLimits(dti)
 
             ax = self.callingObj.mainPlotWidget.plotItem.getAxis('bottom')

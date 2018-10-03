@@ -164,9 +164,19 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
 
         self.spectrPeaksDetection = SpectrogramPeaksDetection(self)
 
+        self.spectrPlot = self.win.addPlot()
+
+        # a histogram with which to control the gradient of the image
+        self.hist = pyqtgraph.HistogramLUTItem(fillHistogram=False)
+        # If don't add the histogram to the window, it stays invisible
+        self.win.addItem(self.hist)
+
+    def updatePeakSliderRange(self):
+        self.spectrPeaksDetection.findSpectroLimits()
+        self.spectrPeaksDetection.findSliderRange()
+
 
     def findSpectroPeaks(self):
-
         self.spectrPeaksDetection.findSpectroPeaks()
 
 
@@ -218,11 +228,11 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
     def drawSpectrogram(self):
         # signalIn = self.generateData()
 
-        self.spectrogram_UI.clear()
+        # self.spectrogram_UI.clear()
 
         self.peakSlider.slider.disconnect()
 
-        self.spectrPlot = self.win.addPlot()
+        # self.spectrPlot = self.win.addPlot()
 
         self.setParamsValues()
         # f, t, self.Sxx = signal.spectrogram(self.generateData(), 10000)
@@ -256,20 +266,18 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         # self.spectrPlot.plot(x, y, pen=pg.mkPen(color=(255,0,0), width=5), name="Red curve", symbol='o' , symbolBrush = "k", symbolPen = "k", symbolSize=18)
 
 
-        # Add a histogram with which to control the gradient of the image
-        hist = pyqtgraph.HistogramLUTItem(fillHistogram=False)
+
         # Link the histogram to the image
-        hist.setImageItem(img)
-        # If you don't add the histogram to the window, it stays invisible, but I find it useful.
-        self.win.addItem(hist)
+        self.hist.setImageItem(img)
+
         # Show the window
         # self.show()
         # Fit the min and max levels of the histogram to the data available
 
-        hist.setLevels(self.SxxMin, self.SxxMax)
+        self.hist.setLevels(self.SxxMin, self.SxxMax)
         # This gradient is roughly comparable to the gradient used by Matplotlib
         # You can adjust it and then save it using hist.gradient.saveState()
-        hist.gradient.restoreState(
+        self.hist.gradient.restoreState(
             {'mode': 'rgb',
              'ticks': [(0.5, (0, 182, 188, 255)),
                        (1.0, (246, 111, 0, 255)),
@@ -290,6 +298,8 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
 
 
         self.show()
+
+        self.spectrPlot.sigRangeChanged.connect(self.updatePeakSliderRange)
 
         self.peakSlider.setSliderMaxMin(self.SxxMax, self.SxxMin)
         self.peakSlider.slider.setValue(self.peakSlider.slider.maximum())
