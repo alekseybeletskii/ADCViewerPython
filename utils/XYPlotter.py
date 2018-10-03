@@ -37,8 +37,8 @@ class XYPlotter:
 
             minXindex  = self.dataXLimitsIndexes.get("minIndex")
             maxXindex  = self.dataXLimitsIndexes.get("maxIndex")
-            self.callingObj.xLeft = minXindex if minXindex > 0 else 0
-            self.callingObj.xRight = maxXindex if maxXindex < len(signal) else len(signal)
+            minXindex = self.callingObj.xLeft = minXindex if minXindex > 0 else 0
+            maxXindex = self.callingObj.xRight = maxXindex if maxXindex < len(signal) else len(signal)
 
             signal = signal[minXindex:maxXindex]
             time = time[minXindex:maxXindex]
