@@ -81,7 +81,9 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         super(self.__class__, self).__init__(parent)
         pg.setConfigOption('background', 'w')
         pg.setConfigOption('foreground', 'k')
-
+        # Interpret image data as row-major instead of col-major
+        pg.setConfigOptions(imageAxisOrder='row-major')
+        pg.setConfigOption('leftButtonPan', False)
 
         # nfft : int, optional.
         #  Length of the FFT used, if a zero padded FFT is desired. If None, the FFT length is nperseg. Defaults to None.
@@ -153,12 +155,9 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
 
         self.peakSlider = SliderWidget(0.1, 1)
 
-        self.peakSlider.slider.valueChanged.connect(self.findSpectroPeaks)
-
         self.horizontalLayout_spectr.addWidget(self.peakSlider)
 
-        # Interpret image data as row-major instead of col-major
-        pyqtgraph.setConfigOptions(imageAxisOrder='row-major')
+
 
         self.peaksCurve = pg.PlotDataItem()
 
@@ -217,15 +216,18 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
 
         self.spectrogram_UI.clear()
 
+        self.peakSlider.slider.disconnect()
+
         self.spectrPlot = self.win.addPlot()
-
-
 
         self.setParamsValues()
         # f, t, self.Sxx = signal.spectrogram(self.generateData(), 10000)
 
         self.f, self.t, self.Sxx = signal.spectrogram(self.dataToSpectrogram, fs=self.fs, window = self.window, nperseg=self.nperseg, noverlap=self.noverlap, nfft=self.nfft,
                                                       detrend=self.detrend, scaling=self.scaling, mode=self.mode)
+
+
+
         if str(self.scaleLinLogSqrt.currentText()).casefold() == 'log10':
             self.Sxx = 10 * np.log10(self.Sxx)
         elif str(self.scaleLinLogSqrt.currentText()).casefold() == 'sqrt':
@@ -241,9 +243,6 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
 
         # Item for displaying image data
         img = pyqtgraph.ImageItem()
-
-        self.peakSlider.setSliderMaxMin(self.SxxMax, self.SxxMin)
-        self.peakSlider.slider.setValue(self.peakSlider.slider.maximum())
 
         self.spectrPlot.addItem(img)
 
@@ -287,6 +286,11 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
 
 
         self.show()
+
+        self.peakSlider.setSliderMaxMin(self.SxxMax, self.SxxMin)
+        self.peakSlider.slider.setValue(self.peakSlider.slider.maximum())
+        self.peakSlider.slider.valueChanged.connect(self.findSpectroPeaks)
+
 
 
         # Plotting with Matplotlib in comparison

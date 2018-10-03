@@ -70,7 +70,7 @@ class ImportFromTxt(QtWidgets.QMainWindow):
         for i in range(len(files)):
             dataTxt = pd.read_csv(files[i], names=['x', 'y'], header=None)
             dataX = dataTxt['x']
-            dti = abs(np.double(dataX[len(dataX)-1]-dataX[len(dataX)-2]))*1e-9
+            dti = abs(np.double(dataX[len(dataX)-1]-dataX[len(dataX)-2]))
             self.callingObj.dti.append(dti)
             self.callingObj.frq.append(int(1/dti))
             self.callingObj.dataIn.append(dataTxt['y'])

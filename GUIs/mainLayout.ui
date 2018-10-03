@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1022</width>
+    <width>1093</width>
     <height>667</height>
    </rect>
   </property>
@@ -325,7 +325,7 @@
      </layout>
     </item>
     <item>
-     <widget class="PlotWidget" name="plot">
+     <widget class="PlotWidget" name="mainPlotWidget">
       <property name="baseSize">
        <size>
         <width>0</width>
@@ -342,8 +342,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1022</width>
-     <height>21</height>
+     <width>1093</width>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

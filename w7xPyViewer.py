@@ -75,6 +75,7 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
 
         pg.setConfigOption('background', 'w')
         pg.setConfigOption('foreground', 'k')
+        pg.setConfigOption('leftButtonPan', False)
         self.files = []
         self.dataIn = []
         self.dti = []
@@ -114,7 +115,7 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
             w7xSpectr.drawSpectrogram()
 
     def clearAll(self):
-        self.plot.clear()
+        self.mainPlotWidget.clear()
         self.files.clear()
         self.dataIn.clear()
         self.dti.clear()

@@ -20,7 +20,7 @@ class SliderWidget(QWidget, QGraphicsWidget):
         self.horizontalLayout.addItem(spacerItem1)
         self.verticalLayout.addLayout(self.horizontalLayout)
 
-        self.setMaximumWidth(70)
+        self.setMaximumWidth(80)
 
         self.resize(self.sizeHint())
 
