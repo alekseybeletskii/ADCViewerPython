@@ -277,11 +277,23 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.hist.setLevels(self.SxxMin, self.SxxMax)
         # This gradient is roughly comparable to the gradient used by Matplotlib
         # You can adjust it and then save it using hist.gradient.saveState()
+        # self.hist.gradient.restoreState(
+        #     {'mode': 'rgb',
+        #      'ticks': [(0.5, (0, 182, 188, 255)),
+        #                (1.0, (246, 111, 0, 255)),
+        #                (0.0, (75, 0, 113, 255))]})
+
+
         self.hist.gradient.restoreState(
             {'mode': 'rgb',
-             'ticks': [(0.5, (0, 182, 188, 255)),
-                       (1.0, (246, 111, 0, 255)),
-                       (0.0, (75, 0, 113, 255))]})
+             'ticks': [(0.5, (0, 160, 160, 255)),
+                       (1.0, (255, 255, 255, 255)),
+                       (0.0, (255, 255, 255, 255))]})
+
+
+
+
+
         # self.Sxx contains the amplitude for each pixel
         img.setImage(self.Sxx)
         # Scale the X and Y Axis to time and frequency (standard is pixels)
@@ -315,12 +327,19 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         # plt.show()
 
     def exitApp(self):
-            sys.exit()
-            # self.close()
+            # sys.exit()
+            self.close()
 
     def closeEvent(self, event):
-        event.accept()
-        sys.exit()
+        # event.accept()
+        # sys.exit()
+
+        if __name__ == '__main__':
+                event.accept()
+                sys.exit()
+        else:
+            event.accept()
+
         # close = QtWidgets.QMessageBox()
         # close.setWindowTitle('closing...')
         # close.setText("Sure?!")

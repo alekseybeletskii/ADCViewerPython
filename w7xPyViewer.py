@@ -113,6 +113,7 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
             w7xSpectr.show()
             w7xSpectr.setDataToSpectrogram(sig[self.xLeft:self.xRight])
             w7xSpectr.drawSpectrogram()
+        self.clearAll()
 
     def clearAll(self):
         self.mainPlotWidget.clear()

@@ -34,8 +34,8 @@ class SliderWidget(QWidget, QGraphicsWidget):
         self.horizontalLayoutBtn = QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalSliderLayoutBtn")
         self.horizontalLayoutBtn.addWidget(self.appendPeaks_btn)
-        self.horizontalLayoutBtn.addWidget(self.removePeaks_btn)
         self.horizontalLayoutBtn.addWidget(self.drawAllPeaks_btn)
+        self.horizontalLayoutBtn.addWidget(self.removePeaks_btn)
         self.verticalLayout.addItem(self.horizontalLayoutBtn)
 
 

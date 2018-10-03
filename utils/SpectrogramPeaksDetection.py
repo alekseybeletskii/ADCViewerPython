@@ -23,9 +23,13 @@ class SpectrogramPeaksDetection:
         def appendPeaksToList(self):
             self.callingObj.allPeaksXPoints.extend(self.peaksX)
             self.callingObj.allPeaksYPoints.extend(self.peaksY)
+            self.drawPeaks([], [], "k")
         def removePeaks(self):
             self.callingObj.allPeaksXPoints.clear()
             self.callingObj.allPeaksYPoints.clear()
+            self.peaksX.clear()
+            self.peaksY.clear()
+            self.drawPeaks([], [], "k")
         def drawAllPeaks(self):
             self.drawPeaks(self.callingObj.allPeaksXPoints, self.callingObj.allPeaksYPoints, "k")
 
@@ -93,5 +97,5 @@ class SpectrogramPeaksDetection:
                 self.callingObj.peaksCurve = pg.PlotDataItem()
                 self.callingObj.spectrPlot.addItem(self.callingObj.peaksCurve)
                 self.callingObj.peaksCurve.setData(x, y,
-                                                   pen=None, name="Red curve", symbol='o', symbolBrush="r",
-                                                   symbolPen=pen, symbolSize=3)
+                                                   pen=None, name="Red curve", symbol='o', symbolBrush=pen,
+                                                   symbolPen=pen, symbolSize=2)
