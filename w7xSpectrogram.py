@@ -157,15 +157,17 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
 
         self.horizontalLayout_spectr.addWidget(self.peakSlider)
 
-
-
         self.peaksCurve = pg.PlotDataItem()
+
+        self.allPeaksXPoints = []
+        self.allPeaksYPoints = []
+
+        self.spectrPeaksDetection = SpectrogramPeaksDetection(self)
 
 
     def findSpectroPeaks(self):
 
-        spectrPeaksDetection = SpectrogramPeaksDetection(self)
-        spectrPeaksDetection.findSpectroPeaks()
+        self.spectrPeaksDetection.findSpectroPeaks()
 
 
     def clearAll(self):
@@ -173,6 +175,8 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.Sxx = np.ndarray
         self.SxxMax = None
         self.SxxMin = None
+        self.allPeaksXPoints = []
+        self.allPeaksYPoints = []
 
 
     def setDefaultParams(self):

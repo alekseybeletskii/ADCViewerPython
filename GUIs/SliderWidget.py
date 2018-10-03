@@ -1,24 +1,46 @@
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QGraphicsWidget, QApplication, QHBoxLayout, QLabel, QSizePolicy, QSlider, QSpacerItem, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QGraphicsWidget, QApplication, QHBoxLayout, QLabel, QSizePolicy, QSlider, QSpacerItem, QVBoxLayout, QWidget, QPushButton
 
 
 class SliderWidget(QWidget, QGraphicsWidget):
     def __init__(self, minimum, maximum, parent=None):
         super(SliderWidget, self).__init__(parent=parent)
         self.verticalLayout = QVBoxLayout(self)
+        self.verticalLayout.setObjectName("verticalSliderLayout")
         self.label = QLabel(self)
         self.verticalLayout.addWidget(self.label)
         self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalSliderLayout")
         spacerItem = QSpacerItem(0, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem)
+        # self.horizontalLayout.addItem(spacerItem)
         self.slider = QSlider(self)
         self.slider.setOrientation(Qt.Vertical)
         self.horizontalLayout.addWidget(self.slider)
         spacerItem1 = QSpacerItem(0, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem1)
-        self.verticalLayout.addLayout(self.horizontalLayout)
+        # self.horizontalLayout.addItem(spacerItem1)
+        self.verticalLayout.addItem(self.horizontalLayout)
+
+        self.appendPeaks_btn = QPushButton(self)
+        self.appendPeaks_btn.setText('+')
+        self.appendPeaks_btn.setMaximumSize(15, 15)
+        self.removePeaks_btn = QPushButton(self)
+        self.removePeaks_btn.setText('x')
+        self.removePeaks_btn.setMaximumSize(15, 15)
+        self.drawAllPeaks_btn = QPushButton(self)
+        self.drawAllPeaks_btn.setText('d')
+        self.drawAllPeaks_btn.setMaximumSize(15, 15)
+        self.horizontalLayoutBtn = QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalSliderLayoutBtn")
+        self.horizontalLayoutBtn.addWidget(self.appendPeaks_btn)
+        self.horizontalLayoutBtn.addWidget(self.removePeaks_btn)
+        self.horizontalLayoutBtn.addWidget(self.drawAllPeaks_btn)
+        self.verticalLayout.addItem(self.horizontalLayoutBtn)
+
+
+
+
 
         self.setMaximumWidth(80)
 
