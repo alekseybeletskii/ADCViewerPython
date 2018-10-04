@@ -104,7 +104,6 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.spectrPlot = None
         self.f = None
         self.t = None
-
         self.SxxMax = None
         self.SxxMin = None
 
