@@ -59,19 +59,13 @@ import sys
 
 import numpy as np
 
-# import pandas as pd
-
-# import MDSplus as m
-
 import pyqtgraph as pg
 
 from scipy import signal
-# import matplotlib.pyplot as plt
 import pyqtgraph
 from utils.TestDataGenerator import TestDataGenerator
 from utils.SpectrogramPeaksDetection import SpectrogramPeaksDetection
 
-# from scipy.signal import savgol_filter
 from GUIs.SliderWidget import SliderWidget
 from utils.SpectgrogramSettings import SpectgrogramSettings
 
@@ -86,52 +80,12 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         pg.setConfigOptions(imageAxisOrder='row-major')
         pg.setConfigOption('leftButtonPan', False)
 
-        # nfft : int, optional.
-        #  Length of the FFT used, if a zero padded FFT is desired. If None, the FFT length is nperseg. Defaults to None.
-        self.nfft = 256
-        # fs : float, optional.
-        #  Sampling frequency of the x time series. Defaults to 1.0.
-        self.fs = 1000
-        # window : str or tuple or array_like, optional.
-        #  Desired window to use. Defaults to a Tukey window with shape parameter of 0.25
-        # Window types: boxcar, triang, blackman, hamming, hann, bartlett, flattop, parzen,
-        # bohman, blackmanharris, nuttall, barthann (and some others that needs parameters)
-        # self.window = ''.join(('tukey', '0.25'))
-        self.window = 'hamming'
-        # nperseg : int, optional.
-        #  Length of each segment. Defaults to None, but if window is str or tuple,
-        # is set to 256, and if window is array_like, is set to the length of the window.
-        self.nperseg = 256
-        # noverlap : int, optional.
-        #  Number of points to overlap between segments. If None, noverlap = nperseg // 8. Defaults to None.
-        self.noverlap = 32
-        # detrend : str or function or False, optional
-        # Specifies how to detrend each segment. If detrend is a string, it is passed as the type argument
-        # to the detrend function. If it is a function, it takes a segment and returns a detrended segment.
-        # If detrend is False, no detrending is done. Defaults to ‘constant’.
-        #  If type == 'constant', only the mean of data is subtracted.
-        self.detrend = False
-        # scaling : { ‘density’, ‘spectrum’ }, optional
-        # Selects between computing the power spectral density (‘density’)
-        # where self.Sxx has units of V**2/Hz and computing the power spectrum (‘spectrum’) where self.Sxx has units of V**2,
-        # if x is measured in V and fs is measured in Hz. Defaults to ‘density’.
-        self.scaling = 'density'
-        # mode : str, optional
-        # Defines what kind of return values are expected. Options are [‘psd’, ‘complex’, ‘magnitude’, ‘angle’, ‘phase’].
-        # ‘complex’ is equivalent to the output of stft with no padding or boundary extension.
-        # ‘magnitude’ returns the absolute magnitude of the STFT. ‘angle’ and ‘phase’ return the complex angle of the STFT,
-        #  with and without unwrapping, respectively.
-        self.mode = 'psd'
-
-         # ‘linear’ is no scaling
-        # 'log' is 10*np.log10(self.Sxx)
-        # 'sqrt' is np.sqrt(self.Sxx)
-        self.scale = 'linear'
 
         self.setupUi(self)  # This is defined in design.py file automatically
         # It sets up layout and widgets that are defined
 
-        # self.resetParams_ui.clicked.connect(self.setDefaultParams)
+        self.spectrogramSettingsWidget = SpectgrogramSettings(self,self)
+        self.settings = self.spectrogramSettingsWidget.setDefaultSettings()
 
         self.dataToSpectrogram = w7xSpectrogram.generateTestData()
 
@@ -168,7 +122,7 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.spectrPlot = self.win.addPlot()
 
         # a histogram with which to control the gradient of the image
-        self.hist = pyqtgraph.HistogramLUTItem(fillHistogram=False)
+        self.hist = pg.HistogramLUTItem(fillHistogram=False)
         # If don't add the histogram to the window, it stays invisible
         self.win.addItem(self.hist)
         self.hotkey = {}
@@ -179,11 +133,7 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.hotkey[key_name].activated.connect(func)
 
     def settingsUi(self):
-        spectrSettings = SpectgrogramSettings(self)
-        spectrSettings.show()
-
-
-
+        self.spectrogramSettingsWidget.show()
 
     def updatePeakSliderRange(self):
         self.spectrPeaksDetection.findSpectroLimits()
@@ -202,36 +152,6 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.allPeaksXPoints = []
         self.allPeaksYPoints = []
 
-
-    def setDefaultParams(self):
-        self.nfft = 1024
-        self.nfft_ui.setText('1024')
-        self.fs = 500
-        self.fs_kHz_ui.setText('500')
-        self.window = 'hamming'
-        self.window_ui.setText('hamming')
-        self.nperseg = 1024
-        self.nperseg_ui.setText('1024')
-        self.noverlap = 500
-        self.noverlap_ui.setText('500')
-        self.detrend = 'constant'
-        self.detrend_ui.setText('constant')
-        self.scaling = 'density'
-        self.scaling_ui.setText('density')
-        self.mode = 'psd'
-        self.mode_ui.setText('psd')
-        self.scaleLinLogSqrt.setCurrentText('linear')
-    def setParamsValues(self):
-        self.nfft = int(self.nfft_ui.text())
-        self.fs = float(self.fs_kHz_ui.text())*1000.0
-        # self.window = make_tuple(self.window_ui.text())
-        self.window = self.window_ui.text()
-        self.nperseg = int(self.nperseg_ui.text())
-        self.noverlap = int(self.noverlap_ui.text())
-        detrend = self.detrend_ui.text()
-        self.detrend = False if detrend.casefold() =='false' else detrend
-        self.scaling = self.scaling_ui.text()
-        self.mode = self.mode_ui.text()
     def generateData(self):
         testDataGenerator = TestDataGenerator(self)
         self.dataToSpectrogram = testDataGenerator.nightingaleSongSpectr()
@@ -239,56 +159,42 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
     def setDataToSpectrogram(self,signalIn):
         self.dataToSpectrogram = signalIn
     # def drawSpectrogram(self,signalIn):
-    def drawSpectrogram(self):
-        # signalIn = self.generateData()
 
-        # self.spectrogram_UI.clear()
+    def drawSpectrogram(self):
 
         self.peakSlider.slider.disconnect()
 
-        # self.spectrPlot = self.win.addPlot()
+        self.f, self.t, self.Sxx = signal.spectrogram(self.dataToSpectrogram,
+                                                      nfft=self.settings["nfft"],
+                                                      fs= self.settings["fs_kHz"]*1000.0,
+                                                      window = self.settings["window"],
+                                                      nperseg=self.settings["nperseg"],
+                                                      noverlap=self.settings["noverlap"],
+                                                      detrend=self.settings["detrend"],
+                                                      scaling=self.settings["scaling"],
+                                                      mode=self.settings["mode"])
 
-        self.setParamsValues()
-        # f, t, self.Sxx = signal.spectrogram(self.generateData(), 10000)
-
-        self.f, self.t, self.Sxx = signal.spectrogram(self.dataToSpectrogram, fs=self.fs, window = self.window, nperseg=self.nperseg, noverlap=self.noverlap, nfft=self.nfft,
-                                                      detrend=self.detrend, scaling=self.scaling, mode=self.mode)
-
-
-
-        if str(self.scaleLinLogSqrt.currentText()).casefold() == 'log10':
+        if str(self.settings["scaleLinLogSqrt"]).casefold() == 'log10':
             self.Sxx = 10 * np.log10(self.Sxx)
-        elif str(self.scaleLinLogSqrt.currentText()).casefold() == 'sqrt':
+        elif str(self.settings["scaleLinLogSqrt"]).casefold() == 'sqrt':
             self.Sxx = np.sqrt(self.Sxx)
 
         self.SxxMin = np.min(self.Sxx)
         self.SxxMax = np.max(self.Sxx)
 
-
-        # pyqtgraph.mkQApp()
-        # win = pyqtgraph.GraphicsLayoutWidget()
-        # A plot area (ViewBox + axes) for displaying the image
-
-        # Item for displaying image data
         img = pyqtgraph.ImageItem()
 
         self.spectrPlot.addItem(img)
-
-
         # x =  np.linspace(0.01,0.05,10)
         # y =  np.linspace(100000,200000,10)
         # self.spectrPlot.plot(x, y, pen=pg.mkPen(color=(255,0,0), width=5), name="Red curve", symbol='o' , symbolBrush = "k", symbolPen = "k", symbolSize=18)
 
-
-
-        # Link the histogram to the image
         self.hist.setImageItem(img)
 
-        # Show the window
-        # self.show()
-        # Fit the min and max levels of the histogram to the data available
-
-        self.hist.setLevels(self.SxxMin, self.SxxMax)
+        if str(self.settings["scaleLinLogSqrt"]).casefold() == 'linear':
+            self.hist.setLevels(self.SxxMin, self.SxxMax)
+        if str(self.settings["scaleLinLogSqrt"]).casefold() == 'sqrt':
+            self.hist.setLevels(self.SxxMin, self.SxxMax*0.3)
         # This gradient is roughly comparable to the gradient used by Matplotlib
         # You can adjust it and then save it using hist.gradient.saveState()
         # self.hist.gradient.restoreState(
@@ -303,10 +209,6 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
              'ticks': [(0.5, (0, 160, 160, 255)),
                        (1.0, (255, 255, 255, 255)),
                        (0.0, (255, 255, 255, 255))]})
-
-
-
-
 
         # self.Sxx contains the amplitude for each pixel
         img.setImage(self.Sxx)
@@ -330,15 +232,6 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         self.peakSlider.setSliderMaxMin(self.SxxMax, self.SxxMin)
         self.peakSlider.slider.setValue(self.peakSlider.slider.maximum())
         self.peakSlider.slider.valueChanged.connect(self.findSpectroPeaks)
-
-
-
-        # Plotting with Matplotlib in comparison
-        # plt.pcolormesh(t, f, self.Sxx)
-        # plt.ylabel('Frequency [Hz]')
-        # plt.xlabel('Time [sec]')
-        # plt.colorbar()
-        # plt.show()
 
     def exitApp(self):
             # sys.exit()
