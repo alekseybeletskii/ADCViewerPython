@@ -1,6 +1,7 @@
 import os.path as ospath
 import numpy as np
-
+import pyqtgraph as pg
+from datetime import datetime
 class ExportToTxt:
     def __init__(self, callingObj):
 
@@ -46,3 +47,32 @@ class ExportToTxt:
             # df.to_csv(filename, header=None, index=None)
 
         print('data exported to csv files, time separated')
+
+
+    def savePlotTofile(self, x, y):
+
+        here = ospath.dirname(ospath.realpath(__file__))
+        subdir = "exported"
+        filename = datetime.utcnow().strftime('%Y-%m-%d-%H-%M-%S') + ".peaks"
+        filepath = ospath.join(here,'..', subdir, filename.replace(":","-"))
+        # peaksX = self.callingObj.allPeaksXPoints
+        # peaksY = self.callingObj.allPeaksYPoints
+
+        xy = np.array([x, y]).T
+        # xy.sort(axis=0)
+        # xy[np.argsort(xy[:, 0])]
+
+
+        xy = xy[xy[:, 0].argsort()]
+
+        # np.savetxt(filepath, np.array([x, y]).T, delimiter=', ')
+        np.savetxt(filepath, xy, delimiter=', ')
+
+        # pg.plot(np.arange(len(y)),y)
+        # pg.plot(xy[:,0],xy[:,1],pen='r',  symbol='o' )
+
+
+
+        print('data exported to utcnow.peaks file')
+
+

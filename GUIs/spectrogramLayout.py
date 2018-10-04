@@ -76,6 +76,7 @@ class Ui_MainWindow(object):
         self.actionOpen_mdsplus_QOC = QtWidgets.QAction(MainWindow)
         self.actionOpen_mdsplus_QOC.setObjectName("actionOpen_mdsplus_QOC")
         self.actionClearAll = QtWidgets.QAction(MainWindow)
+        self.actionClearAll.setEnabled(False)
         self.actionClearAll.setObjectName("actionClearAll")
         self.menuFile.addAction(self.actionGenerateTestData)
         self.menuFile.addAction(self.actionClearAll)

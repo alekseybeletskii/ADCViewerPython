@@ -1,6 +1,7 @@
 from skimage.feature.peak import peak_local_max
 import numpy as np
 import pyqtgraph as pg
+from  importExport.ExportToTxt import ExportToTxt
 from utils.GetDataLimits import GetDataLimits
 
 
@@ -19,7 +20,11 @@ class SpectrogramPeaksDetection:
             self.callingObj.peakSlider.appendPeaks_btn.clicked.connect(self.appendPeaksToList)
             self.callingObj.peakSlider.removePeaks_btn.clicked.connect(self.removePeaks)
             self.callingObj.peakSlider.drawAllPeaks_btn.clicked.connect(self.drawAllPeaks)
-            # self.drawSpectrogramUI.clicked.connect(self.drawSpectrogram)
+            self.callingObj.peakSlider.saveAllPeaks_btn.clicked.connect(self.saveAllPeaksToFile)
+
+        def saveAllPeaksToFile(self):
+            exportToFile = ExportToTxt(self.callingObj)
+            exportToFile.savePlotTofile(self.callingObj.allPeaksXPoints, self.callingObj.allPeaksYPoints)
         def appendPeaksToList(self):
             self.callingObj.allPeaksXPoints.extend(self.peaksX)
             self.callingObj.allPeaksYPoints.extend(self.peaksY)

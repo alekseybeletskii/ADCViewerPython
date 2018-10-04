@@ -1,11 +1,11 @@
 {
     "nfft": 1024,
-    "fs_kHz": 100.0,
+    "fs_kHz": 500.0,
     "window": "hamming",
     "nperseg": 1024,
     "noverlap": 900,
     "detrend": "constant",
     "scaling": "density",
     "mode": "psd",
-    "scaleLinLogSqrt": "log10"
+    "scaleLinLogSqrt": "sqrt"
 }

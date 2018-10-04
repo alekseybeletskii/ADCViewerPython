@@ -169,6 +169,9 @@
    </property>
   </action>
   <action name="actionClearAll">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>ClearAll</string>
    </property>
