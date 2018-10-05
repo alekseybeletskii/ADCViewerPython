@@ -1,6 +1,7 @@
 #general
 *.zip
 exported/
+settings/
 
 
 .idea/

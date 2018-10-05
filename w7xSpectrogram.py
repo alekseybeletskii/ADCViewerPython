@@ -85,7 +85,8 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         # It sets up layout and widgets that are defined
 
         self.spectrogramSettingsWidget = SpectgrogramSettings(self,self)
-        self.settings = self.spectrogramSettingsWidget.setDefaultSettings()
+        self.settings = {}
+        self.spectrogramSettingsWidget.setDefaultSettings()
 
         self.dataToSpectrogram = w7xSpectrogram.generateTestData()
 
@@ -184,16 +185,30 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         img = pyqtgraph.ImageItem()
 
         self.spectrPlot.addItem(img)
+
+
+        # self.Sxx contains the amplitude for each pixel
+        img.setImage(self.Sxx)
+        # Scale the X and Y Axis to time and frequency (standard is pixels)
+        img.scale(self.t[-1] / np.size(self.Sxx, axis=1),
+                  self.f[-1] / np.size(self.Sxx, axis=0))
+
+
         # x =  np.linspace(0.01,0.05,10)
         # y =  np.linspace(100000,200000,10)
         # self.spectrPlot.plot(x, y, pen=pg.mkPen(color=(255,0,0), width=5), name="Red curve", symbol='o' , symbolBrush = "k", symbolPen = "k", symbolSize=18)
 
         self.hist.setImageItem(img)
-
+        tickMiddle = 0.5
         if str(self.settings["scaleLinLogSqrt"]).casefold() == 'linear':
             self.hist.setLevels(self.SxxMin, self.SxxMax)
         if str(self.settings["scaleLinLogSqrt"]).casefold() == 'sqrt':
-            self.hist.setLevels(self.SxxMin, self.SxxMax*0.3)
+            self.hist.setLevels(self.SxxMin, self.SxxMax)
+            tickMiddle = 0.8
+
+        if str(self.settings["scaleLinLogSqrt"]).casefold() == 'log10':
+            self.hist.setLevels(self.SxxMin, self.SxxMax)
+
         # This gradient is roughly comparable to the gradient used by Matplotlib
         # You can adjust it and then save it using hist.gradient.saveState()
         # self.hist.gradient.restoreState(
@@ -202,18 +217,24 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         #                (1.0, (246, 111, 0, 255)),
         #                (0.0, (75, 0, 113, 255))]})
 
+        # self.hist.gradient.restoreState(
+        #     {'mode': 'rgb',
+        #      'ticks': [(tickMiddle, (0, 160, 160, 255)),
+        #                (1.0, (255, 255, 255, 255)),
+        #                (0.0, (255, 255, 255, 255))]})
 
-        self.hist.gradient.restoreState(
-            {'mode': 'rgb',
-             'ticks': [(0.5, (0, 160, 160, 255)),
-                       (1.0, (255, 255, 255, 255)),
-                       (0.0, (255, 255, 255, 255))]})
+        # self.hist.gradient.restoreState(
+        #     {'mode': 'rgb',
+        #      'ticks': [(tickMiddle, (0, 160, 160, 255)),
+        #
+        #                (0.0, (255, 255, 255, 255))]})
+        self.hist.gradient.restoreState(self.settings["histoGradient"])
 
-        # self.Sxx contains the amplitude for each pixel
-        img.setImage(self.Sxx)
-        # Scale the X and Y Axis to time and frequency (standard is pixels)
-        img.scale(self.t[-1] / np.size(self.Sxx, axis=1),
-                  self.f[-1] / np.size(self.Sxx, axis=0))
+
+        # self.hist.setHistogramRange(0,1)
+
+
+
         # Limit panning/zooming to the spectrogram
         self.spectrPlot.setLimits(xMin=0, xMax=self.t[-1], yMin=0, yMax=self.f[-1])
         # Add labels to the axis

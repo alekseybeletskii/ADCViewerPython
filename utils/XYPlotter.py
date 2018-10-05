@@ -58,3 +58,7 @@ class XYPlotter:
     #     # axY = self.plot.plotItem.getAxis('left')
     #     print('x axis range: {}'.format(axX.range))  # <------- get range of x axis
     #     # print('y axis range: {}'.format(axY.range))  # <------- get range of y axis
+
+    # x =  np.linspace(0.01,0.05,10)
+    # y =  np.linspace(100000,200000,10)
+    # self.spectrPlot.plot(x, y, pen=pg.mkPen(color=(255,0,0), width=5), name="Red curve", symbol='o' , symbolBrush = "k", symbolPen = "k", symbolSize=18)
