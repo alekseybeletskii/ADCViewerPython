@@ -69,7 +69,7 @@ from utils.SpectrogramPeaksDetection import SpectrogramPeaksDetection
 from GUIs.SliderWidget import SliderWidget
 from utils.SpectgrogramSettings import SpectgrogramSettings
 
-class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
+class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
 
     def __init__(self, parent):
@@ -199,15 +199,13 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_MainWindow):
         # self.spectrPlot.plot(x, y, pen=pg.mkPen(color=(255,0,0), width=5), name="Red curve", symbol='o' , symbolBrush = "k", symbolPen = "k", symbolSize=18)
 
         self.hist.setImageItem(img)
-        tickMiddle = 0.5
-        if str(self.settings["scaleLinLogSqrt"]).casefold() == 'linear':
-            self.hist.setLevels(self.SxxMin, self.SxxMax)
-        if str(self.settings["scaleLinLogSqrt"]).casefold() == 'sqrt':
-            self.hist.setLevels(self.SxxMin, self.SxxMax)
-            tickMiddle = 0.8
-
-        if str(self.settings["scaleLinLogSqrt"]).casefold() == 'log10':
-            self.hist.setLevels(self.SxxMin, self.SxxMax)
+        self.hist.setLevels(self.SxxMin, self.SxxMax)
+        # if str(self.settings["scaleLinLogSqrt"]).casefold() == 'linear':
+        #     self.hist.setLevels(self.SxxMin, self.SxxMax)
+        # if str(self.settings["scaleLinLogSqrt"]).casefold() == 'sqrt':
+        #     self.hist.setLevels(self.SxxMin, self.SxxMax)
+        # if str(self.settings["scaleLinLogSqrt"]).casefold() == 'log10':
+        #     self.hist.setLevels(self.SxxMin, self.SxxMax)
 
         # This gradient is roughly comparable to the gradient used by Matplotlib
         # You can adjust it and then save it using hist.gradient.saveState()

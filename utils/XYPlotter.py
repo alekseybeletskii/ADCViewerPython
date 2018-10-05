@@ -13,10 +13,10 @@ class XYPlotter:
         self.callingObj.mainPlotWidget.clear()
         for i in range(len(self.callingObj.dataIn)):
             signal = self.callingObj.dataIn[i]
+            dti = self.callingObj.dti[i]
             # time = np.arange(len(signal))
             # time = self.callingObj.dti[i]
-            time = np.arange(0, (len(signal)) * self.callingObj.dti[i], self.callingObj.dti[i])
-            dti = self.callingObj.dti[i]
+            time = np.arange(0, (len(signal)) * dti, dti) if len(dti)==1 else dti
             self.nextPen = self.nextPen + 1
             # self.callingObj.mainPlotWidget.plot(time, signal, pen=None, symbol='t' + str(i + 1), symbolBrush=self.nextPen,
             #                symbolPen=self.nextPen + 3, symbolSize=10 + 3 * i)

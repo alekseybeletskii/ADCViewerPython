@@ -60,7 +60,7 @@ class ImportFromTxt(QtWidgets.QMainWindow):
        super().__init__(*args, **kwargs)
        self.callingObj = callingObj
 
-   def openCsvTxt(self):
+   def openCsvTxt_dt(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
@@ -73,6 +73,23 @@ class ImportFromTxt(QtWidgets.QMainWindow):
             dti = abs(np.double(dataX[len(dataX)-1]-dataX[len(dataX)-2]))
             self.callingObj.dti.append(dti)
             self.callingObj.frq.append(int(1/dti))
+            self.callingObj.dataIn.append(dataTxt['y'])
+            filename_and_ext = path.basename(files[i])
+            filename, _ = path.splitext(filename_and_ext)
+            self.callingObj.channelsList.append(filename)
+
+   def  openCsvTxt_fullX(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
+        files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, None, "QFileDialog.getOpenFileNames()", "All Files (*)",
+                                                     "All Files (*)", options=options)
+
+        for i in range(len(files)):
+            dataTxt = pd.read_csv(files[i], names=['x', 'y'], header=None)
+            dataX = dataTxt['x']
+            self.callingObj.dti.append(dataX)
+            self.callingObj.frq.append(int(1))
             self.callingObj.dataIn.append(dataTxt['y'])
             filename_and_ext = path.basename(files[i])
             filename, _ = path.splitext(filename_and_ext)

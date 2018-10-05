@@ -352,7 +352,8 @@
     </property>
     <addaction name="actionOpen_mdsplus_QXT"/>
     <addaction name="actionOpen_mdsplus_QOC"/>
-    <addaction name="actionOpen_csv"/>
+    <addaction name="actionOpen_csv_dt"/>
+    <addaction name="actionOpen_csv_fullX"/>
     <addaction name="separator"/>
     <addaction name="actionExport_time_to_separate_file"/>
     <addaction name="actionExport_to_csv"/>
@@ -364,9 +365,9 @@
    </widget>
    <addaction name="menuFile"/>
   </widget>
-  <action name="actionOpen_csv">
+  <action name="actionOpen_csv_dt">
    <property name="text">
-    <string>Open_csv</string>
+    <string>Open_csv_dt</string>
    </property>
   </action>
   <action name="actionClear">
@@ -412,6 +413,11 @@
   <action name="actionOpen_mdsplus_QOC">
    <property name="text">
     <string>Open_mdsplus_QOC</string>
+   </property>
+  </action>
+  <action name="actionOpen_csv_fullX">
+   <property name="text">
+    <string>Open_csv_fullX</string>
    </property>
   </action>
  </widget>

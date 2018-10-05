@@ -84,7 +84,8 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         self.nextPen = 0
         self.setupUi(self)  # This is defined in design.py file automatically
         # It sets up layout and widgets that are defined
-        self.actionOpen_csv.triggered.connect(self.openCsv)
+        self.actionOpen_csv_dt.triggered.connect(self.openCsv_dt)
+        self.actionOpen_csv_fullX.triggered.connect(self.openCsv_fullX)
         self.actionOpen_mdsplus_QXT.triggered.connect(self.openMdsplusQXT)
         self.actionOpen_mdsplus_QOC.triggered.connect(self.openMdsplusQOC)
         self.actionDrawPlots.triggered.connect(self.drawPlots)
@@ -127,9 +128,12 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         self.xRight=0
 
 
-    def openCsv(self):
+    def openCsv_dt(self):
         CsvTxtR = ImportFromTxt(self)
-        CsvTxtR.openCsvTxt()
+        CsvTxtR.openCsvTxt_dt()
+    def openCsv_fullX(self):
+        CsvTxtR = ImportFromTxt(self)
+        CsvTxtR.openCsvTxt_fullX()
 
     def openMdsplusQXT(self):
         openQxt = ImportFromMdsplus(self)
