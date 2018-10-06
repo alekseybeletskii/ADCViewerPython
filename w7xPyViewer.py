@@ -98,15 +98,22 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         self.xRight=0
         self.drawUI.clicked.connect(self.drawPlots)
         self.drawSpectrogramUI.clicked.connect(self.drawSpectrogram)
-        self.resample_btn.clicked.connect(self.resampleData)
+        self.resample_btn.clicked.connect(self.resampleDataDecimation)
         self.subtractSGF.clicked.connect(self.subtractSGFilter)
         self.replaceWithSGF.clicked.connect(self.replaceWithSGFilter)
 
-    def resampleData(self):
+    def resampleDataResampy(self):
         resampler = DataResample(self)
         # print('np.double(self.NewSamplingRate_kHz.text())*1000', np.double(self.NewSamplingRate_kHz.text())*1000)
         newSampleRateHz = int(np.double(self.NewSamplingRate_kHz.text())*1000) if np.double(self.NewSamplingRate_kHz.text())>0.01 else 1000000
-        resampler.downSample(newSampleRateHz)
+        resampler.downSampleResampy(newSampleRateHz)
+
+    def resampleDataDecimation(self):
+        resampler = DataResample(self)
+        newSampleRateHz = int(np.double(self.NewSamplingRate_kHz.text())*1000) if np.double(self.NewSamplingRate_kHz.text())>0.01 else 1000000
+        resampler.downSampleDecimate(newSampleRateHz)
+
+
 
     def drawSpectrogram(self):
         for sig in self.dataIn:
