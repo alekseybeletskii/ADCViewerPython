@@ -1,15 +1,16 @@
+import numpy as np
 class GetDataLimits:
     dataLimits = {}
 
     @classmethod
     def getDataLimitsIndexes(cls, axIn, x):
         cls.dataLimits = {}
-        if type(x) is not list :
+        if type(x) is not np.ndarray :
             cls.dataLimits["minIndex"] = int(axIn.range[0]/x)
             cls.dataLimits["maxIndex"] = int(axIn.range[1]/x)
-        elif type(x) is list:
+        elif type(x) is np.ndarray:
             i = 0
-            while i < len(x):
+            while i < x.size:
                 if x[i] > axIn.range[0]:
                    cls.dataLimits["minIndex"] = i
                    break

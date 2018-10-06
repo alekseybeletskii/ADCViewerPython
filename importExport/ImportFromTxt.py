@@ -61,6 +61,8 @@ class ImportFromTxt(QtWidgets.QMainWindow):
        self.callingObj = callingObj
 
    def openCsvTxt_dt(self):
+        self.callingObj.clearAll()
+
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
@@ -73,12 +75,16 @@ class ImportFromTxt(QtWidgets.QMainWindow):
             dti = abs(np.double(dataX[len(dataX)-1]-dataX[len(dataX)-2]))
             self.callingObj.dti.append(dti)
             self.callingObj.frq.append(int(1/dti))
-            self.callingObj.dataIn.append(dataTxt['y'])
+            self.callingObj.dataIn.append(np.asarray(dataTxt['y']))
             filename_and_ext = path.basename(files[i])
             filename, _ = path.splitext(filename_and_ext)
             self.callingObj.channelsList.append(filename)
 
+            print(type(dataX))
+
    def  openCsvTxt_fullX(self):
+        self.callingObj.clearAll()
+
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
@@ -87,10 +93,13 @@ class ImportFromTxt(QtWidgets.QMainWindow):
 
         for i in range(len(files)):
             dataTxt = pd.read_csv(files[i], names=['x', 'y'], header=None)
-            dataX = dataTxt['x']
+            dataX = np.asarray(dataTxt['x'])
+
+            print(type(dataX))
+
             self.callingObj.dti.append(dataX)
             self.callingObj.frq.append(int(1))
-            self.callingObj.dataIn.append(dataTxt['y'])
+            self.callingObj.dataIn.append(np.asarray(dataTxt['y']))
             filename_and_ext = path.basename(files[i])
             filename, _ = path.splitext(filename_and_ext)
             self.callingObj.channelsList.append(filename)

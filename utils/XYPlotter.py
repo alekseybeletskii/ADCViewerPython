@@ -16,7 +16,11 @@ class XYPlotter:
             dti = self.callingObj.dti[i]
             # time = np.arange(len(signal))
             # time = self.callingObj.dti[i]
-            time = np.arange(0, (len(signal)) * dti, dti) if len(dti)==1 else dti
+
+
+            # time = np.arange(0, (len(signal)) * dti, dti) if len(self.callingObj.dti[i])==1 else dti
+            time = np.arange(0, (signal.size) * dti, dti) if self.callingObj.dti[i].size==1 else dti
+
             self.nextPen = self.nextPen + 1
             # self.callingObj.mainPlotWidget.plot(time, signal, pen=None, symbol='t' + str(i + 1), symbolBrush=self.nextPen,
             #                symbolPen=self.nextPen + 3, symbolSize=10 + 3 * i)

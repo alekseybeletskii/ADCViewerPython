@@ -4,8 +4,8 @@ import MDSplus as mdspl
 class ImportFromMdsplus:
     def __init__(self, callingObj):
         self.callingObj = callingObj
-        # self.mdsConnection = mdspl.Connection('mds-data-1')
-        self.mdsConnection = mdspl.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
+        self.mdsConnection = mdspl.Connection('mds-data-1')
+        # self.mdsConnection = mdspl.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
     
     def openQXT(self):
         self.callingObj.clearAll()
