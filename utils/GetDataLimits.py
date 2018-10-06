@@ -4,10 +4,10 @@ class GetDataLimits:
     @classmethod
     def getDataLimitsIndexes(cls, axIn, x):
         cls.dataLimits = {}
-        if len(x) == 1:
+        if type(x) is not list :
             cls.dataLimits["minIndex"] = int(axIn.range[0]/x)
             cls.dataLimits["maxIndex"] = int(axIn.range[1]/x)
-        else:
+        elif type(x) is list:
             i = 0
             while i < len(x):
                 if x[i] > axIn.range[0]:

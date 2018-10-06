@@ -37,8 +37,11 @@ class TestDataGenerator:
 
     def nightingaleSongSpectr(self):
         from scipy.io import wavfile
+        # http://www.orangefreesounds.com/nightingale-sound/
+        # https: // www.oreilly.com / library / view / elegant - scipy / 9781491922927 / ch04.html
         # https://github.com/elegant-scipy/elegant-scipy/tree/master/data/nightingale.wav
         fs, audio = wavfile.read('sound/nightingale.wav')
+        #fs = 44100 Hz
         print(' nightingaleSong fs: ', fs)
         # convert to mono by averaging the left and right channels
         audio = np.mean(audio, axis=1)

@@ -62,12 +62,12 @@ from importExport.ImportFromTxt import ImportFromTxt
 from importExport.ImportFromMdsplus import ImportFromMdsplus
 from utils.XYPlotter import XYPlotter
 from importExport.ExportToTxt import ExportToTxt
-from utils.XYFiltering import XYFiltering
+from utils.DataFilters import DataFilters
 from utils.DataResample import DataResample
-from w7xSpectrogram import w7xSpectrogram
+from W7XSpectrogram import W7XSpectrogram
 
 
-class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
+class W7XPyViewer(QtWidgets.QMainWindow, mainLayout.Ui_w7xPyViewer):
 
     def __init__(self):
 
@@ -113,11 +113,18 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
         newSampleRateHz = int(np.double(self.NewSamplingRate_kHz.text())*1000) if np.double(self.NewSamplingRate_kHz.text())>0.01 else 1000000
         resampler.downSampleDecimate(newSampleRateHz)
 
+    def butterBandpassZeroPhase(self):
+        dataFilters = DataFilters(self)
+        for i in range(len(self.dataIn)):
+            self.dataIn[i] = dataFilters.butterworthBandpassZeroPhase(self.dataIn[i],5000,10000,44100,3)
+
+        self.applySGF.checkState()
+
 
 
     def drawSpectrogram(self):
         for sig in self.dataIn:
-            w7xSpectr = w7xSpectrogram(self)
+            w7xSpectr = W7XSpectrogram(self)
             w7xSpectr.show()
             w7xSpectr.setDataToSpectrogram(sig[self.xLeft:self.xRight])
             w7xSpectr.drawSpectrogram()
@@ -164,12 +171,12 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
 
     def subtractSGFilter(self):
 
-        xyFilt = XYFiltering(self)
+        xyFilt = DataFilters(self)
         xyFilt.subtractSGFilter()
         self.drawPlots()
 
     def replaceWithSGFilter(self):
-        xyFilt = XYFiltering(self)
+        xyFilt = DataFilters(self)
         xyFilt.replaceWithSGFilter()
         self.drawPlots()
 
@@ -196,7 +203,7 @@ class mainApp(QtWidgets.QMainWindow, mainLayout.Ui_MainWindow):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    window = mainApp()
+    window = W7XPyViewer()
     window.show()
     sys.exit(app.exec_())
 

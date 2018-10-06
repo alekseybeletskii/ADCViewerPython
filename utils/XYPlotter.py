@@ -1,7 +1,7 @@
 import pyqtgraph as pg
 import numpy as np
 from utils.GetDataLimits import GetDataLimits
-from utils.XYFiltering import  XYFiltering
+from utils.DataFilters import  DataFilters
 class XYPlotter:
     def __init__(self, callingObj):
 
@@ -44,9 +44,9 @@ class XYPlotter:
             signal = signal[minXindex:maxXindex]
             time = time[minXindex:maxXindex]
             if self.callingObj.applySGF.checkState():
-                xyFilt = XYFiltering(self.callingObj)
+                dataFilters = DataFilters(self.callingObj)
 
-                smoothed = xyFilt.savitzky_golay_filt(signal,int(self.callingObj.winLength.text()),int(self.callingObj.polyOrder.text()))
+                smoothed = dataFilters.savitzky_golay_filt(signal,int(self.callingObj.winLength.text()),int(self.callingObj.polyOrder.text()))
                 self.callingObj.mainPlotWidget.plot(time, smoothed, pen=pg.mkPen(color='k'))
             print('samplingRate,Hz: ', np.double(self.callingObj.frq[i]))
             print('size, points: ', np.double(len(signal)))

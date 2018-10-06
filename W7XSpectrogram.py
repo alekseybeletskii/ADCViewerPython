@@ -69,7 +69,10 @@ from utils.SpectrogramPeaksDetection import SpectrogramPeaksDetection
 from GUIs.SliderWidget import SliderWidget
 from utils.SpectgrogramSettings import SpectgrogramSettings
 
-class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
+from utils.DataFilters import DataFilters
+
+
+class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
 
     def __init__(self, parent):
@@ -88,7 +91,7 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.settings = {}
         self.spectrogramSettingsWidget.setDefaultSettings()
 
-        self.dataToSpectrogram = w7xSpectrogram.generateTestData()
+        self.dataToSpectrogram = W7XSpectrogram.generateTestData()
 
         self.redrawSpectrogramBtn.clicked.connect(self.drawSpectrogram)
         self.settings_btn.clicked.connect(self.settingsUi)
@@ -107,7 +110,7 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.t = None
         self.SxxMax = None
         self.SxxMin = None
-
+        self.frq = 0
         self.peakSlider = SliderWidget(0.1, 1)
 
         self.horizontalLayout_spectr.addWidget(self.peakSlider)
@@ -131,6 +134,11 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
     def ui_hotkey(self, key_name, key_combo, func):
         self.hotkey[key_name] = QtWidgets.QShortcut(QtGui.QKeySequence(key_combo), self)
         self.hotkey[key_name].activated.connect(func)
+
+
+    def butterBandpassZeroPhase(self):
+        dataFilters = DataFilters(self)
+        self.dataToSpectrogram = dataFilters.butterworthBandpassZeroPhase(self.dataToSpectrogram,self.settings["bandpassLowcut_kHz"]*1000 ,self.settings["bandpassHighcut_kHz"]*1000, self.frq, self.settings["order"])
 
     def settingsUi(self):
         self.spectrogramSettingsWidget.show()
@@ -162,11 +170,17 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
     def drawSpectrogram(self):
 
+        self.frq = self.settings["fs_kHz"] * 1000.0
+
         self.peakSlider.slider.disconnect()
+
+        if self.settings["applyBandPass"]:
+            self.butterBandpassZeroPhase()
+
 
         self.f, self.t, self.Sxx = signal.spectrogram(self.dataToSpectrogram,
                                                       nfft=self.settings["nfft"],
-                                                      fs= self.settings["fs_kHz"]*1000.0,
+                                                      fs= self.frq,
                                                       window = self.settings["window"],
                                                       nperseg=self.settings["nperseg"],
                                                       noverlap=self.settings["noverlap"],
@@ -295,7 +309,7 @@ class w7xSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    window = w7xSpectrogram(parent=None)
+    window = W7XSpectrogram(parent=None)
     window.show()
     sys.exit(app.exec_())
 

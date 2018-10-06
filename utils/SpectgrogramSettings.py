@@ -1,6 +1,6 @@
 import sys
 from GUIs import spectrogramSettingsLayout
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui
 import json
 from pathlib import Path
 
@@ -17,6 +17,12 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         self.resetSetings_btn.clicked.connect(self.loadSettingsFromJSON)
         self.setToUiAndClose_btn.clicked.connect(self.setToUiAndClose)
         self.settingsFile = Path("settings/spectrSettings.txt")
+        self.hotkey = {}
+        self.ui_hotkey('ajustSettings', "Return", self.saveSettingsToJSON)
+
+    def ui_hotkey(self, key_name, key_combo, func):
+        self.hotkey[key_name] = QtWidgets.QShortcut(QtGui.QKeySequence(key_combo), self)
+        self.hotkey[key_name].activated.connect(func)
 
     def setToUiAndClose(self):
         self.getFromUi()
@@ -33,9 +39,12 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         self.settings["detrend"]=False if detrend.casefold() =='false' else detrend
         self.settings["scaling"]=self.scaling_ui.text()
         self.settings["mode"]=self.mode_ui.text()
-        self.settings["scaleLinLogSqrt"]=self.scaleLinLogSqrt.currentText()
-
+        self.settings["scaleLinLogSqrt"]=self.scaleLinLogSqrt_ui.currentText()
         self.settings["histoGradient"] = self.callingObj.hist.gradient.saveState()
+        self.settings["applyBandPass"] = self.applyBandPass_ui.checkState()
+        self.settings["bandpassLowcut_kHz"] = float(self.bandpassLowcut_kHz_ui.text())
+        self.settings["bandpassHighcut_kHz"] = float(self.bandpassHighcut_kHz_ui.text())
+        self.settings["order"] = int(self.order_ui.text())
 
     def saveSettingsToJSON(self):
 
@@ -46,12 +55,6 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
 
         with open(self.settingsFile, 'w') as outfile:
             json.dump(self.settings,outfile, indent=4)
-
-        # gradientState = self.callingObj.hist.gradient.saveState()
-        # print(gradientState)
-
-
-
         self.close()
 
     def putSettingsToUi(self):
@@ -64,7 +67,12 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         self.detrend_ui.setText(str(self.settings["detrend"]))
         self.scaling_ui.setText(str(self.settings["scaling"]))
         self.mode_ui.setText(str(self.settings["mode"]))
-        self.scaleLinLogSqrt.setCurrentText(self.settings["scaleLinLogSqrt"])
+        self.scaleLinLogSqrt_ui.setCurrentText(self.settings["scaleLinLogSqrt"])
+
+        self.applyBandPass_ui.setCheckState(self.settings["applyBandPass"])
+        self.bandpassLowcut_kHz_ui.setText(str(self.settings["bandpassLowcut_kHz"]))
+        self.bandpassHighcut_kHz_ui.setText(str(self.settings["bandpassHighcut_kHz"]))
+        self.order_ui.setText(str(self.settings["order"]))
 
     def loadSettingsFromJSON(self):
 
@@ -81,6 +89,11 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
             self.settings["mode"] = settingsFromFile["mode"]
             self.settings["scaleLinLogSqrt"] = settingsFromFile["scaleLinLogSqrt"]
             self.settings["histoGradient"] = settingsFromFile["histoGradient"]
+
+            self.settings["applyBandPass"] = settingsFromFile["applyBandPass"]
+            self.settings["bandpassLowcut_kHz"] = settingsFromFile["bandpassLowcut_kHz"]
+            self.settings["bandpassHighcut_kHz"] = settingsFromFile["bandpassHighcut_kHz"]
+            self.settings["order"] = settingsFromFile["order"]
 
 
             self.putSettingsToUi()
@@ -105,11 +118,18 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
                        (1.0, (246, 111, 0, 255)),
                        (0.0, (75, 0, 113, 255))]}
 
+        self.settings["applyBandPass"] = False
+        self.settings["bandpassLowcut_kHz"] = 5
+        self.settings["bandpassHighcut_kHz"] = 20
+        self.settings["order"] = 5
+
         self.putSettingsToUi()
         self.checkAndApplySettins()
         # return self.settings
 
     def checkAndApplySettins(self):
+        self.settings["fs_kHz"] = self.settings["fs_kHz"] if self.settings["fs_kHz"] > 0 else 1
+        self.settings["nfft"] = self.settings["nfft"] if self.settings["nfft"] > 0 else 512
         self.settings["nperseg"] = self.settings["nperseg"] if self.settings["nperseg"] < self.settings["nfft"] else self.settings["nfft"]
         self.settings["noverlap"] = self.settings["noverlap"] if self.settings["noverlap"] < self.settings["nperseg"] else int(0.8*(self.settings["nperseg"]))
         self.putSettingsToUi()
