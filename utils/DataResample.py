@@ -16,9 +16,15 @@ class DataResample:
             self.callingObj.frq[i] = newSampleRateHz
             self.callingObj.dti[i] = np.double(1.0/newSampleRateHz)
 
-    def downSampleDecimate(self,target_frqHz):
-        for i in range(len(self.callingObj.dataIn)):
-            decimation_ratio = int(np.round(self.callingObj.frq[i]/ target_frqHz))
-            self.callingObj.dataIn[i] = signal.decimate( self.callingObj.dataIn[i], decimation_ratio, zero_phase=True)
-            self.callingObj.frq[i] = target_frqHz
-            self.callingObj.dti[i] = np.double(1.0/target_frqHz)
+    def downSampleDecimate(self, dataIn, dataIn_frqHz, target_frqHz):
+        #will  be no phase shift !
+        decimation_ratio = int(np.round(dataIn_frqHz/ target_frqHz))
+        return signal.decimate( dataIn, decimation_ratio, zero_phase=True)
+
+    # def downSampleDecimate(self,target_frqHz):
+    #     #will  be no phase shift !
+    #     for i in range(len(self.callingObj.dataIn)):
+    #         decimation_ratio = int(np.round(self.callingObj.frq[i]/ target_frqHz))
+    #         self.callingObj.dataIn[i] = signal.decimate( self.callingObj.dataIn[i], decimation_ratio, zero_phase=True)
+    #         self.callingObj.frq[i] = target_frqHz
+    #         self.callingObj.dti[i] = np.double(1.0/target_frqHz)

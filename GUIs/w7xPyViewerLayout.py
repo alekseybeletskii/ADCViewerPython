@@ -123,8 +123,8 @@ class Ui_w7xPyViewer(object):
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
         w7xPyViewer.setMenuBar(self.menubar)
-        self.actionOpen_csv_dt = QtWidgets.QAction(w7xPyViewer)
-        self.actionOpen_csv_dt.setObjectName("actionOpen_csv_dt")
+        self.actionOpen_csv_dx = QtWidgets.QAction(w7xPyViewer)
+        self.actionOpen_csv_dx.setObjectName("actionOpen_csv_dx")
         self.actionClear = QtWidgets.QAction(w7xPyViewer)
         self.actionClear.setObjectName("actionClear")
         self.actionExit = QtWidgets.QAction(w7xPyViewer)
@@ -147,7 +147,7 @@ class Ui_w7xPyViewer(object):
         self.actionOpen_csv_fullX.setObjectName("actionOpen_csv_fullX")
         self.menuFile.addAction(self.actionOpen_mdsplus_QXT)
         self.menuFile.addAction(self.actionOpen_mdsplus_QOC)
-        self.menuFile.addAction(self.actionOpen_csv_dt)
+        self.menuFile.addAction(self.actionOpen_csv_dx)
         self.menuFile.addAction(self.actionOpen_csv_fullX)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionExport_time_to_separate_file)
@@ -185,7 +185,8 @@ class Ui_w7xPyViewer(object):
         self.label_5.setText(_translate("w7xPyViewer", "polyOrder"))
         self.polyOrder.setText(_translate("w7xPyViewer", "0"))
         self.menuFile.setTitle(_translate("w7xPyViewer", "Data"))
-        self.actionOpen_csv_dt.setText(_translate("w7xPyViewer", "Open_csv_dt"))
+        self.actionOpen_csv_dx.setText(_translate("w7xPyViewer", "Open_csv_dx"))
+        self.actionOpen_csv_dx.setToolTip(_translate("w7xPyViewer", "store only dx calculated from the first column"))
         self.actionClear.setText(_translate("w7xPyViewer", "ClearPlots"))
         self.actionExit.setText(_translate("w7xPyViewer", "Exit"))
         self.actionAbout.setText(_translate("w7xPyViewer", "about"))
@@ -196,6 +197,7 @@ class Ui_w7xPyViewer(object):
         self.actionExport_time_to_separate_file.setText(_translate("w7xPyViewer", "Export to csv (time separate)"))
         self.actionOpen_mdsplus_QOC.setText(_translate("w7xPyViewer", "Open_mdsplus_QOC"))
         self.actionOpen_csv_fullX.setText(_translate("w7xPyViewer", "Open_csv_fullX"))
+        self.actionOpen_csv_fullX.setToolTip(_translate("w7xPyViewer", "store full first column as X"))
 
 from pyqtgraph import PlotWidget
 

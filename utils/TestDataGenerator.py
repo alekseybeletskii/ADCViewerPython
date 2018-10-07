@@ -19,7 +19,7 @@ class TestDataGenerator:
         noise *= np.exp(-time / 5)
         self.matplotlibPlot(carrier+noise, fs, 1024)
 
-        return  carrier + noise
+        return  carrier + noise, fs
 
     def generateChirpAndNoise(self):
 
@@ -33,7 +33,7 @@ class TestDataGenerator:
 
         self.matplotlibPlot(carrier+noise, fs, 1024)
 
-        return  carrier + noise
+        return  carrier + noise, fs
 
     def nightingaleSongSpectr(self):
         from scipy.io import wavfile
@@ -47,7 +47,7 @@ class TestDataGenerator:
         audio = np.mean(audio, axis=1)
         # np.save('data/nightingale.npy', audio)
         self.matplotlibPlot(audio, fs, 1024)
-        return  audio
+        return  audio, fs
 
 
     @staticmethod

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>561</width>
-    <height>143</height>
+    <width>650</width>
+    <height>240</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,75 +18,48 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>561</width>
-    <height>143</height>
+    <width>650</width>
+    <height>240</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>561</width>
-    <height>143</height>
+    <width>650</width>
+    <height>240</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>spectrogramSettings</string>
   </property>
-  <widget class="QWidget" name="layoutWidget">
+  <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>9</x>
-     <y>12</y>
-     <width>549</width>
-     <height>119</height>
+     <x>0</x>
+     <y>10</y>
+     <width>644</width>
+     <height>223</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0" alignment="Qt::AlignRight">
+    <item row="0" column="0">
      <widget class="QLabel" name="label_2">
       <property name="minimumSize">
        <size>
-        <width>50</width>
+        <width>130</width>
         <height>15</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>50</width>
+        <width>130</width>
         <height>15</height>
        </size>
       </property>
       <property name="text">
-       <string>fs,kHz</string>
+       <string>signal frq, kHz</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="fs_kHz_ui">
-      <property name="minimumSize">
-       <size>
-        <width>60</width>
-        <height>20</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>60</width>
-        <height>20</height>
-       </size>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>8</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>1000</string>
-      </property>
-      <property name="placeholderText">
-       <string extracomment="timeScale"/>
       </property>
      </widget>
     </item>
@@ -100,7 +73,7 @@
       </property>
       <property name="maximumSize">
        <size>
-        <width>20</width>
+        <width>50</width>
         <height>15</height>
        </size>
       </property>
@@ -135,7 +108,7 @@
        <string>256</string>
       </property>
       <property name="placeholderText">
-       <string extracomment="timeScale"/>
+       <string/>
       </property>
      </widget>
     </item>
@@ -149,7 +122,7 @@
       </property>
       <property name="maximumSize">
        <size>
-        <width>20</width>
+        <width>50</width>
         <height>15</height>
        </size>
       </property>
@@ -184,21 +157,21 @@
        <string>256</string>
       </property>
       <property name="placeholderText">
-       <string extracomment="timeScale"/>
+       <string/>
       </property>
      </widget>
     </item>
-    <item row="0" column="6">
+    <item row="0" column="6" alignment="Qt::AlignRight">
      <widget class="QLabel" name="label_5">
       <property name="minimumSize">
        <size>
-        <width>55</width>
+        <width>50</width>
         <height>15</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>55</width>
+        <width>50</width>
         <height>15</height>
        </size>
       </property>
@@ -233,7 +206,7 @@
        <string>32</string>
       </property>
       <property name="placeholderText">
-       <string extracomment="timeScale"/>
+       <string/>
       </property>
      </widget>
     </item>
@@ -247,7 +220,7 @@
       </property>
       <property name="maximumSize">
        <size>
-        <width>20</width>
+        <width>50</width>
         <height>15</height>
        </size>
       </property>
@@ -296,7 +269,7 @@
       </property>
       <property name="maximumSize">
        <size>
-        <width>20</width>
+        <width>50</width>
         <height>15</height>
        </size>
       </property>
@@ -331,7 +304,7 @@
        <string>constant</string>
       </property>
       <property name="placeholderText">
-       <string extracomment="timeScale"/>
+       <string/>
       </property>
      </widget>
     </item>
@@ -345,7 +318,7 @@
       </property>
       <property name="maximumSize">
        <size>
-        <width>20</width>
+        <width>50</width>
         <height>15</height>
        </size>
       </property>
@@ -380,7 +353,7 @@
        <string>density</string>
       </property>
       <property name="placeholderText">
-       <string extracomment="timeScale"/>
+       <string/>
       </property>
      </widget>
     </item>
@@ -394,7 +367,7 @@
       </property>
       <property name="maximumSize">
        <size>
-        <width>20</width>
+        <width>50</width>
         <height>15</height>
        </size>
       </property>
@@ -429,7 +402,7 @@
        <string>psd</string>
       </property>
       <property name="placeholderText">
-       <string extracomment="timeScale"/>
+       <string/>
       </property>
      </widget>
     </item>
@@ -440,10 +413,38 @@
       </property>
      </widget>
     </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_13">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>apply bandPass, kHz</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
     <item row="3" column="1">
      <widget class="QCheckBox" name="applyBandPass_ui">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>60</horstretch>
+        <verstretch>20</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>60</width>
+        <height>20</height>
+       </size>
+      </property>
       <property name="layoutDirection">
-       <enum>Qt::RightToLeft</enum>
+       <enum>Qt::LeftToRight</enum>
       </property>
       <property name="text">
        <string/>
@@ -453,10 +454,25 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="2" alignment="Qt::AlignRight">
+    <item row="3" column="2">
      <widget class="QLabel" name="label_10">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>15</height>
+       </size>
+      </property>
       <property name="text">
        <string>lowcut</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -483,14 +499,29 @@
        <string>5000</string>
       </property>
       <property name="placeholderText">
-       <string extracomment="timeScale"/>
+       <string/>
       </property>
      </widget>
     </item>
-    <item row="3" column="4" alignment="Qt::AlignRight">
+    <item row="3" column="4">
      <widget class="QLabel" name="label_11">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>15</height>
+       </size>
+      </property>
       <property name="text">
        <string>highcut</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -517,14 +548,35 @@
        <string>15000</string>
       </property>
       <property name="placeholderText">
-       <string extracomment="timeScale"/>
+       <string/>
       </property>
      </widget>
     </item>
     <item row="3" column="6" alignment="Qt::AlignRight">
      <widget class="QLabel" name="label_12">
+      <property name="minimumSize">
+       <size>
+        <width>50</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="sizeIncrement">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
       <property name="text">
        <string>order</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -551,18 +603,351 @@
        <string>3</string>
       </property>
       <property name="placeholderText">
-       <string extracomment="timeScale"/>
+       <string/>
       </property>
      </widget>
     </item>
     <item row="4" column="0" colspan="8">
+     <widget class="Line" name="line_3">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_15">
+      <property name="minimumSize">
+       <size>
+        <width>130</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>130</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>apply downsampling</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QCheckBox" name="applyDownsampling_ui">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>60</horstretch>
+        <verstretch>20</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>60</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="tristate">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="2" colspan="2">
+     <widget class="QLabel" name="label_14">
+      <property name="minimumSize">
+       <size>
+        <width>100</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="sizeIncrement">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>target frq, kHz</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="4" colspan="2">
+     <widget class="QLineEdit" name="targetFrq_kHz_ui">
+      <property name="minimumSize">
+       <size>
+        <width>60</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>500</string>
+      </property>
+      <property name="placeholderText">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0" colspan="8">
+     <widget class="Line" name="line_4">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QLabel" name="label_16">
+      <property name="minimumSize">
+       <size>
+        <width>130</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>130</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>set histogram levels</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QCheckBox" name="setHistogramLevels_ui">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>60</horstretch>
+        <verstretch>20</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>60</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="tristate">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="2">
+     <widget class="QLabel" name="label_17">
+      <property name="minimumSize">
+       <size>
+        <width>30</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>30</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="sizeIncrement">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>min</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="3">
+     <widget class="QLineEdit" name="histogramLevelMin_ui">
+      <property name="minimumSize">
+       <size>
+        <width>60</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>*SxxMax</string>
+      </property>
+      <property name="text">
+       <string>0.1</string>
+      </property>
+      <property name="placeholderText">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="4">
+     <widget class="QLabel" name="label_18">
+      <property name="minimumSize">
+       <size>
+        <width>30</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>30</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="sizeIncrement">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>max</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="5">
+     <widget class="QLineEdit" name="histogramLevelMax_ui">
+      <property name="minimumSize">
+       <size>
+        <width>60</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>*SxxMax</string>
+      </property>
+      <property name="text">
+       <string>1</string>
+      </property>
+      <property name="placeholderText">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="0" colspan="8">
+     <widget class="Line" name="line_5">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="0">
+     <widget class="QLabel" name="label_19">
+      <property name="minimumSize">
+       <size>
+        <width>130</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>130</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>save histogram color</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="1">
+     <widget class="QCheckBox" name="saveHistogramColor_ui">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>60</horstretch>
+        <verstretch>20</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>60</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="tristate">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="0" colspan="8">
      <widget class="Line" name="line_2">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
      </widget>
     </item>
-    <item row="5" column="0" alignment="Qt::AlignRight">
+    <item row="11" column="0" alignment="Qt::AlignRight">
      <widget class="QLabel" name="label_9">
       <property name="minimumSize">
        <size>
@@ -584,7 +969,7 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="1">
+    <item row="11" column="1">
      <widget class="QComboBox" name="scaleLinLogSqrt_ui">
       <property name="minimumSize">
        <size>
@@ -615,8 +1000,8 @@
       </item>
      </widget>
     </item>
-    <item row="5" column="5">
-     <widget class="QPushButton" name="setToUiAndClose_btn">
+    <item row="11" column="5">
+     <widget class="QPushButton" name="getFromUiApplyAndClose_btn">
       <property name="minimumSize">
        <size>
         <width>50</width>
@@ -634,26 +1019,26 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="6">
+    <item row="11" column="6">
      <widget class="QPushButton" name="saveSettings_btn">
       <property name="minimumSize">
        <size>
-        <width>50</width>
+        <width>80</width>
         <height>20</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>50</width>
+        <width>80</width>
         <height>20</height>
        </size>
       </property>
       <property name="text">
-       <string>save</string>
+       <string>save to file</string>
       </property>
      </widget>
     </item>
-    <item row="5" column="7">
+    <item row="11" column="7">
      <widget class="QPushButton" name="resetSetings_btn">
       <property name="minimumSize">
        <size>
@@ -672,10 +1057,16 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="0" alignment="Qt::AlignRight">
-     <widget class="QLabel" name="label_13">
+    <item row="0" column="1">
+     <widget class="QLabel" name="fs_kHz_ui">
+      <property name="frameShape">
+       <enum>QFrame::WinPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
       <property name="text">
-       <string>apply bandPass</string>
+       <string>1</string>
       </property>
      </widget>
     </item>

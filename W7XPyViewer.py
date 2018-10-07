@@ -53,7 +53,7 @@
 
 from PyQt5 import QtWidgets
 
-from GUIs import mainLayout
+from GUIs import w7xPyViewerLayout
 # it also keeps events etc that we defined in Qt Design
 import sys
 import numpy as np
@@ -67,7 +67,7 @@ from utils.DataResample import DataResample
 from W7XSpectrogram import W7XSpectrogram
 
 
-class W7XPyViewer(QtWidgets.QMainWindow, mainLayout.Ui_w7xPyViewer):
+class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
     def __init__(self):
 
@@ -84,7 +84,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, mainLayout.Ui_w7xPyViewer):
         self.nextPen = 0
         self.setupUi(self)  # This is defined in design.py file automatically
         # It sets up layout and widgets that are defined
-        self.actionOpen_csv_dt.triggered.connect(self.openCsv_dt)
+        self.actionOpen_csv_dx.triggered.connect(self.openCsv_dx)
         self.actionOpen_csv_fullX.triggered.connect(self.openCsv_fullX)
         self.actionOpen_mdsplus_QXT.triggered.connect(self.openMdsplusQXT)
         self.actionOpen_mdsplus_QOC.triggered.connect(self.openMdsplusQOC)
@@ -104,7 +104,6 @@ class W7XPyViewer(QtWidgets.QMainWindow, mainLayout.Ui_w7xPyViewer):
 
     def resampleDataResampy(self):
         resampler = DataResample(self)
-        # print('np.double(self.NewSamplingRate_kHz.text())*1000', np.double(self.NewSamplingRate_kHz.text())*1000)
         newSampleRateHz = int(np.double(self.NewSamplingRate_kHz.text())*1000) if np.double(self.NewSamplingRate_kHz.text())>0.01 else 1000000
         resampler.downSampleResampy(newSampleRateHz)
 
@@ -117,7 +116,6 @@ class W7XPyViewer(QtWidgets.QMainWindow, mainLayout.Ui_w7xPyViewer):
         dataFilters = DataFilters(self)
         for i in range(len(self.dataIn)):
             self.dataIn[i] = dataFilters.butterworthBandpassZeroPhase(self.dataIn[i],5000,10000,44100,3)
-
         self.applySGF.checkState()
 
 
@@ -132,6 +130,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, mainLayout.Ui_w7xPyViewer):
 
     def clearAll(self):
         self.mainPlotWidget.clear()
+        self.mainPlotWidget.plotItem.enableAutoScale()
         self.files.clear()
         self.dataIn.clear()
         self.dti.clear()
@@ -142,9 +141,9 @@ class W7XPyViewer(QtWidgets.QMainWindow, mainLayout.Ui_w7xPyViewer):
         self.xRight=0
 
 
-    def openCsv_dt(self):
+    def openCsv_dx(self):
         CsvTxtR = ImportFromTxt(self)
-        CsvTxtR.openCsvTxt_dt()
+        CsvTxtR.openCsvTxt_dx()
     def openCsv_fullX(self):
         CsvTxtR = ImportFromTxt(self)
         CsvTxtR.openCsvTxt_fullX()

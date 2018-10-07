@@ -70,6 +70,7 @@ from GUIs.SliderWidget import SliderWidget
 from utils.SpectgrogramSettings import SpectgrogramSettings
 
 from utils.DataFilters import DataFilters
+from utils.DataResample import DataResample
 
 
 class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
@@ -91,7 +92,7 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.settings = {}
         self.spectrogramSettingsWidget.setDefaultSettings()
 
-        self.dataToSpectrogram = W7XSpectrogram.generateTestData()
+        self.generateData()
 
         self.redrawSpectrogramBtn.clicked.connect(self.drawSpectrogram)
         self.settings_btn.clicked.connect(self.settingsUi)
@@ -110,7 +111,7 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.t = None
         self.SxxMax = None
         self.SxxMin = None
-        self.frq = 0
+
         self.peakSlider = SliderWidget(0.1, 1)
 
         self.horizontalLayout_spectr.addWidget(self.peakSlider)
@@ -134,6 +135,14 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
     def ui_hotkey(self, key_name, key_combo, func):
         self.hotkey[key_name] = QtWidgets.QShortcut(QtGui.QKeySequence(key_combo), self)
         self.hotkey[key_name].activated.connect(func)
+
+    def resampleDataDecimation(self):
+        resampler = DataResample(self)
+        targetFrq_Hz = int(np.double(self.settings["targetFrq_kHz"])*1000) if self.frq > np.double(self.settings["targetFrq_kHz"])> 0.01 else self.frq
+        self.dataToSpectrogram = resampler.downSampleDecimate(self.dataToSpectrogram, self.frq, targetFrq_Hz)
+        self.frq = self.settings["targetFrq_kHz"]*1000
+        self.spectrogramSettingsWidget.settings["fs_kHz"] = str(self.frq/1000.0)
+        self.spectrogramSettingsWidget.putSettingsToUi()
 
 
     def butterBandpassZeroPhase(self):
@@ -162,21 +171,32 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
     def generateData(self):
         testDataGenerator = TestDataGenerator(self)
-        self.dataToSpectrogram = testDataGenerator.nightingaleSongSpectr()
+        # self.dataToSpectrogram, self.frq = testDataGenerator.generatePeriodicAndNoise()
+        self.dataToSpectrogram, self.frq = testDataGenerator.nightingaleSongSpectr()
+        self.spectrogramSettingsWidget.settings["fs_kHz"] = str(self.frq/1000.0)
+        self.spectrogramSettingsWidget.putSettingsToUi()
 
-    def setDataToSpectrogram(self,signalIn):
+    def setDataToSpectrogram(self,signalIn, frq):
         self.dataToSpectrogram = signalIn
-    # def drawSpectrogram(self,signalIn):
+        self.frq = frq
+        self.spectrogramSettingsWidget.settings["fs_kHz"] = str(self.frq/1000.0)
+        self.spectrogramSettingsWidget.putSettingsToUi()
 
     def drawSpectrogram(self):
 
-        self.frq = self.settings["fs_kHz"] * 1000.0
+        # self.frq = self.settings["fs_kHz"] * 1000.0
 
         self.peakSlider.slider.disconnect()
 
+        if self.settings["applyDownsampling"]:
+            self.resampleDataDecimation()
+            self.spectrogramSettingsWidget.settings["applyDownsampling"] = False
+            self.spectrogramSettingsWidget.putSettingsToUi()
+
         if self.settings["applyBandPass"]:
             self.butterBandpassZeroPhase()
-
+            self.spectrogramSettingsWidget.settings["applyBandPass"] = False
+            self.spectrogramSettingsWidget.putSettingsToUi()
 
         self.f, self.t, self.Sxx = signal.spectrogram(self.dataToSpectrogram,
                                                       nfft=self.settings["nfft"],
@@ -214,6 +234,11 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
         self.hist.setImageItem(img)
         self.hist.setLevels(self.SxxMin, self.SxxMax)
+        self.hist.gradient.restoreState(self.settings["histoGradient"])
+
+        if self.settings["setHistogramLevels"]:
+            self.hist.setLevels(self.settings["histogramLevelMin"]*self.SxxMax, self.settings["histogramLevelMax"]*self.SxxMax)
+
         # if str(self.settings["scaleLinLogSqrt"]).casefold() == 'linear':
         #     self.hist.setLevels(self.SxxMin, self.SxxMax)
         # if str(self.settings["scaleLinLogSqrt"]).casefold() == 'sqrt':
@@ -240,7 +265,6 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         #      'ticks': [(tickMiddle, (0, 160, 160, 255)),
         #
         #                (0.0, (255, 255, 255, 255))]})
-        self.hist.gradient.restoreState(self.settings["histoGradient"])
 
 
         # self.hist.setHistogramRange(0,1)
@@ -292,20 +316,21 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         # else:
         #     event.ignore()
 
-    @staticmethod
-    def generateTestData():
-        # Create the data
-        fs = 1e4
-        N = 1e5
-        amp = 2 * np.sqrt(2)
-        noise_power = 0.01 * fs / 2
-        # noise_power = 0.001 * fs / 2
-        time = np.arange(N) / float(fs)
-        mod = 500 * np.cos(2 * np.pi * 0.25 * time)
-        carrier = amp * np.sin(2 * np.pi * 3e3 * time + mod)
-        noise = np.random.normal(scale=np.sqrt(noise_power), size=time.shape)
-        noise *= np.exp(-time / 5)
-        return  carrier + noise
+    # @staticmethod
+    # def generateTestData():
+    #     # Create the data
+    #     fs = 1e4
+    #     N = 1e5
+    #     amp = 2 * np.sqrt(2)
+    #     noise_power = 0.01 * fs / 2
+    #     # noise_power = 0.001 * fs / 2
+    #     time = np.arange(N) / float(fs)
+    #     mod = 500 * np.cos(2 * np.pi * 0.25 * time)
+    #     carrier = amp * np.sin(2 * np.pi * 3e3 * time + mod)
+    #     noise = np.random.normal(scale=np.sqrt(noise_power), size=time.shape)
+    #     noise *= np.exp(-time / 5)
+    #     return  carrier + noise
+    #
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

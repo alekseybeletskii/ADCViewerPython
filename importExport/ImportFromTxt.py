@@ -60,7 +60,7 @@ class ImportFromTxt(QtWidgets.QMainWindow):
        super().__init__(*args, **kwargs)
        self.callingObj = callingObj
 
-   def openCsvTxt_dt(self):
+   def openCsvTxt_dx(self):
         self.callingObj.clearAll()
 
         options = QtWidgets.QFileDialog.Options()

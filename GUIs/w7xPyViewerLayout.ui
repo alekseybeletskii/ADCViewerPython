@@ -352,7 +352,7 @@
     </property>
     <addaction name="actionOpen_mdsplus_QXT"/>
     <addaction name="actionOpen_mdsplus_QOC"/>
-    <addaction name="actionOpen_csv_dt"/>
+    <addaction name="actionOpen_csv_dx"/>
     <addaction name="actionOpen_csv_fullX"/>
     <addaction name="separator"/>
     <addaction name="actionExport_time_to_separate_file"/>
@@ -365,9 +365,12 @@
    </widget>
    <addaction name="menuFile"/>
   </widget>
-  <action name="actionOpen_csv_dt">
+  <action name="actionOpen_csv_dx">
    <property name="text">
-    <string>Open_csv_dt</string>
+    <string>Open_csv_dx</string>
+   </property>
+   <property name="toolTip">
+    <string>store only dx calculated from the first column</string>
    </property>
   </action>
   <action name="actionClear">
@@ -418,6 +421,9 @@
   <action name="actionOpen_csv_fullX">
    <property name="text">
     <string>Open_csv_fullX</string>
+   </property>
+   <property name="toolTip">
+    <string>store full first column as X</string>
    </property>
   </action>
  </widget>
