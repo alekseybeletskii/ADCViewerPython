@@ -47,10 +47,10 @@ class SpectrogramPeaksDetection:
             # SxxMaxXIndex = self.dataXLimitsIndexes.get('maxIndex')
             # SxxMinYIndex = self.dataYLimitsIndexes.get('minIndex')
             # SxxMaxYIndex = self.dataYLimitsIndexes.get('maxIndex')
-            # print('Sxx X size: ', len(self.callingObj.Sxx[0, :]))
-            # print('Sxx Y size: ', len(self.callingObj.Sxx[:, 0]))
-            # print('Sxx X range: ',  SxxMinXIndex, SxxMaxXIndex)
-            # print('Sxx Y range: ',  SxxMinYIndex, SxxMaxYIndex)
+            # #print('Sxx X size: ', len(self.callingObj.Sxx[0, :]))
+            # #print('Sxx Y size: ', len(self.callingObj.Sxx[:, 0]))
+            # #print('Sxx X range: ',  SxxMinXIndex, SxxMaxXIndex)
+            # #print('Sxx Y range: ',  SxxMinYIndex, SxxMaxYIndex)
 
             # SxxZoomed = self.callingObj.Sxx[SxxMinYIndex : SxxMaxYIndex, SxxMinXIndex:SxxMaxXIndex]
 
@@ -67,9 +67,9 @@ class SpectrogramPeaksDetection:
 
             self.drawPeaks(self.peaksX, self.peaksY, "r")
 
-            print('peakThreshold = ', self.peakThreshold)
-            print('self.dataXLimitsIndexes: ', self.dataXLimitsIndexes)
-            print('self.dataYLimitsIndexes: ', self.dataYLimitsIndexes)
+            #print('peakThreshold = ', self.peakThreshold)
+            #print('self.dataXLimitsIndexes: ', self.dataXLimitsIndexes)
+            #print('self.dataYLimitsIndexes: ', self.dataYLimitsIndexes)
 
         def findSpectroLimits(self):
             axt = self.callingObj.spectrPlot.getAxis('bottom')

@@ -23,7 +23,7 @@ class ExportToTxt:
             xRight = self.callingObj.xRight if self.callingObj.xRight < len(signal) else len(signal) - 1
             np.savetxt(filepath, np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T, delimiter=', ')
 
-        print('data exported to csv files')
+        #print('data exported to csv files')
 
     def export_to_csv_v2(self):
 
@@ -46,7 +46,7 @@ class ExportToTxt:
             # df = pd.DataFrame(np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T,index=None, columns=None)
             # df.to_csv(filename, header=None, index=None)
 
-        print('data exported to csv files, time separated')
+        #print('data exported to csv files, time separated')
 
 
     def savePlotTofile(self, x, y):
@@ -73,6 +73,6 @@ class ExportToTxt:
 
 
 
-        print('data exported to utcnow.peaks file')
+        #print('data exported to utcnow.peaks file')
 
 

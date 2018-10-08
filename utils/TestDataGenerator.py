@@ -17,7 +17,7 @@ class TestDataGenerator:
         carrier = amp * np.sin(2 * np.pi * 3e3 * time + mod)
         noise = np.random.normal(scale=np.sqrt(noise_power), size=time.shape)
         noise *= np.exp(-time / 5)
-        self.matplotlibPlot(carrier+noise, fs, 1024)
+        # self.matplotlibPlot(carrier+noise, fs, 1024)
 
         return  carrier + noise, fs
 
@@ -31,7 +31,7 @@ class TestDataGenerator:
         noise = np.random.normal(scale=np.sqrt(noise_power), size=t.shape)
         noise *= np.exp(-t / 5)
 
-        self.matplotlibPlot(carrier+noise, fs, 1024)
+        # self.matplotlibPlot(carrier+noise, fs, 1024)
 
         return  carrier + noise, fs
 
@@ -42,11 +42,11 @@ class TestDataGenerator:
         # https://github.com/elegant-scipy/elegant-scipy/tree/master/data/nightingale.wav
         fs, audio = wavfile.read('sound/nightingale.wav')
         #fs = 44100 Hz
-        print(' nightingaleSong fs: ', fs)
+        #print(' nightingaleSong fs: ', fs)
         # convert to mono by averaging the left and right channels
         audio = np.mean(audio, axis=1)
         # np.save('data/nightingale.npy', audio)
-        self.matplotlibPlot(audio, fs, 1024)
+        # self.matplotlibPlot(audio, fs, 1024)
         return  audio, fs
 
 

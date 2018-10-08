@@ -1,0 +1,53 @@
+{
+    "fs_kHz": 44.1,
+    "nfft": 1024,
+    "window": "hamming",
+    "nperseg": 1024,
+    "noverlap": 900,
+    "detrend": "constant",
+    "scaling": "density",
+    "mode": "psd",
+    "scaleLinLogSqrt": "sqrt",
+    "histoGradient": {
+        "mode": "rgb",
+        "ticks": [
+            [
+                0.5,
+                [
+                    0,
+                    182,
+                    188,
+                    255
+                ]
+            ],
+            [
+                1.0,
+                [
+                    246,
+                    111,
+                    0,
+                    255
+                ]
+            ],
+            [
+                0.0,
+                [
+                    75,
+                    0,
+                    113,
+                    255
+                ]
+            ]
+        ]
+    },
+    "applyBandPass": 0,
+    "bandpassLowcut_kHz": 5.0,
+    "bandpassHighcut_kHz": 20.0,
+    "order": 5,
+    "applyDownsampling": 0,
+    "targetFrq_kHz": 0.001,
+    "setHistogramLevels": 2,
+    "histogramLevelMin": 0.01,
+    "histogramLevelMax": 0.1,
+    "saveHistogramColor": 0
+}

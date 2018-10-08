@@ -22,7 +22,7 @@ class GetDataLimits:
                    break
                 i-=1
 
-        print('axis range: {}'.format(axIn.range))  # <------- get range of x axis
-        print('data indexes: {}'.format(cls.dataLimits))  # <------- get range of x axis
+        #print('axis range: {}'.format(axIn.range))  # <------- get range of x axis
+        #print('data indexes: {}'.format(cls.dataLimits))  # <------- get range of x axis
 
         return cls.dataLimits

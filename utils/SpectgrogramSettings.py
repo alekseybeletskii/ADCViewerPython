@@ -32,6 +32,9 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
     def getFromUi(self):
         self.settings["nfft"]=int(self.nfft_ui.text())
         self.settings["fs_kHz"]=float(self.fs_kHz_ui.text())
+
+        #print('fs_kHz', self.fs_kHz_ui.text() )
+
         self.settings["window"]=self.window_ui.text()
         self.settings["nperseg"]=int(self.nperseg_ui.text())
         self.settings["noverlap"]=int(self.noverlap_ui.text())
@@ -177,11 +180,11 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         # return self.settings
 
     def checkAndApplySettins(self):
-        self.settings["fs_kHz"] = self.settings["fs_kHz"] if self.settings["fs_kHz"] > 0 else 1
+        self.settings["fs_kHz"] = self.settings["fs_kHz"] if float(self.settings["fs_kHz"]) > 0 else 1
         self.settings["nfft"] = self.settings["nfft"] if self.settings["nfft"] > 0 else 512
         self.settings["nperseg"] = self.settings["nperseg"] if self.settings["nperseg"] < self.settings["nfft"] else self.settings["nfft"]
         self.settings["noverlap"] = self.settings["noverlap"] if self.settings["noverlap"] < self.settings["nperseg"] else int(0.8*(self.settings["nperseg"]))
-        self.settings["targetFrq_kHz"] = self.settings["targetFrq_kHz"] if self.settings["targetFrq_kHz"] < self.settings["fs_kHz"] else self.settings["fs_kHz"]
+        self.settings["targetFrq_kHz"] = self.settings["targetFrq_kHz"] if float(self.settings["targetFrq_kHz"]) < float(self.settings["fs_kHz"]) else self.settings["fs_kHz"]
         self.putSettingsToUi()
 
         self.callingObj.settings = self.settings

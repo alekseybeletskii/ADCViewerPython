@@ -108,9 +108,10 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         resampler.downSampleResampy(newSampleRateHz)
 
     def resampleDataDecimation(self):
-        resampler = DataResample(self)
-        newSampleRateHz = int(np.double(self.NewSamplingRate_kHz.text())*1000) if np.double(self.NewSamplingRate_kHz.text())>0.01 else 1000000
-        resampler.downSampleDecimate(newSampleRateHz)
+        for i in range(len(self.dataIn)):
+            resampler = DataResample(self)
+            target_frqHz = int(np.double(self.NewSamplingRate_kHz.text())*1000) if np.double(self.NewSamplingRate_kHz.text())>0.01 else 1000000
+            resampler.downSampleDecimate(self.dataIn[i],self.frq[i],target_frqHz)
 
     def butterBandpassZeroPhase(self):
         dataFilters = DataFilters(self)
@@ -121,16 +122,16 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
 
     def drawSpectrogram(self):
-        for sig in self.dataIn:
+        for i in range(len(self.dataIn)):
             w7xSpectr = W7XSpectrogram(self)
             w7xSpectr.show()
-            w7xSpectr.setDataToSpectrogram(sig[self.xLeft:self.xRight])
+            w7xSpectr.setDataToSpectrogram(self.dataIn[i][self.xLeft:self.xRight],self.frq[i])
             w7xSpectr.drawSpectrogram()
         self.clearAll()
 
     def clearAll(self):
         self.mainPlotWidget.clear()
-        self.mainPlotWidget.plotItem.enableAutoScale()
+        self.mainPlotWidget.plotItem.enableAutoRange()
         self.files.clear()
         self.dataIn.clear()
         self.dti.clear()

@@ -111,6 +111,7 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.t = None
         self.SxxMax = None
         self.SxxMin = None
+        self.frq = 0
 
         self.peakSlider = SliderWidget(0.1, 1)
 
@@ -175,12 +176,15 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.dataToSpectrogram, self.frq = testDataGenerator.nightingaleSongSpectr()
         self.spectrogramSettingsWidget.settings["fs_kHz"] = str(self.frq/1000.0)
         self.spectrogramSettingsWidget.putSettingsToUi()
+        self.spectrogramSettingsWidget.checkAndApplySettins()
 
     def setDataToSpectrogram(self,signalIn, frq):
         self.dataToSpectrogram = signalIn
         self.frq = frq
         self.spectrogramSettingsWidget.settings["fs_kHz"] = str(self.frq/1000.0)
         self.spectrogramSettingsWidget.putSettingsToUi()
+        self.spectrogramSettingsWidget.checkAndApplySettins()
+
 
     def drawSpectrogram(self):
 
@@ -200,8 +204,8 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
         self.f, self.t, self.Sxx = signal.spectrogram(self.dataToSpectrogram,
                                                       nfft=self.settings["nfft"],
-                                                      fs= self.frq,
-                                                      window = self.settings["window"],
+                                                      fs=int(float(self.settings["fs_kHz"])*1000.0),
+                                                      window=self.settings["window"],
                                                       nperseg=self.settings["nperseg"],
                                                       noverlap=self.settings["noverlap"],
                                                       detrend=self.settings["detrend"],

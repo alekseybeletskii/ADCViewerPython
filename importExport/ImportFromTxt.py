@@ -80,7 +80,7 @@ class ImportFromTxt(QtWidgets.QMainWindow):
             filename, _ = path.splitext(filename_and_ext)
             self.callingObj.channelsList.append(filename)
 
-            print(type(dataX))
+            #print(type(dataX))
 
    def  openCsvTxt_fullX(self):
         self.callingObj.clearAll()
@@ -95,7 +95,7 @@ class ImportFromTxt(QtWidgets.QMainWindow):
             dataTxt = pd.read_csv(files[i], names=['x', 'y'], header=None)
             dataX = np.asarray(dataTxt['x'])
 
-            print(type(dataX))
+            #print(type(dataX))
 
             self.callingObj.dti.append(dataX)
             self.callingObj.frq.append(int(1))

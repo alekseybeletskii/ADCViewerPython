@@ -28,13 +28,13 @@ class ImportFromMdsplus:
             # t_raw = signal.dim_of()
             # startDataTime = datetime.utcfromtimestamp(t_raw[0] // 1000000000).second
             # startDataTime = datetime.utcfromtimestamp(t_raw[0] // 1000000000)
-            # print(startDataTime.strftime('%Y-%m-%d %H:%M:%S'))
+            # #print(startDataTime.strftime('%Y-%m-%d %H:%M:%S'))
             dti = abs(np.double(t_raw[len(t_raw)-1]-t_raw[len(t_raw)-2]))*1e-9
             self.callingObj.dataIn.append(dat_raw)
             self.callingObj.dti.append(dti)
             self.callingObj.frq.append(int(round(np.power(dti,-1))))
 
-        print('data loaded from mdsplus QXT')
+        #print('data loaded from mdsplus QXT')
 
     def openQOC(self):
         # mdpid = 171207017  # PCI saw activity here
@@ -71,7 +71,7 @@ class ImportFromMdsplus:
             # dat_raw = MDSraw.data()
             # t_raw = np.double(dat_raw.dim_of())/fs
 
-        print('data loaded from mdsplus QOC')
+        #print('data loaded from mdsplus QOC')
 
     def setTimeContext(self):
         resample = int(self.callingObj.MDSresampling.text()) if self.callingObj.MDSresampling.text().isnumeric() else 1
