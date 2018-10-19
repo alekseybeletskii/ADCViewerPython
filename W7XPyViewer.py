@@ -111,7 +111,10 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         for i in range(len(self.dataIn)):
             resampler = DataResample(self)
             target_frqHz = int(np.double(self.NewSamplingRate_kHz.text())*1000) if np.double(self.NewSamplingRate_kHz.text())>0.01 else 1000000
-            resampler.downSampleDecimate(self.dataIn[i],self.frq[i],target_frqHz)
+            self.dataIn[i] = resampler.downSampleDecimate(self.dataIn[i],self.frq[i],target_frqHz)
+            self.frq[i] = target_frqHz
+            self.dti[i] = np.double(1.0/target_frqHz)
+
 
     def butterBandpassZeroPhase(self):
         dataFilters = DataFilters(self)

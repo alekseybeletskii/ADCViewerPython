@@ -48,8 +48,8 @@ class XYPlotter:
 
                 smoothed = dataFilters.savitzky_golay_filt(signal,int(self.callingObj.winLength.text()),int(self.callingObj.polyOrder.text()))
                 self.callingObj.mainPlotWidget.plot(time, smoothed, pen=pg.mkPen(color='k'))
-            #print('samplingRate,Hz: ', np.double(self.callingObj.frq[i]))
-            #print('size, points: ', np.double(len(signal)))
+            print('samplingRate,Hz: ', np.double(self.callingObj.frq[i]))
+            print('size, points: ', np.double(len(signal)))
 
     # def getXaxisLimits(self, dti):
     #     axX = self.callingObj.mainPlotWidget.plotItem.getAxis('bottom')
