@@ -61,7 +61,7 @@ class ImportFromTxt(QtWidgets.QMainWindow):
        self.callingObj = callingObj
 
    def openCsvTxt_dx(self):
-        self.callingObj.clearAll()
+        self.callingObj.clearAllViewer()
 
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
@@ -78,12 +78,12 @@ class ImportFromTxt(QtWidgets.QMainWindow):
             self.callingObj.dataIn.append(np.asarray(dataTxt['y']))
             filename_and_ext = path.basename(files[i])
             filename, _ = path.splitext(filename_and_ext)
-            self.callingObj.channelsList.append(filename)
+            self.callingObj.dataInLabels.append(filename)
 
             #print(type(dataX))
 
    def  openCsvTxt_fullX(self):
-        self.callingObj.clearAll()
+        self.callingObj.clearAllViewer()
 
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
@@ -97,11 +97,11 @@ class ImportFromTxt(QtWidgets.QMainWindow):
 
             #print(type(dataX))
 
-            self.callingObj.dti.append(dataX)
             self.callingObj.frq.append(int(1))
+            self.callingObj.dti.append(dataX)
             self.callingObj.dataIn.append(np.asarray(dataTxt['y']))
             filename_and_ext = path.basename(files[i])
             filename, _ = path.splitext(filename_and_ext)
-            self.callingObj.channelsList.append(filename)
+            self.callingObj.dataInLabels.append(filename)
 
 

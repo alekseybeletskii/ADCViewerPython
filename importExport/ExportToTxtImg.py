@@ -1,24 +1,34 @@
-import os.path as ospath
+from os import path, makedirs
 import numpy as np
 import pyqtgraph as pg
+import pyqtgraph.exporters
+
 from datetime import datetime
-class ExportToTxt:
+class ExportToTxtImg:
     def __init__(self, callingObj):
 
         self.callingObj = callingObj
+        self.here = path.dirname(path.realpath(__file__))
+        self.exportDirName = "exported"
+        self.exportDirPath = path.join(self.here, '..', self.exportDirName)
+        if not path.exists(self.exportDirPath):
+            makedirs(self.exportDirPath)
 
     def export_to_csv_v1(self):
 
-        here = ospath.dirname(ospath.realpath(__file__))
-        subdir = "exported"
+
 
         for i in range(len(self.callingObj.dataIn)):
             # filename = str(i) + ".csv"
-            filename = self.callingObj.channelsList[i] + ".csv"
-            filepath = ospath.join(here, subdir, filename.replace(":","-"))
+            filename = self.callingObj.dataInLabels[i] + ".csv"
+            filepath = path.join(self.exportDirPath, filename.replace(":", "-"))
+
             signal = self.callingObj.dataIn[i]
             # time = self.callingObj.dti[i]
-            time = np.arange(0, (len(signal)) * self.callingObj.dti[i], self.callingObj.dti[i])
+            # time = np.arange(0, (len(signal)) * self.callingObj.dti[i], self.callingObj.dti[i])
+            dti = self.callingObj.dti[i]
+            time = np.arange(0, (signal.size) * dti, dti) if self.callingObj.dti[i].size==1 else dti
+
             xLeft = self.callingObj.xLeft if self.callingObj.xLeft > 0 else 0
             xRight = self.callingObj.xRight if self.callingObj.xRight < len(signal) else len(signal) - 1
             np.savetxt(filepath, np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T, delimiter=', ')
@@ -27,17 +37,19 @@ class ExportToTxt:
 
     def export_to_csv_v2(self):
 
-        here = ospath.dirname(ospath.realpath(__file__))
-        subdir = "exported"
+
 
         for i in range(len(self.callingObj.dataIn)):
-            filename = self.callingObj.channelsList[i]
-            filepath = ospath.join(here, subdir, filename.replace(":","-"))
+            filename = self.callingObj.dataInLabels[i]
+            filepath = path.join(self.exportDirPath, filename.replace(":", "-"))
+
             signal = self.callingObj.dataIn[i]
             # time = self.callingObj.dti[i]
-            time = np.arange(0, (len(signal)) * self.callingObj.dti[i], self.callingObj.dti[i])
-
+            # time = np.arange(0, (len(signal)) * self.callingObj.dti[i], self.callingObj.dti[i])
+            dti = self.callingObj.dti[i]
+            time = np.arange(0, (signal.size) * dti, dti) if self.callingObj.dti[i].size==1 else dti
             xLeft = self.callingObj.xLeft if self.callingObj.xLeft > 0 else 0
+
             xRight = self.callingObj.xRight if self.callingObj.xRight < len(signal) else len(signal) - 1
 
             np.savetxt(filepath + "_time_" + ".csv", time[xLeft:xRight])
@@ -51,10 +63,8 @@ class ExportToTxt:
 
     def savePlotTofile(self, x, y):
 
-        here = ospath.dirname(ospath.realpath(__file__))
-        subdir = "exported"
         filename = datetime.utcnow().strftime('%Y-%m-%d-%H-%M-%S') + ".peaks"
-        filepath = ospath.join(here,'..', subdir, filename.replace(":","-"))
+        filepath = path.join(self.exportDirPath, filename.replace(":","-"))
         # peaksX = self.callingObj.allPeaksXPoints
         # peaksY = self.callingObj.allPeaksYPoints
 
@@ -75,4 +85,11 @@ class ExportToTxt:
 
         #print('data exported to utcnow.peaks file')
 
+    def exportWidgetToImg(self,widget):
+
+        filename = datetime.utcnow().strftime('%Y-%m-%d-%H-%M-%S-%f') + ".png"
+        filepath = path.join(self.exportDirPath, filename.replace(":","-"))
+        exporter = pg.exporters.ImageExporter(widget.scene())
+        exporter.export(filepath)
+        # print('spectrogram exported to png')
 

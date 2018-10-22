@@ -60,6 +60,7 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         self.settings["histogramLevelMax"] = float(self.histogramLevelMax_ui.text())
 
         self.settings["saveHistogramColor"] = self.saveHistogramColor_ui.checkState()
+        self.settings["exportSpectrogramToImg"] = self.exportSpectrogramToImg_ui.checkState()
 
 
 
@@ -106,6 +107,7 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         self.histogramLevelMax_ui.setText(str(self.settings["histogramLevelMax"]))
 
         self.saveHistogramColor_ui.setCheckState(self.settings["saveHistogramColor"])
+        self.exportSpectrogramToImg_ui.setCheckState(self.settings["exportSpectrogramToImg"])
 
     def loadSettingsFromFile(self):
         with open(self.settingsFile) as json_file:
@@ -135,6 +137,7 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
             self.settings["histogramLevelMax"] = settingsFromFile["histogramLevelMax"]
 
             self.settings["saveHistogramColor"] = settingsFromFile["saveHistogramColor"]
+            self.settings["exportSpectrogramToImg"] = settingsFromFile["exportSpectrogramToImg"]
 
         self.putSettingsToUi()
 
@@ -171,6 +174,7 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         self.settings["histogramLevelMax"] = 1
 
         self.settings["saveHistogramColor"] = False
+        self.settings["exportSpectrogramToImg"] = False
 
 
 

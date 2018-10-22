@@ -8,8 +8,9 @@ class ImportFromMdsplus:
         # self.mdsConnection = mdspl.Connection('ssh://oleb@mds-trm-1.ipp-hgw.mpg.de')
     
     def openQXT(self):
-        self.callingObj.clearAll()
-        self.readChannelsList('importExport/QXTchList.txt')
+        self.readDataLabels('importExport/QXTchList.txt')
+
+        self.callingObj.clearAllViewer()
         self.mdsConnection.get(self.setTimeContext())
         shotNumber = self.callingObj.shot.text()
         shotNumber = int(shotNumber) if len(shotNumber)==9 else 171123034
@@ -19,11 +20,11 @@ class ImportFromMdsplus:
         # self.mdsConnection.openTree('qxt1', 171123027)
         # self.mdsConnection.openTree('qxt1', 171123034)
 
-        for i in range(len(self.callingObj.channelsList)):
-            dat_raw = np.asarray(self.mdsConnection.get(f'DATA:{self.callingObj.channelsList[i]}'))
-            t_raw = self.mdsConnection.get(f'DIM_OF(DATA:{self.callingObj.channelsList[i]})')
+        for i in range(len(self.callingObj.dataInLabels)):
+            dat_raw = np.asarray(self.mdsConnection.get(f'DATA:{self.callingObj.dataInLabels[i]}'))
+            t_raw = self.mdsConnection.get(f'DIM_OF(DATA:{self.callingObj.dataInLabels[i]})')
             # dat_raw = self.mdsConnection.get('DATA:CH84')
-            # signal = self.mdsConnection.get(f'DATA:{self.callingObj.channelsList[i]}')
+            # signal = self.mdsConnection.get(f'DATA:{self.callingObj.dataInLabels[i]}')
             # dat_raw = np.double(signal.data())
             # t_raw = signal.dim_of()
             # startDataTime = datetime.utcfromtimestamp(t_raw[0] // 1000000000).second
@@ -46,8 +47,8 @@ class ImportFromMdsplus:
         # fs = np.int(conn.get('\W7X::TOP.QOC.HARDWARE:ACQ2106_064:CLOCK'))
         # t_raw = np.double(MDSraw.dim_of().data()) / fs
 
-        self.callingObj.clearAll()
-        self.readChannelsList('importExport/QOCchList.txt')
+        self.callingObj.clearAllViewer()
+        self.readDataLabels('importExport/QOCchList.txt')
         shotNumber = self.callingObj.shot.text()
         shotNumber = int(shotNumber) if len(shotNumber)==9 else 180823005
         self.callingObj.shot.setText(str(shotNumber))
@@ -60,9 +61,9 @@ class ImportFromMdsplus:
         # fs = np.int(self.mdsConnection.get('HARDWARE:ACQ2106_064:CLOCK'))
 
 
-        for i in range(len(self.callingObj.channelsList)):
-            dat_raw = np.asarray(self.mdsConnection.get(f'DATA:{self.callingObj.channelsList[i]}'))
-            t_raw = self.mdsConnection.get(f'DIM_OF(DATA:{self.callingObj.channelsList[i]})')
+        for i in range(len(self.callingObj.dataInLabels)):
+            dat_raw = np.asarray(self.mdsConnection.get(f'DATA:{self.callingObj.dataInLabels[i]}'))
+            t_raw = self.mdsConnection.get(f'DIM_OF(DATA:{self.callingObj.dataInLabels[i]})')
             dti = abs(np.double(t_raw[len(t_raw)-1]-t_raw[len(t_raw)-2]))*1e-9
             self.callingObj.dataIn.append(dat_raw)
             self.callingObj.dti.append(dti)
@@ -84,6 +85,6 @@ class ImportFromMdsplus:
             settimecontext = "SETTIMECONTEXT(*,*,*)"
         return settimecontext
 
-    def readChannelsList(self,fileName):
+    def readDataLabels(self,fileName):
         with open(fileName, 'r') as text_file:
-            self.callingObj.channelsList = text_file.read().splitlines()
+            self.callingObj.dataInLabels = text_file.read().splitlines()

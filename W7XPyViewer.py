@@ -61,7 +61,7 @@ import pyqtgraph as pg
 from importExport.ImportFromTxt import ImportFromTxt
 from importExport.ImportFromMdsplus import ImportFromMdsplus
 from utils.XYPlotter import XYPlotter
-from importExport.ExportToTxt import ExportToTxt
+from importExport.ExportToTxtImg import ExportToTxtImg
 from utils.DataFilters import DataFilters
 from utils.DataResample import DataResample
 from W7XSpectrogram import W7XSpectrogram
@@ -80,7 +80,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.dataIn = []
         self.dti = []
         self.frq = []
-        self.channelsList = []
+        self.dataInLabels = []
         self.nextPen = 0
         self.setupUi(self)  # This is defined in design.py file automatically
         # It sets up layout and widgets that are defined
@@ -92,7 +92,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.actionExport_to_csv.triggered.connect(self.export_to_csv_v1)
         self.actionExport_time_to_separate_file.triggered.connect(self.export_to_csv_v2)
 
-        self.actionClear.triggered.connect(self.clearAll)
+        self.actionClear.triggered.connect(self.clearAllViewer)
         self.actionExit.triggered.connect(self.exitApp)
         self.xLeft=0
         self.xRight=0
@@ -125,14 +125,15 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
 
     def drawSpectrogram(self):
+        w7xSpectr = W7XSpectrogram(self)
+        w7xSpectr.show()
         for i in range(len(self.dataIn)):
-            w7xSpectr = W7XSpectrogram(self)
-            w7xSpectr.show()
-            w7xSpectr.setDataToSpectrogram(self.dataIn[i][self.xLeft:self.xRight],self.frq[i])
+            w7xSpectr.setDataToSpectrogram( self.dataInLabels[i], self.dataIn[i][self.xLeft:self.xRight],self.frq[i])
             w7xSpectr.drawSpectrogram()
-        self.clearAll()
+            # w7xSpectr.close()
+        self.clearAllViewer()
 
-    def clearAll(self):
+    def clearAllViewer(self):
         self.mainPlotWidget.clear()
         self.mainPlotWidget.plotItem.enableAutoRange()
         self.files.clear()
@@ -140,7 +141,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.dti.clear()
         self.frq.clear()
         self.nextPen = 0
-        self.channelsList.clear()
+        self.dataInLabels.clear()
         self.xLeft=0
         self.xRight=0
 
@@ -161,11 +162,11 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         openQoc.openQOC()
 
     def export_to_csv_v1(self):
-        toTxt = ExportToTxt(self)
+        toTxt = ExportToTxtImg(self)
         toTxt.export_to_csv_v1()
 
     def export_to_csv_v2(self):
-        toTxt = ExportToTxt(self)
+        toTxt = ExportToTxtImg(self)
         toTxt.export_to_csv_v2()
 
     def drawPlots(self):

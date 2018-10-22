@@ -1,7 +1,7 @@
 from skimage.feature.peak import peak_local_max
 import numpy as np
 import pyqtgraph as pg
-from  importExport.ExportToTxt import ExportToTxt
+from  importExport.ExportToTxtImg import ExportToTxtImg
 from utils.GetDataLimits import GetDataLimits
 
 
@@ -23,7 +23,7 @@ class SpectrogramPeaksDetection:
             self.callingObj.peakSlider.saveAllPeaks_btn.clicked.connect(self.saveAllPeaksToFile)
 
         def saveAllPeaksToFile(self):
-            exportToFile = ExportToTxt(self.callingObj)
+            exportToFile = ExportToTxtImg(self.callingObj)
             exportToFile.savePlotTofile(self.callingObj.allPeaksXPoints, self.callingObj.allPeaksYPoints)
         def appendPeaksToList(self):
             self.callingObj.allPeaksXPoints.extend(self.peaksX)
@@ -97,10 +97,10 @@ class SpectrogramPeaksDetection:
 
                 # peaksCurve = pg.PlotDataItem(peaksX, peaksY, pen=None, name="Red curve", symbol='o' , symbolBrush = "r", symbolPen = "r", symbolSize=9)
                 # self.callingObj.spectrPlot.addItem(peaksCurve)
-
                 self.callingObj.spectrPlot.removeItem(self.callingObj.peaksCurve)
                 self.callingObj.peaksCurve = pg.PlotDataItem()
                 self.callingObj.spectrPlot.addItem(self.callingObj.peaksCurve)
+                # custom pen : pen=pg.mkPen(color=(255,0,0), width=5)
                 self.callingObj.peaksCurve.setData(x, y,
-                                                   pen=None, name="Red curve", symbol='o', symbolBrush=pen,
+                                                   pen=None, name="allPeaks", symbol='o', symbolBrush=pen,
                                                    symbolPen=pen, symbolSize=2)

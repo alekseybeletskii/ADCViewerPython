@@ -1,6 +1,6 @@
 {
-    "fs_kHz": 44.1,
     "nfft": 1024,
+    "fs_kHz": 500.0,
     "window": "hamming",
     "nperseg": 1024,
     "noverlap": 900,
@@ -45,9 +45,10 @@
     "bandpassHighcut_kHz": 20.0,
     "order": 5,
     "applyDownsampling": 0,
-    "targetFrq_kHz": 0.001,
+    "targetFrq_kHz": 44.1,
     "setHistogramLevels": 2,
-    "histogramLevelMin": 0.01,
-    "histogramLevelMax": 0.1,
-    "saveHistogramColor": 0
+    "histogramLevelMin": 0.001,
+    "histogramLevelMax": 0.3,
+    "saveHistogramColor": 0,
+    "exportSpectrogramToImg": 0
 }

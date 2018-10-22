@@ -49,8 +49,9 @@
 
 
 # from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5 import QtGui, QtWidgets
+from PyQt5 import QtGui, QtWidgets, QtCore
 # from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
+
 
 from GUIs import spectrogramLayout
 # it also keeps events etc that we defined in Qt Design
@@ -72,6 +73,8 @@ from utils.SpectgrogramSettings import SpectgrogramSettings
 from utils.DataFilters import DataFilters
 from utils.DataResample import DataResample
 
+from importExport.ExportToTxtImg import ExportToTxtImg
+
 
 class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
@@ -92,11 +95,10 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.settings = {}
         self.spectrogramSettingsWidget.setDefaultSettings()
 
-        self.generateData()
 
         self.redrawSpectrogramBtn.clicked.connect(self.drawSpectrogram)
         self.settings_btn.clicked.connect(self.settingsUi)
-        self.actionClearAll.triggered.connect(self.clearAll)
+        self.actionClearAll.triggered.connect(self.clearAllSpectrogram)
 
         self.actionGenerateTestData.triggered.connect(self.generateData)
         self.actionExit.triggered.connect(self.exitApp)
@@ -112,6 +114,7 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.SxxMax = None
         self.SxxMin = None
         self.frq = 0
+        self.spectrogramTitle = 'spectrogram title'
 
         self.peakSlider = SliderWidget(0.1, 1)
 
@@ -121,7 +124,6 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
         self.allPeaksXPoints = []
         self.allPeaksYPoints = []
-
         self.spectrPeaksDetection = SpectrogramPeaksDetection(self)
 
         self.spectrPlot = self.win.addPlot()
@@ -132,6 +134,22 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.win.addItem(self.hist)
         self.hotkey = {}
         self.ui_hotkey('ajustSettings', "Shift+s", self.settingsUi)
+
+
+        self.dataToSpectrogram = np.array([])
+
+        self.generateData()
+
+
+
+    def clearAllSpectrogram(self):
+        # self.spectrogram_UI.clear()
+        self.Sxx = []
+        self.SxxMax = None
+        self.SxxMin = None
+        self.allPeaksXPoints = []
+        self.allPeaksYPoints = []
+        self.dataToSpectrogram = np.array([])
 
     def ui_hotkey(self, key_name, key_combo, func):
         self.hotkey[key_name] = QtWidgets.QShortcut(QtGui.QKeySequence(key_combo), self)
@@ -162,23 +180,15 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.spectrPeaksDetection.findSpectroPeaks()
 
 
-    def clearAll(self):
-        self.spectrogram_UI.clear()
-        self.Sxx = np.ndarray
-        self.SxxMax = None
-        self.SxxMin = None
-        self.allPeaksXPoints = []
-        self.allPeaksYPoints = []
-
     def generateData(self):
         testDataGenerator = TestDataGenerator(self)
-        # self.dataToSpectrogram, self.frq = testDataGenerator.generatePeriodicAndNoise()
-        self.dataToSpectrogram, self.frq = testDataGenerator.nightingaleSongSpectr()
-        self.spectrogramSettingsWidget.settings["fs_kHz"] = str(self.frq/1000.0)
-        self.spectrogramSettingsWidget.putSettingsToUi()
-        self.spectrogramSettingsWidget.checkAndApplySettins()
+        # d, f = testDataGenerator.generatePeriodicAndNoise()
+        title = 'Nightingale song spectrogram'
+        d, f = testDataGenerator.nightingaleSongSpectr()
+        self.setDataToSpectrogram(title, d, f)
 
-    def setDataToSpectrogram(self,signalIn, frq):
+    def setDataToSpectrogram(self, specTitle, signalIn, frq):
+        self.spectrogramTitle = specTitle
         self.dataToSpectrogram = signalIn
         self.frq = frq
         self.spectrogramSettingsWidget.settings["fs_kHz"] = str(self.frq/1000.0)
@@ -222,6 +232,8 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
         img = pyqtgraph.ImageItem()
 
+        self.spectrPlot.setTitle(self.spectrogramTitle)
+
         self.spectrPlot.addItem(img)
 
 
@@ -232,47 +244,12 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
                   self.f[-1] / np.size(self.Sxx, axis=0))
 
 
-        # x =  np.linspace(0.01,0.05,10)
-        # y =  np.linspace(100000,200000,10)
-        # self.spectrPlot.plot(x, y, pen=pg.mkPen(color=(255,0,0), width=5), name="Red curve", symbol='o' , symbolBrush = "k", symbolPen = "k", symbolSize=18)
-
         self.hist.setImageItem(img)
         self.hist.setLevels(self.SxxMin, self.SxxMax)
         self.hist.gradient.restoreState(self.settings["histoGradient"])
 
         if self.settings["setHistogramLevels"]:
             self.hist.setLevels(self.settings["histogramLevelMin"]*self.SxxMax, self.settings["histogramLevelMax"]*self.SxxMax)
-
-        # if str(self.settings["scaleLinLogSqrt"]).casefold() == 'linear':
-        #     self.hist.setLevels(self.SxxMin, self.SxxMax)
-        # if str(self.settings["scaleLinLogSqrt"]).casefold() == 'sqrt':
-        #     self.hist.setLevels(self.SxxMin, self.SxxMax)
-        # if str(self.settings["scaleLinLogSqrt"]).casefold() == 'log10':
-        #     self.hist.setLevels(self.SxxMin, self.SxxMax)
-
-        # This gradient is roughly comparable to the gradient used by Matplotlib
-        # You can adjust it and then save it using hist.gradient.saveState()
-        # self.hist.gradient.restoreState(
-        #     {'mode': 'rgb',
-        #      'ticks': [(0.5, (0, 182, 188, 255)),
-        #                (1.0, (246, 111, 0, 255)),
-        #                (0.0, (75, 0, 113, 255))]})
-
-        # self.hist.gradient.restoreState(
-        #     {'mode': 'rgb',
-        #      'ticks': [(tickMiddle, (0, 160, 160, 255)),
-        #                (1.0, (255, 255, 255, 255)),
-        #                (0.0, (255, 255, 255, 255))]})
-
-        # self.hist.gradient.restoreState(
-        #     {'mode': 'rgb',
-        #      'ticks': [(tickMiddle, (0, 160, 160, 255)),
-        #
-        #                (0.0, (255, 255, 255, 255))]})
-
-
-        # self.hist.setHistogramRange(0,1)
-
 
 
         # Limit panning/zooming to the spectrogram
@@ -282,16 +259,26 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         # If you include the units, Pyqtgraph automatically scales the axis and adjusts the SI prefix (in this case kHz)
         self.spectrPlot.setLabel('left', "Frequency", units='Hz')
 
+        self.ajustPeakSliderWidget()
+
+        if self.settings["exportSpectrogramToImg"]:
+                self.exportToImg()
+
+    def exportToImg(self):
+        # when widget is not displayed on the screen but used to export image
+        # QtWidgets.QApplication.processEvents()
+        imgExporter = ExportToTxtImg(self)
+        imgExporter.exportWidgetToImg(self.spectrPlot)
 
 
-
-        self.show()
-
+    def ajustPeakSliderWidget(self):
         self.spectrPlot.sigRangeChanged.connect(self.updatePeakSliderRange)
-
         self.peakSlider.setSliderMaxMin(self.SxxMax, self.SxxMin)
         self.peakSlider.slider.setValue(self.peakSlider.slider.maximum())
         self.peakSlider.slider.valueChanged.connect(self.findSpectroPeaks)
+
+    # def showOrExport(self):
+
 
     def exitApp(self):
             # sys.exit()

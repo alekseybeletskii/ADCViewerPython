@@ -104,7 +104,7 @@
      <x>0</x>
      <y>0</y>
      <width>1314</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -170,7 +170,7 @@
   </action>
   <action name="actionClearAll">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>ClearAll</string>
