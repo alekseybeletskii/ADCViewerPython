@@ -38,43 +38,32 @@ class ImportFromMdsplus:
         self.mdsConnection = mdspl.Connection('mds-data-1')
         # self.mdsConnection = mdspl.Connection('ssh://user@mds-trm-1.ipp-hgw.mpg.de')
 
-    def getMdsplusData(self, dataLabelsFile, treeName, shotNum):
-        self.callingObj.clearAllViewer()
-        self.readDataLabels(dataLabelsFile)
-        shotNumber = int(shotNum) if len(shotNum) == 9 else 180823005
-        self.callingObj.shot.setText(str(shotNum))
-        self.mdsConnection.get(self.setTimeContext())
-        self.mdsConnection.openTree(treeName, shotNumber)
-        for i in range(len(self.callingObj.dataInLabels)):
-            dat_raw = np.asarray(self.mdsConnection.get(f'DATA:{self.callingObj.dataInLabels[i]}'))
-            t_raw = self.mdsConnection.get(f'DIM_OF(DATA:{self.callingObj.dataInLabels[i]})')
-            dti = abs(np.double(t_raw[len(t_raw)-1]-t_raw[len(t_raw)-2]))*1e-9
-            self.callingObj.dataIn.append(dat_raw)
-            self.callingObj.dti.append(dti)
-            self.callingObj.frq.append(int(round(np.power(dti,-1))))
+    def getMdsplusData(self, dataLabel, treeName, shotNum, start, end, resample):
 
+        self.mdsConnection.get(self.setTimeContext(start, end, resample))
+        self.mdsConnection.openTree(treeName, shotNum)
 
-    def setTimeContext(self):
-        resample = int(self.callingObj.MDSresampling.text()) if self.callingObj.MDSresampling.text().isnumeric() else 1
-        settimecontext = "SETTIMECONTEXT(*,*," + str(resample) + "Q)"
-        if resample < 0:
-            resample = '1000000'
-            settimecontext = "SETTIMECONTEXT(*,*," + str(resample) + "Q)"
-            self.callingObj.MDSresampling.setText(str(resample))
+        dat_raw = np.asarray(self.mdsConnection.get(f'DATA:{dataLabel}'))
+        t_raw = self.mdsConnection.get(f'DIM_OF(DATA:{dataLabel})')
+        dt = abs(np.double(t_raw[len(t_raw)-1]-t_raw[len(t_raw)-2]))*1e-9
+        return dat_raw, dt
+
+    def setTimeContext(self, start, end, resample):
+        settimecontext = f'SETTIMECONTEXT({start},{end},{resample}Q)'
         if resample == 1:
-            settimecontext = "SETTIMECONTEXT(*,*,*)"
+            settimecontext = f'SETTIMECONTEXT({start},{end},*)'
         return settimecontext
 
     # def readDataLabels(self,fileName):
     #     with open(fileName, 'r') as text_file:
     #         self.callingObj.dataInLabels = text_file.read().splitlines()
 
-    def readDataLabels(self,fileName):
+    def readDatainLabels(self,fileName):
+        dataInLabels = []
         with open(fileName, 'r') as txtFile:
-
             for line in txtFile:
-
                 if not line[0] == '#':
-                    self.callingObj.dataInLabels.append(line.strip())
-        print(' self.callingObj.dataInLabels: ')
-        print( self.callingObj.dataInLabels)
+                    dataInLabels.append(line.strip())
+                    # print(' self.callingObj.dataInLabels: ')
+            # print( self.callingObj.dataInLabels)
+        return dataInLabels

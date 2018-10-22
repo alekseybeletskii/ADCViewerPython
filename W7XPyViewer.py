@@ -154,12 +154,26 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         CsvTxtR.openCsvTxt_fullX()
 
     def openMdsplusQXT(self):
-        openQxt = ImportFromMdsplus(self)
-        openQxt.getMdsplusData('importExport/QXTchList.txt', 'qxt1', self.shot.text())
-
+        self.openMdsplus('qxt1', 'importExport/QXTchList.txt')
     def openMdsplusQOC(self):
+        self.openMdsplus('qoc','importExport/QOCchList.txt')
+    def openMdsplus(self, treeName, DatainLabelsFile):
+        self.clearAllViewer()
+        start = '*'
+        end = '*'
+        resample = int(self.MDSresampling.text()) if self.MDSresampling.text().isnumeric() and int(self.MDSresampling.text()) > 0 else 1
+        shotNumber = int(self.shot.text()) if len(self.shot.text()) == 9 else 180823005
+        self.MDSresampling.setText(str(resample))
+        self.shot.setText(str(shotNumber))
+
         openQoc = ImportFromMdsplus(self)
-        openQoc.getMdsplusData('importExport/QOCchList.txt', 'qoc', self.shot.text())
+        self.dataInLabels = openQoc.readDatainLabels(DatainLabelsFile)
+
+        for i in range(len(self.dataInLabels)):
+            d, dt = openQoc.getMdsplusData( self.dataInLabels[i], treeName, shotNumber, start, end, resample)
+            self.dataIn.append(d)
+            self.dti.append(dt)
+            self.frq.append(int(round(np.power(dt, -1))))
 
     def export_to_csv_v1(self):
         toTxt = ExportToTxtImg(self)
