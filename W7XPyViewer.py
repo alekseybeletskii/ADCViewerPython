@@ -155,11 +155,11 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
     def openMdsplusQXT(self):
         openQxt = ImportFromMdsplus(self)
-        openQxt.openQXT()
+        openQxt.getMdsplusData('importExport/QXTchList.txt', 'qxt1', self.shot.text())
 
     def openMdsplusQOC(self):
         openQoc = ImportFromMdsplus(self)
-        openQoc.openQOC()
+        openQoc.getMdsplusData('importExport/QOCchList.txt', 'qoc', self.shot.text())
 
     def export_to_csv_v1(self):
         toTxt = ExportToTxtImg(self)
