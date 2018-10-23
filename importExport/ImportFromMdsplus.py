@@ -38,9 +38,9 @@ class ImportFromMdsplus:
         self.mdsConnection = mdspl.Connection('mds-data-1')
         # self.mdsConnection = mdspl.Connection('ssh://user@mds-trm-1.ipp-hgw.mpg.de')
 
-    def getMdsplusData(self, dataLabel, treeName, shotNum, start, end, resample):
+    def getMdsplusData(self, dataLabel, treeName, shotNum, startSecond, endSecond, resample):
 
-        self.mdsConnection.get(self.setTimeContext(start, end, resample))
+        self.mdsConnection.get(self.setTimeContext(startSecond, endSecond, resample))
         self.mdsConnection.openTree(treeName, shotNum)
 
         dat_raw = np.asarray(self.mdsConnection.get(f'DATA:{dataLabel}'))
@@ -50,7 +50,7 @@ class ImportFromMdsplus:
 
     def setTimeContext(self, start, end, resample):
         settimecontext = f'SETTIMECONTEXT({start},{end},{resample}Q)'
-        if resample == 1:
+        if resample == '*':
             settimecontext = f'SETTIMECONTEXT({start},{end},*)'
         return settimecontext
 
@@ -58,8 +58,9 @@ class ImportFromMdsplus:
     #     with open(fileName, 'r') as text_file:
     #         self.callingObj.dataInLabels = text_file.read().splitlines()
 
-    def readDatainLabels(self,fileName):
+    def readDatainLabels(self):
         dataInLabels = []
+        fileName = 'importExport/DatainLabelsFile.txt'
         with open(fileName, 'r') as txtFile:
             for line in txtFile:
                 if not line[0] == '#':

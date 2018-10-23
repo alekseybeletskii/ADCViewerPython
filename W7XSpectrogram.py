@@ -91,7 +91,7 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.setupUi(self)  # This is defined in design.py file automatically
         # It sets up layout and widgets that are defined
 
-        self.spectrogramSettingsWidget = SpectgrogramSettings(self,self)
+        self.spectrogramSettingsWidget = SpectgrogramSettings(self, self)
         self.settings = {}
         self.spectrogramSettingsWidget.setDefaultSettings()
 

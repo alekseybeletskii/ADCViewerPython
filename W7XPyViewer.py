@@ -51,7 +51,7 @@
 # pyuic5 -x name.ui -o name.py
 
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui
 
 from GUIs import w7xPyViewerLayout
 # it also keeps events etc that we defined in Qt Design
@@ -65,6 +65,7 @@ from importExport.ExportToTxtImg import ExportToTxtImg
 from utils.DataFilters import DataFilters
 from utils.DataResample import DataResample
 from W7XSpectrogram import W7XSpectrogram
+from utils.w7xPyViewerSettings import w7xPyViewerSettings
 
 
 class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
@@ -86,8 +87,8 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         # It sets up layout and widgets that are defined
         self.actionOpen_csv_dx.triggered.connect(self.openCsv_dx)
         self.actionOpen_csv_fullX.triggered.connect(self.openCsv_fullX)
-        self.actionOpen_mdsplus_QXT.triggered.connect(self.openMdsplusQXT)
-        self.actionOpen_mdsplus_QOC.triggered.connect(self.openMdsplusQOC)
+        self.actionOpen_mdsplus.triggered.connect(self.openMdsplus)
+        # self.actionOpen_mdsplus_QOC.triggered.connect(self.openMdsplusQOC)
         self.actionDrawPlots.triggered.connect(self.drawPlots)
         self.actionExport_to_csv.triggered.connect(self.export_to_csv_v1)
         self.actionExport_time_to_separate_file.triggered.connect(self.export_to_csv_v2)
@@ -98,9 +99,26 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.xRight=0
         self.drawUI.clicked.connect(self.drawPlots)
         self.drawSpectrogramUI.clicked.connect(self.drawSpectrogram)
-        self.resample_btn.clicked.connect(self.resampleDataDecimation)
+        self.settings_btn.clicked.connect(self.settingsUi)
         self.subtractSGF.clicked.connect(self.subtractSGFilter)
         self.replaceWithSGF.clicked.connect(self.replaceWithSGFilter)
+
+
+        self.w7xPyViewerSettingsWidget = w7xPyViewerSettings(self, self)
+        self.settings = {}
+        self.w7xPyViewerSettingsWidget.setDefaultSettings()
+
+        self.hotkey = {}
+
+        self.ui_hotkey('ajustSettings', "Shift+s", self.settingsUi)
+
+
+    def settingsUi(self):
+        self.w7xPyViewerSettingsWidget.show()
+
+    def ui_hotkey(self, key_name, key_combo, func):
+        self.hotkey[key_name] = QtWidgets.QShortcut(QtGui.QKeySequence(key_combo), self)
+        self.hotkey[key_name].activated.connect(func)
 
     def resampleDataResampy(self):
         resampler = DataResample(self)
@@ -153,24 +171,25 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         CsvTxtR = ImportFromTxt(self)
         CsvTxtR.openCsvTxt_fullX()
 
-    def openMdsplusQXT(self):
-        self.openMdsplus('qxt1', 'importExport/QXTchList.txt')
-    def openMdsplusQOC(self):
-        self.openMdsplus('qoc','importExport/QOCchList.txt')
-    def openMdsplus(self, treeName, DatainLabelsFile):
-        self.clearAllViewer()
-        start = '*'
-        end = '*'
-        resample = int(self.MDSresampling.text()) if self.MDSresampling.text().isnumeric() and int(self.MDSresampling.text()) > 0 else 1
-        shotNumber = int(self.shot.text()) if len(self.shot.text()) == 9 else 180823005
-        self.MDSresampling.setText(str(resample))
-        self.shot.setText(str(shotNumber))
+    # def openMdsplusQXT(self):
+    #     self.openMdsplus('qxt1', 'importExport/QXTchList.txt')
+    # def openMdsplusQOC(self):
+    #     self.openMdsplus('qoc','importExport/QOCchList.txt')
 
-        openQoc = ImportFromMdsplus(self)
-        self.dataInLabels = openQoc.readDatainLabels(DatainLabelsFile)
+    def openMdsplus(self):
+        self.clearAllViewer()
+        start = self.settings["startMdsplusTime"]
+        end = self.settings["endMdsplusTime"]
+        resample = self.settings["deltaMdsplusTime"]
+        shotNumber = self.settings["shotNum"]
+        treeName  =  self.settings["treeName"]
+
+
+        openMds = ImportFromMdsplus(self)
+        self.dataInLabels = openMds.readDatainLabels()
 
         for i in range(len(self.dataInLabels)):
-            d, dt = openQoc.getMdsplusData( self.dataInLabels[i], treeName, shotNumber, start, end, resample)
+            d, dt = openMds.getMdsplusData( self.dataInLabels[i], treeName, shotNumber, start, end, resample)
             self.dataIn.append(d)
             self.dti.append(dt)
             self.frq.append(int(round(np.power(dt, -1))))
