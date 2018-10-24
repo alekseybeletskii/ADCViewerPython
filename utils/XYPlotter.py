@@ -57,6 +57,12 @@ class XYPlotter:
 
     def drawPlots(self):
         self.callingObj.mainPlotWidget.clear()
+
+        # Add labels to the axis
+        self.callingObj.mainPlotWidget.setLabel('bottom', "Time", units='s')
+        # If you include the units, Pyqtgraph automatically scales the axis and adjusts the SI prefix (in this case kHz)
+        self.callingObj.mainPlotWidget.setLabel('left', "Amplitude", units='a.u.')
+
         for i in range(len(self.callingObj.dataIn)):
             signal = self.callingObj.dataIn[i]
             dti = self.callingObj.dti[i]

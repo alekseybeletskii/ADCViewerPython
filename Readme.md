@@ -10,8 +10,8 @@ and saved as a text files or fetched directly from the Wendelstein-7X MDSPlus da
 Screenshot
 ==========
 
-![mainLayout](screenshot/mainWindow.png)
-![mainLayout](screenshot/spectrogram.png)
+![mainLayout](screenshot/W7XPyViewer.png)
+![mainLayout](screenshot/W7XSpectrogram.png)
 
 The application is based on the next packages:
 
