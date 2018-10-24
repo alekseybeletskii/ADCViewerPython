@@ -435,7 +435,7 @@ class Ui_spectrogramSettingsWidget(object):
         self.label_14.setText(_translate("spectrogramSettingsWidget", "target frq, kHz"))
         self.targetFrq_kHz_ui.setText(_translate("spectrogramSettingsWidget", "500"))
         self.label_16.setText(_translate("spectrogramSettingsWidget", "set histogram levels"))
-        self.label_17.setText(_translate("spectrogramSettingsWidget", "min(*SxxMin)"))
+        self.label_17.setText(_translate("spectrogramSettingsWidget", "min(*SxxMax)"))
         self.histogramLevelMin_ui.setToolTip(_translate("spectrogramSettingsWidget", "*SxxMax"))
         self.histogramLevelMin_ui.setText(_translate("spectrogramSettingsWidget", "0.1"))
         self.label_18.setText(_translate("spectrogramSettingsWidget", "max(*SxxMax)"))

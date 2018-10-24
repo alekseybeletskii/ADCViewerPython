@@ -2,8 +2,11 @@ from os import path, makedirs
 import numpy as np
 import pyqtgraph as pg
 import pyqtgraph.exporters
-
 from datetime import datetime
+
+from PyQt5.QtGui import QScreen
+
+
 class ExportToTxtImg:
     def __init__(self, callingObj):
 
@@ -87,9 +90,16 @@ class ExportToTxtImg:
 
     def exportWidgetToImg(self,widget):
 
-        filename = datetime.utcnow().strftime('%Y-%m-%d-%H-%M-%S-%f') + ".png"
+        # exporter = pg.exporters.ImageExporter(widget.scene())
+        # exporter.export(filepath)
+        # exporter.parameters()['width'] = widget.scene().sceneRect().width()
+#!!!!!!!!!!!
+        # for some reason, pyqtgraph.exporters.ImageExporter deteriorates spectrogram resolution during export
+        # both in exported file and in the exported widget
+#!!!!!!!!!!!
+
+        filename = datetime.utcnow().strftime('%Y-%m-%d-%H-%M-%S-%f') + ".jpg"
         filepath = path.join(self.exportDirPath, filename.replace(":","-"))
-        exporter = pg.exporters.ImageExporter(widget.scene())
-        exporter.export(filepath)
-        # print('spectrogram exported to png')
+        p = widget.grab()
+        p.save(filepath, 'jpg')
 

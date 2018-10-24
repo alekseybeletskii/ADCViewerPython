@@ -75,6 +75,10 @@ from utils.DataResample import DataResample
 
 from importExport.ExportToTxtImg import ExportToTxtImg
 
+from os import path
+import pyqtgraph.exporters
+from datetime import datetime
+
 
 class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
@@ -107,7 +111,7 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
         self.Sxx = np.ndarray
 
-        self.win = self.spectrogram_UI
+        self.spectrogramWindow = self.spectrogram_UI
         self.spectrPlot = None
         self.f = None
         self.t = None
@@ -126,12 +130,12 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.allPeaksYPoints = []
         self.spectrPeaksDetection = SpectrogramPeaksDetection(self)
 
-        self.spectrPlot = self.win.addPlot()
+        self.spectrPlot = self.spectrogramWindow.addPlot()
 
         # a histogram with which to control the gradient of the image
         self.hist = pg.HistogramLUTItem(fillHistogram=False)
         # If don't add the histogram to the window, it stays invisible
-        self.win.addItem(self.hist)
+        self.spectrogramWindow.addItem(self.hist)
         self.hotkey = {}
         self.ui_hotkey('ajustSettings', "Shift+s", self.settingsUi)
 
@@ -198,77 +202,68 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
     def drawSpectrogram(self):
 
+        self.draw()
+
+        if self.settings["exportSpectrogramToImg"]:
+            self.exportToImg()
+
+    def draw(self):
         # self.frq = self.settings["fs_kHz"] * 1000.0
-
         self.peakSlider.slider.disconnect()
-
         if self.settings["applyDownsampling"]:
             self.resampleDataDecimation()
             self.spectrogramSettingsWidget.settings["applyDownsampling"] = False
             self.spectrogramSettingsWidget.putSettingsToUi()
-
         if self.settings["applyBandPass"]:
             self.butterBandpassZeroPhase()
             self.spectrogramSettingsWidget.settings["applyBandPass"] = False
             self.spectrogramSettingsWidget.putSettingsToUi()
-
         self.f, self.t, self.Sxx = signal.spectrogram(self.dataToSpectrogram,
                                                       nfft=self.settings["nfft"],
-                                                      fs=int(float(self.settings["fs_kHz"])*1000.0),
+                                                      fs=int(float(self.settings["fs_kHz"]) * 1000.0),
                                                       window=self.settings["window"],
                                                       nperseg=self.settings["nperseg"],
                                                       noverlap=self.settings["noverlap"],
                                                       detrend=self.settings["detrend"],
                                                       scaling=self.settings["scaling"],
                                                       mode=self.settings["mode"])
-
         if str(self.settings["scaleLinLogSqrt"]).casefold() == 'log10':
             self.Sxx = 10 * np.log10(self.Sxx)
         elif str(self.settings["scaleLinLogSqrt"]).casefold() == 'sqrt':
             self.Sxx = np.sqrt(self.Sxx)
-
         self.SxxMin = np.min(self.Sxx)
         self.SxxMax = np.max(self.Sxx)
-
         img = pyqtgraph.ImageItem()
-
         self.spectrPlot.setTitle(self.spectrogramTitle)
-
         self.spectrPlot.addItem(img)
-
-
         # self.Sxx contains the amplitude for each pixel
         img.setImage(self.Sxx)
         # Scale the X and Y Axis to time and frequency (standard is pixels)
         img.scale(self.t[-1] / np.size(self.Sxx, axis=1),
                   self.f[-1] / np.size(self.Sxx, axis=0))
-
-
         self.hist.setImageItem(img)
         self.hist.setLevels(self.SxxMin, self.SxxMax)
         self.hist.gradient.restoreState(self.settings["histoGradient"])
-
         if self.settings["setHistogramLevels"]:
-            self.hist.setLevels(self.settings["histogramLevelMin"]*self.SxxMax, self.settings["histogramLevelMax"]*self.SxxMax)
-
-
+            self.hist.setLevels(self.settings["histogramLevelMin"] * self.SxxMax,
+                                self.settings["histogramLevelMax"] * self.SxxMax)
         # Limit panning/zooming to the spectrogram
         self.spectrPlot.setLimits(xMin=0, xMax=self.t[-1], yMin=0, yMax=self.f[-1])
         # Add labels to the axis
         self.spectrPlot.setLabel('bottom', "Time", units='s')
         # If you include the units, Pyqtgraph automatically scales the axis and adjusts the SI prefix (in this case kHz)
         self.spectrPlot.setLabel('left', "Frequency", units='Hz')
-
         self.ajustPeakSliderWidget()
-
-        if self.settings["exportSpectrogramToImg"]:
-                self.exportToImg()
 
     def exportToImg(self):
         # when widget is not displayed on the screen but used to export image
         # QtWidgets.QApplication.processEvents()
         imgExporter = ExportToTxtImg(self)
-        imgExporter.exportWidgetToImg(self.spectrPlot)
+        imgExporter.exportWidgetToImg(self.spectrogramWindow)
+
+
+
+
 
 
     def ajustPeakSliderWidget(self):

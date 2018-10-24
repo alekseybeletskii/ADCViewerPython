@@ -853,7 +853,7 @@
        </size>
       </property>
       <property name="text">
-       <string>min(*SxxMin)</string>
+       <string>min(*SxxMax)</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

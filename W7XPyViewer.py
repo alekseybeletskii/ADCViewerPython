@@ -68,6 +68,8 @@ from W7XSpectrogram import W7XSpectrogram
 from utils.w7xPyViewerSettings import w7xPyViewerSettings
 
 
+
+
 class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
     def __init__(self):
@@ -165,9 +167,12 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
     def openCsv_dx(self):
         CsvTxtR = ImportFromTxt(self)
         CsvTxtR.openCsvTxt_dx()
+        self.drawPlots()
+
     def openCsv_fullX(self):
         CsvTxtR = ImportFromTxt(self)
         CsvTxtR.openCsvTxt_fullX()
+        self.drawPlots()
 
     # def openMdsplusQXT(self):
     #     self.openMdsplus('qxt1', 'importExport/QXTchList.txt')
@@ -195,6 +200,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
             self.dataIn.append(d)
             self.dti.append(dt)
             self.frq.append(int(round(np.power(dt, -1))))
+        self.drawPlots()
 
     def export_to_csv_v1(self):
         toTxt = ExportToTxtImg(self)
