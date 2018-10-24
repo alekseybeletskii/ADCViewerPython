@@ -23,7 +23,7 @@
 #  *
 #  * The software is distributed to You under terms of the GNU General Public
 #  * License. This means it is "free software". However, any program, using
-#  * ADCDataViewer _MUST_ be the "free software" as well.
+#  * w7x-PyViewer _MUST_ be the "free software" as well.
 #  * See the GNU General Public License for more details
 #  * (file ./COPYING in the root of the distribution
 #  * or website <http://www.gnu.org/licenses/>)
@@ -43,9 +43,6 @@
 #  */
 #
 
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 from PyQt5 import QtWidgets
 
