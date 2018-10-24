@@ -74,7 +74,7 @@ class ImportFromTxt(QtWidgets.QMainWindow):
             dataX = dataTxt['x']
             dti = abs(np.double(dataX[len(dataX)-1]-dataX[len(dataX)-2]))
             self.callingObj.dti.append(dti)
-            self.callingObj.frq.append(int(1/dti))
+            self.callingObj.frq.append(int(round(np.power(dti, -1))))
             self.callingObj.dataIn.append(np.asarray(dataTxt['y']))
             filename_and_ext = path.basename(files[i])
             filename, _ = path.splitext(filename_and_ext)
@@ -96,8 +96,8 @@ class ImportFromTxt(QtWidgets.QMainWindow):
             dataX = np.asarray(dataTxt['x'])
 
             #print(type(dataX))
-
-            self.callingObj.frq.append(int(1))
+            dti = abs(np.double(dataX[len(dataX) - 1] - dataX[len(dataX) - 2]))
+            self.callingObj.frq.append(int(round(np.power(dti, -1))))
             self.callingObj.dti.append(dataX)
             self.callingObj.dataIn.append(np.asarray(dataTxt['y']))
             filename_and_ext = path.basename(files[i])

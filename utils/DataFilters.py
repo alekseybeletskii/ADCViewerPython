@@ -8,12 +8,12 @@ class DataFilters:
 
     def subtractSGFilter(self):
         for i in range(len(self.callingObj.dataIn)):
-            smoothed = self.savitzky_golay_filt(self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight], int(self.callingObj.winLength.text()), int(self.callingObj.polyOrder.text()))
+            smoothed = self.savitzky_golay_filt(self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight], self.callingObj.settings["sgFilterWindow"],self.callingObj.settings["sgFilterPolyOrder"])
             self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight] = self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight] - smoothed
 
     def replaceWithSGFilter(self):
         for i in range(len(self.callingObj.dataIn)):
-            smoothed = self.savitzky_golay_filt(self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight], int(self.callingObj.winLength.text()), int(self.callingObj.polyOrder.text()))
+            smoothed = self.savitzky_golay_filt(self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight], self.callingObj.settings["sgFilterWindow"],self.callingObj.settings["sgFilterPolyOrder"])
             self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight] =  smoothed
 
     def savitzky_golay_filt(self,data, window_length=1001, polyorder=0, deriv=0, delta=1.0, axis=-1, mode='interp'):

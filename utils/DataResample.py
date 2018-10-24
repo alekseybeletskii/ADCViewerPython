@@ -1,4 +1,4 @@
-import nnresample
+# import nnresample
 from scipy import signal
 import resampy # resampy uses sinc filter that has linear phase response
 # all frequency components of the input signal are shifted in time (usually delayed)
@@ -8,13 +8,13 @@ class DataResample:
     def __init__(self, callingObj):
         self.callingObj = callingObj
 
-    def downSampleResampy(self,newSampleRateHz):
-        for i in range(len(self.callingObj.dataIn)):
-            # self.callingObj.dataIn[i] = nnresample.resample( self.callingObj.dataIn[i], newSampleRateHz, self.callingObj.frq[i])
-            # self.callingObj.dataIn[i] = signal.resample_poly( self.callingObj.dataIn[i], newSampleRateHz, self.callingObj.frq[i])
-            self.callingObj.dataIn[i] = resampy.resample( self.callingObj.dataIn[i], self.callingObj.frq[i], newSampleRateHz)
-            self.callingObj.frq[i] = newSampleRateHz
-            self.callingObj.dti[i] = np.double(1.0/newSampleRateHz)
+    # def downSampleResampy(self,newSampleRateHz):
+    #     for i in range(len(self.callingObj.dataIn)):
+    #         # self.callingObj.dataIn[i] = nnresample.resample( self.callingObj.dataIn[i], newSampleRateHz, self.callingObj.frq[i])
+    #         # self.callingObj.dataIn[i] = signal.resample_poly( self.callingObj.dataIn[i], newSampleRateHz, self.callingObj.frq[i])
+    #         self.callingObj.dataIn[i] = resampy.resample( self.callingObj.dataIn[i], self.callingObj.frq[i], newSampleRateHz)
+    #         self.callingObj.frq[i] = newSampleRateHz
+    #         self.callingObj.dti[i] = np.double(1.0/newSampleRateHz)
 
     def downSampleDecimate(self, dataIn, dataIn_frqHz, target_frqHz):
         #will  be no phase shift !

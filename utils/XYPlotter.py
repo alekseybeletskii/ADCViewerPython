@@ -46,7 +46,7 @@ class XYPlotter:
             if self.callingObj.applySGF.checkState():
                 dataFilters = DataFilters(self.callingObj)
 
-                smoothed = dataFilters.savitzky_golay_filt(signal,int(self.callingObj.winLength.text()),int(self.callingObj.polyOrder.text()))
+                smoothed = dataFilters.savitzky_golay_filt(signal,self.callingObj.settings["sgFilterWindow"],self.callingObj.settings["sgFilterPolyOrder"])
                 self.callingObj.mainPlotWidget.plot(time, smoothed, pen=pg.mkPen(color='k'))
             print('samplingRate,Hz: ', np.double(self.callingObj.frq[i]))
             print('size, points: ', np.double(len(signal)))

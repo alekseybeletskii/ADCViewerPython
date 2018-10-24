@@ -41,7 +41,7 @@ class w7xPyViewerSettings(QtWidgets.QMainWindow, w7xPyViewerSettingsLayout.Ui_w7
     def saveSettingsToFile(self):
         self.getFromUi()
         self.checkAndApplySettins()
-        with open(self.settingsFile, 'w') as outfile:
+        with open(self.settingsFilePath, 'w') as outfile:
             json.dump(self.settings,outfile, indent=4)
         self.close()
 
@@ -72,7 +72,7 @@ class w7xPyViewerSettings(QtWidgets.QMainWindow, w7xPyViewerSettingsLayout.Ui_w7
 
 
     def loadSettingsFromFile(self):
-        with open(self.settingsFile) as json_file:
+        with open(self.settingsFilePath) as json_file:
             settingsFromFile = json.load(json_file)
             self.settings["shotNum"] = settingsFromFile["shotNum"]
             self.settings["treeName"] = settingsFromFile["treeName"]

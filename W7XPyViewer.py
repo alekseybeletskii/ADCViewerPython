@@ -112,6 +112,9 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
         self.ui_hotkey('ajustSettings', "Shift+s", self.settingsUi)
 
+        self.resampler =  DataResample(self)
+
+
 
     def settingsUi(self):
         self.w7xPyViewerSettingsWidget.show()
@@ -120,26 +123,21 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.hotkey[key_name] = QtWidgets.QShortcut(QtGui.QKeySequence(key_combo), self)
         self.hotkey[key_name].activated.connect(func)
 
-    def resampleDataResampy(self):
-        resampler = DataResample(self)
-        newSampleRateHz = int(np.double(self.NewSamplingRate_kHz.text())*1000) if np.double(self.NewSamplingRate_kHz.text())>0.01 else 1000000
-        resampler.downSampleResampy(newSampleRateHz)
+    # def resampleDataResampy(self):
+    #     resampler = DataResample(self)
+    #     newSampleRateHz = int(np.double(self.NewSamplingRate_kHz.text())*1000) if np.double(self.NewSamplingRate_kHz.text())>0.01 else 1000000
+    #     resampler.downSampleResampy(newSampleRateHz)
 
-    def resampleDataDecimation(self):
-        for i in range(len(self.dataIn)):
-            resampler = DataResample(self)
-            target_frqHz = int(np.double(self.NewSamplingRate_kHz.text())*1000) if np.double(self.NewSamplingRate_kHz.text())>0.01 else 1000000
-            self.dataIn[i] = resampler.downSampleDecimate(self.dataIn[i],self.frq[i],target_frqHz)
-            self.frq[i] = target_frqHz
-            self.dti[i] = np.double(1.0/target_frqHz)
+    def resampleDataDecimation(self, dataToResample, frq_Hz, target_frq_Hz):
+            d = self.resampler.downSampleDecimate(dataToResample, frq_Hz, target_frq_Hz)
+            dt = np.double(1.0/target_frq_Hz)
+            return d, dt
 
 
     def butterBandpassZeroPhase(self):
         dataFilters = DataFilters(self)
         for i in range(len(self.dataIn)):
             self.dataIn[i] = dataFilters.butterworthBandpassZeroPhase(self.dataIn[i],5000,10000,44100,3)
-        self.applySGF.checkState()
-
 
 
     def drawSpectrogram(self):
@@ -190,6 +188,10 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
         for i in range(len(self.dataInLabels)):
             d, dt = openMds.getMdsplusData( self.dataInLabels[i], treeName, shotNumber, start, end, resample)
+
+            if self.settings["applyDownsampling"]:
+                d, dt = self.resampleDataDecimation(d, 1.0/dt, self.settings["targetFrq_kHz"]*1000)
+
             self.dataIn.append(d)
             self.dti.append(dt)
             self.frq.append(int(round(np.power(dt, -1))))
