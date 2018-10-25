@@ -76,9 +76,11 @@ from utils.DataResample import DataResample
 
 from importExport.ExportToTxtImg import ExportToTxtImg
 
-from os import path
-import pyqtgraph.exporters
-from datetime import datetime
+#from os import path
+#import pyqtgraph.exporters
+#from datetime import datetime
+from utils.GetDataLimits import GetDataLimits
+
 
 
 class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
@@ -116,9 +118,16 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.spectrPlot = None
         self.f = None
         self.t = None
+        self.frq = 0
+
         self.SxxMax = None
         self.SxxMin = None
-        self.frq = 0
+
+        self.zoomedSxxMaxMin = {}
+        self.dataXLimitsIndexes = {}
+        self.tLimitsIndexes = {}
+        self.fLimitsIndexes = {}
+
         self.spectrogramTitle = 'spectrogram title'
 
         self.peakSlider = SliderWidget(0.1, 1)
@@ -139,22 +148,31 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.spectrogramWindow.addItem(self.hist)
         self.hotkey = {}
         self.ui_hotkey('ajustSettings', "Shift+s", self.settingsUi)
-
-
         self.dataToSpectrogram = np.array([])
 
         self.generateData()
 
 
+    def findSpectroLimitsIndexes(self):
+        axt = self.spectrPlot.getAxis('bottom')
+        axf = self.spectrPlot.getAxis('left')
+        dt = abs(np.double(
+            self.t[len(self.t) - 1] - self.t[len(self.t) - 2]))
+        self.tLimitsIndexes = GetDataLimits.getDataLimitsIndexes(axt, dt)
+        df = abs(np.double(
+            self.f[len(self.f) - 1] - self.f[len(self.f) - 2]))
+        self.fLimitsIndexes = GetDataLimits.getDataLimitsIndexes(axf, df)
 
-    def clearAllSpectrogram(self):
-        # self.spectrogram_UI.clear()
-        self.Sxx = []
-        self.SxxMax = None
-        self.SxxMin = None
-        self.allPeaksXPoints = []
-        self.allPeaksYPoints = []
-        self.dataToSpectrogram = np.array([])
+        self.dataXLimitsIndexes = GetDataLimits.getDataLimitsIndexes(axt, np.power(np.double(self.frq), -1))
+
+
+        self.zoomedSxxMaxMin['max'] = np.max(
+            self.Sxx[self.fLimitsIndexes.get('minIndex'): self.fLimitsIndexes.get('maxIndex'),
+            self.tLimitsIndexes.get('minIndex'):self.tLimitsIndexes.get('maxIndex')])
+        self.zoomedSxxMaxMin['min'] = np.min(
+            self.Sxx[self.fLimitsIndexes.get('minIndex'): self.fLimitsIndexes.get('maxIndex'),
+            self.tLimitsIndexes.get('minIndex'):self.tLimitsIndexes.get('maxIndex')])
+
 
     def ui_hotkey(self, key_name, key_combo, func):
         self.hotkey[key_name] = QtWidgets.QShortcut(QtGui.QKeySequence(key_combo), self)
@@ -177,8 +195,8 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.spectrogramSettingsWidget.show()
 
     def updatePeakSliderRange(self):
-        self.spectrPeaksDetection.findSpectroLimits()
-        self.spectrPeaksDetection.findSliderRange()
+        self.findSpectroLimitsIndexes()
+        self.peakSlider.setSliderMaxMin(self.zoomedSxxMaxMin['max'], self.zoomedSxxMaxMin['min'])
 
 
     def findSpectroPeaks(self):
@@ -199,6 +217,8 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.spectrogramSettingsWidget.settings["fs_kHz"] = str(self.frq/1000.0)
         self.spectrogramSettingsWidget.putSettingsToUi()
         self.spectrogramSettingsWidget.checkAndApplySettins()
+        self.dataXLimitsIndexes["minIndex"]  = 0
+        self.dataXLimitsIndexes["maxIndex"]  = len(signalIn)-1
 
 
     def drawSpectrogram(self):
@@ -229,9 +249,16 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
                                                       scaling=self.settings["scaling"],
                                                       mode=self.settings["mode"])
         if str(self.settings["scaleLinLogSqrt"]).casefold() == 'log10':
-            self.Sxx = 10 * np.log10(self.Sxx)
+            self.Sxx = np.log10(self.Sxx)
         elif str(self.settings["scaleLinLogSqrt"]).casefold() == 'sqrt':
             self.Sxx = np.sqrt(self.Sxx)
+            # self.Sxx = np.cbrt(self.Sxx)
+            # self.Sxx = np.exp2(self.Sxx)
+            # self.Sxx = np.exp(self.Sxx)
+            # self.Sxx = np.power(self.Sxx, 0.2)
+            # self.Sxx = np.log(self.Sxx)
+
+
         self.SxxMin = np.min(self.Sxx)
         self.SxxMax = np.max(self.Sxx)
         img = pyqtgraph.ImageItem()
@@ -318,6 +345,18 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
     #     noise *= np.exp(-time / 5)
     #     return  carrier + noise
     #
+    def clearAllSpectrogram(self):
+        # self.spectrogram_UI.clear()
+        self.Sxx = []
+        self.SxxMax = None
+        self.SxxMin = None
+        self.allPeaksXPoints = []
+        self.allPeaksYPoints = []
+        self.dataToSpectrogram = np.array([])
+        self.zoomedSxxMaxMin.clear()
+        self.dataXLimitsIndexes.clear()
+        self.tLimitsIndexes.clear()
+        self.fLimitsIndexes.clear()
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

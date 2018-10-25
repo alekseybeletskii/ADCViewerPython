@@ -52,8 +52,8 @@ class GetDataLimits:
     def getDataLimitsIndexes(cls, axIn, x):
         cls.dataLimits = {}
         if type(x) is not np.ndarray :
-            cls.dataLimits["minIndex"] = int(axIn.range[0]/x)
-            cls.dataLimits["maxIndex"] = int(axIn.range[1]/x)
+            cls.dataLimits["minIndex"] = int(round(axIn.range[0]/x))
+            cls.dataLimits["maxIndex"] = int(round(axIn.range[1]/x))
         elif type(x) is np.ndarray:
             i = 0
             while i < x.size:
