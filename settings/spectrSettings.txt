@@ -4,11 +4,11 @@
     "startMdsplusTime": "*",
     "endMdsplusTime": "*",
     "deltaMdsplusTime": "*",
-    "fs_kHz": 2000.0,
+    "fs_kHz": 500.0,
     "nfft": 1024,
     "window": "hamming",
     "nperseg": 1024,
-    "noverlap": 819,
+    "noverlap": 921,
     "detrend": "constant",
     "scaling": "density",
     "mode": "psd",
@@ -37,9 +37,9 @@
             [
                 0.0,
                 [
-                    75,
-                    0,
-                    113,
+                    255,
+                    255,
+                    255,
                     255
                 ]
             ]
@@ -53,7 +53,7 @@
     "targetFrq_kHz": 500.0,
     "setHistogramLevels": 2,
     "histogramLevelMin": 0.0,
-    "histogramLevelMax": 0.1,
+    "histogramLevelMax": 0.05,
     "saveHistogramColor": 0,
     "exportSpectrogramToImg": 2
 }
