@@ -206,8 +206,10 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         targetFrq_Hz = int(np.double(self.settings["targetFrq_kHz"])*1000) if self.frq > np.double(self.settings["targetFrq_kHz"])> 0.01 else self.frq
         self.dataToSpectrogram = resampler.downSampleDecimate(self.dataToSpectrogram, self.frq, targetFrq_Hz)
         self.frq = self.settings["targetFrq_kHz"]*1000
-        self.spectrogramSettingsWidget.settings["fs_kHz"] = str(self.frq/1000.0)
+        self.spectrogramSettingsWidget.settings["fs_kHz"] = self.frq/1000.0
         self.spectrogramSettingsWidget.putSettingsToUi()
+        self.spectrogramSettingsWidget.checkAndApplySettins()
+
 
 
     def butterBandpassZeroPhase(self):
@@ -254,17 +256,21 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
     def draw(self):
         # self.frq = self.settings["fs_kHz"] * 1000.0
+        print('input data frequency, *BEFORE* downsampling, Hz: ' + str(self.frq))
         self.spectrPlot.removeItem(self.spectrogramImage)
 
         self.peakSlider.slider.disconnect()
-        if self.settings["applyDownsampling"]:
+        if self.settings["applyDownsampling"] and self.settings["targetFrq_kHz"]<self.settings["fs_kHz"]:
             self.resampleDataDecimation()
             # self.spectrogramSettingsWidget.settings["applyDownsampling"] = False
-            self.spectrogramSettingsWidget.putSettingsToUi()
+            # self.spectrogramSettingsWidget.putSettingsToUi()
+            print('input data frequency, *AFTER* downsampling, Hz: ' + str(self.frq))
+
         if self.settings["applyBandPass"]:
             self.butterBandpassZeroPhase()
             # self.spectrogramSettingsWidget.settings["applyBandPass"] = False
-            self.spectrogramSettingsWidget.putSettingsToUi()
+            # self.spectrogramSettingsWidget.putSettingsToUi()
+
         self.f, self.t, self.Sxx = signal.spectrogram(self.dataToSpectrogram,
                                                       nfft=self.settings["nfft"],
                                                       fs=int(float(self.settings["fs_kHz"]) * 1000.0),

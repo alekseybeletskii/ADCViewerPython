@@ -274,6 +274,10 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         self.settings["nperseg"] = self.settings["nperseg"] if self.settings["nperseg"] < self.settings["nfft"] else self.settings["nfft"]
         self.settings["noverlap"] = self.settings["noverlap"] if self.settings["noverlap"] < self.settings["nperseg"] else int(0.9*(self.settings["nperseg"]))
         self.settings["targetFrq_kHz"] = self.settings["targetFrq_kHz"] if float(self.settings["targetFrq_kHz"]) < float(self.settings["fs_kHz"]) else self.settings["fs_kHz"]
+        self.settings["bandpassLowcut_kHz"] = self.settings["bandpassLowcut_kHz"] if 0 <  self.settings["bandpassLowcut_kHz"] < self.settings["fs_kHz"] else 0.1*self.settings["fs_kHz"]
+        self.settings["bandpassHighcut_kHz"] = self.settings["bandpassHighcut_kHz"] if self.settings["bandpassLowcut_kHz"] < self.settings["bandpassHighcut_kHz"] < self.settings["fs_kHz"] else 0.4*self.settings["fs_kHz"]
+
+
         self.putSettingsToUi()
 
         self.callingObj.settings = self.settings
