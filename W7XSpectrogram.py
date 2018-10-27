@@ -120,7 +120,6 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.Sxx = np.ndarray
 
         self.spectrogramWindow = self.spectrogram_UI
-        self.spectrPlot = None
         self.f = None
         self.t = None
         self.frq = 0
@@ -133,7 +132,7 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.tLimitsIndexes = {}
         self.fLimitsIndexes = {}
 
-        self.spectrogramTitle = 'spectrogram title'
+        self.spectrogramTitle = ' '
 
         self.peakSlider = SliderWidget(0.1, 1)
 
@@ -146,6 +145,7 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.spectrPeaksDetection = SpectrogramPeaksDetection(self)
 
         self.spectrPlot = self.spectrogramWindow.addPlot()
+        self.spectrPlot.setTitle(self.spectrogramTitle, **{'color': '#0000ff', 'size': '14pt'})
 
         # a histogram with which to control the gradient of the image
         self.hist = pg.HistogramLUTItem(fillHistogram=False)
@@ -174,6 +174,7 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
             self.setDataToSpectrogram(self.dataInLabels[i], d, self.frq)
             self.drawSpectrogram()
             self.dataToSpectrogram = np.array([])
+
 
     def findSpectroLimitsIndexes(self):
         axt = self.spectrPlot.getAxis('bottom')
@@ -249,21 +250,20 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
            self.draw()
 
         if self.settings["exportSpectrogramToImg"]:
-            self.exportToImg()
+            self.exportToImg(self.spectrogramTitle)
 
     def draw(self):
         # self.frq = self.settings["fs_kHz"] * 1000.0
         self.spectrPlot.removeItem(self.spectrogramImage)
-        self.spectrPlot.setTitle(self.spectrogramTitle, **{'color': '#ffffff', 'size': '14pt'})
 
         self.peakSlider.slider.disconnect()
         if self.settings["applyDownsampling"]:
             self.resampleDataDecimation()
-            self.spectrogramSettingsWidget.settings["applyDownsampling"] = False
+            # self.spectrogramSettingsWidget.settings["applyDownsampling"] = False
             self.spectrogramSettingsWidget.putSettingsToUi()
         if self.settings["applyBandPass"]:
             self.butterBandpassZeroPhase()
-            self.spectrogramSettingsWidget.settings["applyBandPass"] = False
+            # self.spectrogramSettingsWidget.settings["applyBandPass"] = False
             self.spectrogramSettingsWidget.putSettingsToUi()
         self.f, self.t, self.Sxx = signal.spectrogram(self.dataToSpectrogram,
                                                       nfft=self.settings["nfft"],
@@ -313,12 +313,14 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.spectrPlot.setLabel('left', "Frequency", units='Hz')
         self.ajustPeakSliderWidget()
 
+        self.spectrPlot.setTitle(self.spectrogramTitle, **{'color': '#0000ff', 'size': '14pt'})
 
-    def exportToImg(self):
+
+    def exportToImg(self, imgTitle):
         # when widget is not displayed on the screen but used to export image
         # QtWidgets.QApplication.processEvents()
         imgExporter = ExportToTxtImg(self)
-        imgExporter.exportWidgetToImg(self.spectrogramWindow)
+        imgExporter.exportWidgetToImg(self.spectrogramWindow,imgTitle)
 
 
 

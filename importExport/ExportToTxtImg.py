@@ -134,7 +134,7 @@ class ExportToTxtImg:
 
         #print('data exported to utcnow.peaks file')
 
-    def exportWidgetToImg(self,widget):
+    def exportWidgetToImg(self, widget, imgTitle):
 
         # exporter = pg.exporters.ImageExporter(widget.scene())
         # exporter.export(filepath)
@@ -144,7 +144,8 @@ class ExportToTxtImg:
         # both in exported file and in the exported widget
 #!!!!!!!!!!!
 
-        filename = datetime.utcnow().strftime('%Y-%m-%d-%H-%M-%S-%f') + ".jpg"
+        # filename = datetime.utcnow().strftime('%Y-%m-%d-%H-%M-%S-%f') + ".jpg"
+        filename = imgTitle + ".png"
         filepath = path.join(self.exportDirPath, filename.replace(":","-"))
         p = widget.grab()
         p.save(filepath, 'jpg')
