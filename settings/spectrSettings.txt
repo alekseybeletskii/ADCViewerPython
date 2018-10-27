@@ -1,9 +1,14 @@
 {
-    "fs_kHz": 500.0,
-    "nfft": 1024,
+    "shotNum": 180906039,
+    "treeName": "qoc",
+    "startMdsplusTime": "*",
+    "endMdsplusTime": "*",
+    "deltaMdsplusTime": "*",
+    "fs_kHz": 2000.0,
+    "nfft": 5000,
     "window": "hamming",
-    "nperseg": 1024,
-    "noverlap": 900,
+    "nperseg": 5000,
+    "noverlap": 4000,
     "detrend": "constant",
     "scaling": "density",
     "mode": "psd",
@@ -32,23 +37,23 @@
             [
                 0.0,
                 [
-                    255,
-                    255,
-                    255,
+                    75,
+                    0,
+                    113,
                     255
                 ]
             ]
         ]
     },
-    "applyBandPass": 2,
-    "bandpassLowcut_kHz": 10.0,
-    "bandpassHighcut_kHz": 120.0,
+    "applyBandPass": 0,
+    "bandpassLowcut_kHz": 5.0,
+    "bandpassHighcut_kHz": 20.0,
     "order": 5,
-    "applyDownsampling": 0,
-    "targetFrq_kHz": 44.1,
+    "applyDownsampling": 2,
+    "targetFrq_kHz": 500.0,
     "setHistogramLevels": 2,
     "histogramLevelMin": 0.0,
-    "histogramLevelMax": 0.3,
+    "histogramLevelMax": 0.01,
     "saveHistogramColor": 0,
-    "exportSpectrogramToImg": 0
+    "exportSpectrogramToImg": 2
 }

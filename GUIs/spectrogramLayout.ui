@@ -112,8 +112,9 @@
      <string>File</string>
     </property>
     <addaction name="actionGenerateTestData"/>
-    <addaction name="actionClearAll"/>
+    <addaction name="actionOpen_mdsplus"/>
     <addaction name="separator"/>
+    <addaction name="actionClearAll"/>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuFile"/>
@@ -125,7 +126,7 @@
   </action>
   <action name="actionGenerateTestData">
    <property name="text">
-    <string>generateTestData</string>
+    <string>Generate Test Data</string>
    </property>
   </action>
   <action name="actionExit">
@@ -174,6 +175,11 @@
    </property>
    <property name="text">
     <string>ClearAll</string>
+   </property>
+  </action>
+  <action name="actionOpen_mdsplus">
+   <property name="text">
+    <string>Open mdsplus</string>
    </property>
   </action>
  </widget>

@@ -78,9 +78,12 @@ class Ui_Spectrogram(object):
         self.actionClearAll = QtWidgets.QAction(Spectrogram)
         self.actionClearAll.setEnabled(True)
         self.actionClearAll.setObjectName("actionClearAll")
+        self.actionOpen_mdsplus = QtWidgets.QAction(Spectrogram)
+        self.actionOpen_mdsplus.setObjectName("actionOpen_mdsplus")
         self.menuFile.addAction(self.actionGenerateTestData)
-        self.menuFile.addAction(self.actionClearAll)
+        self.menuFile.addAction(self.actionOpen_mdsplus)
         self.menuFile.addSeparator()
+        self.menuFile.addAction(self.actionClearAll)
         self.menuFile.addAction(self.actionExit)
         self.menubar.addAction(self.menuFile.menuAction())
 
@@ -94,7 +97,7 @@ class Ui_Spectrogram(object):
         self.settings_btn.setText(_translate("Spectrogram", "settings"))
         self.menuFile.setTitle(_translate("Spectrogram", "File"))
         self.actionOpen_csv.setText(_translate("Spectrogram", "Open_csv"))
-        self.actionGenerateTestData.setText(_translate("Spectrogram", "generateTestData"))
+        self.actionGenerateTestData.setText(_translate("Spectrogram", "Generate Test Data"))
         self.actionExit.setText(_translate("Spectrogram", "Exit"))
         self.actionAbout.setText(_translate("Spectrogram", "about"))
         self.actionExport_to_csv.setText(_translate("Spectrogram", "Export to csv"))
@@ -104,6 +107,7 @@ class Ui_Spectrogram(object):
         self.actionExport_time_to_separate_file.setText(_translate("Spectrogram", "Export time to separate file"))
         self.actionOpen_mdsplus_QOC.setText(_translate("Spectrogram", "Open_mdsplus_QOC"))
         self.actionClearAll.setText(_translate("Spectrogram", "ClearAll"))
+        self.actionOpen_mdsplus.setText(_translate("Spectrogram", "Open mdsplus"))
 
 from pyqtgraph import GraphicsLayoutWidget
 

@@ -62,6 +62,7 @@ import sys
 import numpy as np
 
 import pyqtgraph as pg
+import time
 
 from scipy import signal
 import pyqtgraph
@@ -80,6 +81,9 @@ from importExport.ExportToTxtImg import ExportToTxtImg
 #import pyqtgraph.exporters
 #from datetime import datetime
 from utils.GetDataLimits import GetDataLimits
+
+from importExport.ImportFromMdsplus import ImportFromMdsplus
+
 
 
 
@@ -108,6 +112,7 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.actionClearAll.triggered.connect(self.clearAllSpectrogram)
 
         self.actionGenerateTestData.triggered.connect(self.generateData)
+        self.actionOpen_mdsplus.triggered.connect(self.openMdsplus)
         self.actionExit.triggered.connect(self.exitApp)
         self.xLeft = 0
         self.xRight = 0
@@ -149,9 +154,26 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.hotkey = {}
         self.ui_hotkey('ajustSettings', "Shift+s", self.settingsUi)
         self.dataToSpectrogram = np.array([])
+        self.spectrogramImage = None
+        # self.generateData()
 
-        self.generateData()
+    def openMdsplus(self):
+        start = self.settings["startMdsplusTime"]
+        end = self.settings["endMdsplusTime"]
+        resample = self.settings["deltaMdsplusTime"]
+        shotNumber = self.settings["shotNum"]
+        treeName  =  self.settings["treeName"]
 
+
+        openMds = ImportFromMdsplus(self)
+        self.dataInLabels = openMds.readDatainLabels()
+
+        for i in range(len(self.dataInLabels)):
+            d, dt = openMds.getMdsplusData( self.dataInLabels[i], treeName, shotNumber, start, end, resample)
+            self.frq = (int(round(np.power(dt, -1))))
+            self.setDataToSpectrogram(self.dataInLabels[i], d, self.frq)
+            self.drawSpectrogram()
+            self.dataToSpectrogram = np.array([])
 
     def findSpectroLimitsIndexes(self):
         axt = self.spectrPlot.getAxis('bottom')
@@ -214,7 +236,7 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.spectrogramTitle = specTitle
         self.dataToSpectrogram = signalIn
         self.frq = frq
-        self.spectrogramSettingsWidget.settings["fs_kHz"] = str(self.frq/1000.0)
+        self.spectrogramSettingsWidget.settings["fs_kHz"] = self.frq/1000.0
         self.spectrogramSettingsWidget.putSettingsToUi()
         self.spectrogramSettingsWidget.checkAndApplySettins()
         self.dataXLimitsIndexes["minIndex"]  = 0
@@ -223,13 +245,17 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
     def drawSpectrogram(self):
 
-        self.draw()
+        if self.dataToSpectrogram.size > 0:
+           self.draw()
 
         if self.settings["exportSpectrogramToImg"]:
             self.exportToImg()
 
     def draw(self):
         # self.frq = self.settings["fs_kHz"] * 1000.0
+        self.spectrPlot.removeItem(self.spectrogramImage)
+        self.spectrPlot.setTitle(self.spectrogramTitle, **{'color': '#ffffff', 'size': '14pt'})
+
         self.peakSlider.slider.disconnect()
         if self.settings["applyDownsampling"]:
             self.resampleDataDecimation()
@@ -261,15 +287,19 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
         self.SxxMin = np.min(self.Sxx)
         self.SxxMax = np.max(self.Sxx)
-        img = pyqtgraph.ImageItem()
-        self.spectrPlot.setTitle(self.spectrogramTitle)
-        self.spectrPlot.addItem(img)
+        self.spectrogramImage = pyqtgraph.ImageItem()
+        self.spectrPlot.addItem(self.spectrogramImage)
+
         # self.Sxx contains the amplitude for each pixel
-        img.setImage(self.Sxx)
+        self.spectrogramImage.setImage(self.Sxx)
         # Scale the X and Y Axis to time and frequency (standard is pixels)
-        img.scale(self.t[-1] / np.size(self.Sxx, axis=1),
+        self.spectrogramImage.scale(self.t[-1] / np.size(self.Sxx, axis=1),
                   self.f[-1] / np.size(self.Sxx, axis=0))
-        self.hist.setImageItem(img)
+        self.hist.setImageItem(self.spectrogramImage)
+
+        # self.spectrPlot.removeItem( self.spectrogramImage)
+
+
         self.hist.setLevels(self.SxxMin, self.SxxMax)
         self.hist.gradient.restoreState(self.settings["histoGradient"])
         if self.settings["setHistogramLevels"]:
@@ -282,6 +312,7 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         # If you include the units, Pyqtgraph automatically scales the axis and adjusts the SI prefix (in this case kHz)
         self.spectrPlot.setLabel('left', "Frequency", units='Hz')
         self.ajustPeakSliderWidget()
+
 
     def exportToImg(self):
         # when widget is not displayed on the screen but used to export image
@@ -357,6 +388,9 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.dataXLimitsIndexes.clear()
         self.tLimitsIndexes.clear()
         self.fLimitsIndexes.clear()
+
+        self.spectrPlot.removeItem( self.spectrogramImage)
+        self.spectrogramImage = None
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

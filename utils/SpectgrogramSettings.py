@@ -49,6 +49,7 @@ from GUIs import spectrogramSettingsLayout
 from PyQt5 import QtWidgets, QtGui
 import json
 from pathlib import Path
+from os import path, makedirs
 
 
 class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_spectrogramSettingsWidget):
@@ -62,7 +63,14 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         self.saveSettings_btn.clicked.connect(self.saveSettingsToFile)
         self.resetSetings_btn.clicked.connect(self.setDefaultSettings)
         self.getFromUiApplyAndClose_btn.clicked.connect(self.getFromUiApplyAndClose)
-        self.settingsFile = Path("settings/spectrSettings.txt")
+
+        self.here = path.dirname(path.realpath(__file__))
+        self.settingsDirName = "settings"
+        self.settingsDirPath = path.join(self.here, '..', self.settingsDirName)
+        if not path.exists(self.settingsDirPath):
+            makedirs(self.settingsDirPath)
+        self.settingsFilePath = Path(path.join(self.settingsDirPath, 'spectrSettings.txt'))
+
         self.hotkey = {}
         self.ui_hotkey('ajustSettings', "Return", self.getFromUiApplyAndClose)
 
@@ -74,8 +82,27 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         self.getFromUi()
         self.checkAndApplySettins()
         self.close()
+    def saveSettingsToFile(self):
+
+        if self.saveHistogramColor_ui:
+           self.settings["histoGradient"] = self.callingObj.hist.gradient.saveState()
+           self.saveHistogramColor_ui.setCheckState(False)
+
+        self.getFromUi()
+        self.checkAndApplySettins()
+
+        with open(self.settingsFilePath, 'w') as outfile:
+            json.dump(self.settings,outfile, indent=4)
+        self.close()
 
     def getFromUi(self):
+
+        self.settings["shotNum"]=int(self.shotNum_ui.text())
+        self.settings["treeName"]=self.treeName_ui.text()
+        self.settings["startMdsplusTime"]=self.startMdsplusTime_ui.text()
+        self.settings["endMdsplusTime"]=self.endMdsplusTime_ui.text()
+        self.settings["deltaMdsplusTime"]=self.deltaMdsplusTime_ui.text()
+
         self.settings["nfft"]=int(self.nfft_ui.text())
         self.settings["fs_kHz"]=float(self.fs_kHz_ui.text())
 
@@ -113,20 +140,15 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
 
 
 
-    def saveSettingsToFile(self):
 
-        if self.saveHistogramColor_ui:
-           self.settings["histoGradient"] = self.callingObj.hist.gradient.saveState()
-           self.saveHistogramColor_ui.setCheckState(False)
-
-        self.getFromUi()
-        self.checkAndApplySettins()
-
-        with open(self.settingsFile, 'w') as outfile:
-            json.dump(self.settings,outfile, indent=4)
-        self.close()
 
     def putSettingsToUi(self):
+
+        self.shotNum_ui.setText(str(self.settings["shotNum"]))
+        self.treeName_ui.setText(str(self.settings["treeName"]))
+        self.startMdsplusTime_ui.setText(str(self.settings["startMdsplusTime"]))
+        self.endMdsplusTime_ui.setText(str(self.settings["endMdsplusTime"]))
+        self.deltaMdsplusTime_ui.setText(str(self.settings["deltaMdsplusTime"]))
 
         self.nfft_ui.setText(str(self.settings["nfft"]))
         self.fs_kHz_ui.setText(str(self.settings["fs_kHz"]))
@@ -156,8 +178,15 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         self.exportSpectrogramToImg_ui.setCheckState(self.settings["exportSpectrogramToImg"])
 
     def loadSettingsFromFile(self):
-        with open(self.settingsFile) as json_file:
+        with open(self.settingsFilePath) as json_file:
             settingsFromFile = json.load(json_file)
+
+            self.settings["shotNum"] = settingsFromFile["shotNum"]
+            self.settings["treeName"] = settingsFromFile["treeName"]
+            self.settings["startMdsplusTime"] = settingsFromFile["startMdsplusTime"]
+            self.settings["endMdsplusTime"] = settingsFromFile["endMdsplusTime"]
+            self.settings["deltaMdsplusTime"] = settingsFromFile["deltaMdsplusTime"]
+
             self.settings["fs_kHz"] = settingsFromFile["fs_kHz"]
             self.settings["nfft"] = settingsFromFile["nfft"]
             self.settings["window"] = settingsFromFile["window"]
@@ -188,20 +217,27 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         self.putSettingsToUi()
 
     def setDefaultSettings(self):
-        if self.settingsFile.is_file():
+        if self.settingsFilePath.is_file():
             self.loadSettingsFromFile()
             self.checkAndApplySettins()
             return
         self.settings = {}
-        self.settings["nfft"]=1024
-        self.settings["fs_kHz"]=500
+
+        self.settings["shotNum"]=180906039
+        self.settings["treeName"]='qoc'
+        self.settings["startMdsplusTime"]='*'
+        self.settings["endMdsplusTime"]='*'
+        self.settings["deltaMdsplusTime"]='*'
+
+        self.settings["nfft"]=5000
+        self.settings["fs_kHz"]=2000
         self.settings["window"]='hamming'
-        self.settings["nperseg"]=1024
-        self.settings["noverlap"]=900
+        self.settings["nperseg"]=5000
+        self.settings["noverlap"]=4000
         self.settings["detrend"]='constant'
         self.settings["scaling"]='density'
         self.settings["mode"]='psd'
-        self.settings["scaleLinLogSqrt"]='linear'
+        self.settings["scaleLinLogSqrt"]='sqrt'
         self.settings["histoGradient"]= {'mode': 'rgb',
              'ticks': [(0.5, (0, 182, 188, 255)),
                        (1.0, (246, 111, 0, 255)),
@@ -216,8 +252,8 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         self.settings["targetFrq_kHz"] = 500
 
         self.settings["setHistogramLevels"] = False
-        self.settings["histogramLevelMin"] = 0.01
-        self.settings["histogramLevelMax"] = 1
+        self.settings["histogramLevelMin"] = 0
+        self.settings["histogramLevelMax"] = 0.01
 
         self.settings["saveHistogramColor"] = False
         self.settings["exportSpectrogramToImg"] = False
@@ -230,6 +266,9 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         # return self.settings
 
     def checkAndApplySettins(self):
+        self.settings["shotNum"] = self.settings["shotNum"] if  self.settings["shotNum"] > 100000000 else 180906039
+        # self.settings["deltaMdsplusTime"] = self.settings["deltaMdsplusTime"] if  float(self.settings["deltaMdsplusTime"]) > 1 else '*'
+
         self.settings["fs_kHz"] = self.settings["fs_kHz"] if float(self.settings["fs_kHz"]) > 0 else 1
         self.settings["nfft"] = self.settings["nfft"] if self.settings["nfft"] > 0 else 512
         self.settings["nperseg"] = self.settings["nperseg"] if self.settings["nperseg"] < self.settings["nfft"] else self.settings["nfft"]
