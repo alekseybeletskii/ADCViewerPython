@@ -93,7 +93,9 @@ class Ui_Spectrogram(object):
     def retranslateUi(self, Spectrogram):
         _translate = QtCore.QCoreApplication.translate
         Spectrogram.setWindowTitle(_translate("Spectrogram", "Spectrogram"))
+        self.redrawSpectrogramBtn.setToolTip(_translate("Spectrogram", "\'Shift\'+\'D\'"))
         self.redrawSpectrogramBtn.setText(_translate("Spectrogram", "draw"))
+        self.settings_btn.setToolTip(_translate("Spectrogram", "\'Shift\'+\'S\'"))
         self.settings_btn.setText(_translate("Spectrogram", "settings"))
         self.menuFile.setTitle(_translate("Spectrogram", "File"))
         self.actionOpen_csv.setText(_translate("Spectrogram", "Open_csv"))

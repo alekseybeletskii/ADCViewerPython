@@ -145,14 +145,20 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.spectrPeaksDetection = SpectrogramPeaksDetection(self)
 
         self.spectrPlot = self.spectrogramWindow.addPlot()
-        self.spectrPlot.setTitle(self.spectrogramTitle, **{'color': '#0000ff', 'size': '14pt'})
+        self.spectrPlot.setTitle(self.spectrogramTitle, **{'color': '#0000ff', 'size': '12pt'})
+        # Add labels to the axis
+        self.spectrPlot.setLabel('bottom', "Time", units='s')
+        # If you include the units, Pyqtgraph automatically scales the axis and adjusts the SI prefix (in this case kHz)
+        self.spectrPlot.setLabel('left', "Frequency", units='Hz')
 
         # a histogram with which to control the gradient of the image
         self.hist = pg.HistogramLUTItem(fillHistogram=False)
+        self.hist.gradient.restoreState(self.settings["histoGradient"])
         # If don't add the histogram to the window, it stays invisible
         self.spectrogramWindow.addItem(self.hist)
         self.hotkey = {}
         self.ui_hotkey('ajustSettings', "Shift+s", self.settingsUi)
+        self.ui_hotkey('drawSpectr', "Shift+d", self.drawSpectrogram)
         self.dataToSpectrogram = np.array([])
         self.spectrogramImage = None
         # self.generateData()
@@ -173,7 +179,8 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
             self.frq = (int(round(np.power(dt, -1))))
             self.setDataToSpectrogram(self.dataInLabels[i], d, self.frq)
             self.drawSpectrogram()
-            self.dataToSpectrogram = np.array([])
+            if not i == len(self.dataInLabels) -1 :
+                self.dataToSpectrogram = np.array([])
 
 
     def findSpectroLimitsIndexes(self):
@@ -212,9 +219,13 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
 
 
-    def butterBandpassZeroPhase(self):
+    def butterBandPassZeroPhase(self):
         dataFilters = DataFilters(self)
-        self.dataToSpectrogram = dataFilters.butterworthBandpassZeroPhase(self.dataToSpectrogram,self.settings["bandpassLowcut_kHz"]*1000 ,self.settings["bandpassHighcut_kHz"]*1000, self.frq, self.settings["order"])
+        self.dataToSpectrogram = dataFilters.butterworthBandFilterZeroPhase(self.dataToSpectrogram,self.settings["bandPassLowcut_kHz"]*1000 ,self.settings["bandPassHighcut_kHz"]*1000, self.frq, self.settings["bandPassOrder"], 'bandpass')
+
+    def butterBandStopZeroPhase(self):
+        dataFilters = DataFilters(self)
+        self.dataToSpectrogram = dataFilters.butterworthBandFilterZeroPhase(self.dataToSpectrogram,self.settings["bandStopLowcut_kHz"]*1000 ,self.settings["bandStopHighcut_kHz"]*1000, self.frq, self.settings["bandStopOrder"], 'bandstop')
 
     def settingsUi(self):
         self.spectrogramSettingsWidget.show()
@@ -267,9 +278,12 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
             print('input data frequency, *AFTER* downsampling, Hz: ' + str(self.frq))
 
         if self.settings["applyBandPass"]:
-            self.butterBandpassZeroPhase()
+            self.butterBandPassZeroPhase()
             # self.spectrogramSettingsWidget.settings["applyBandPass"] = False
             # self.spectrogramSettingsWidget.putSettingsToUi()
+
+        if self.settings["applyBandStop"]:
+            self.butterBandStopZeroPhase()
 
         self.f, self.t, self.Sxx = signal.spectrogram(self.dataToSpectrogram,
                                                       nfft=self.settings["nfft"],
@@ -313,10 +327,7 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
                                 self.settings["histogramLevelMax"] * self.SxxMax)
         # Limit panning/zooming to the spectrogram
         self.spectrPlot.setLimits(xMin=0, xMax=self.t[-1], yMin=0, yMax=self.f[-1])
-        # Add labels to the axis
-        self.spectrPlot.setLabel('bottom', "Time", units='s')
-        # If you include the units, Pyqtgraph automatically scales the axis and adjusts the SI prefix (in this case kHz)
-        self.spectrPlot.setLabel('left', "Frequency", units='Hz')
+
         self.ajustPeakSliderWidget()
 
         self.spectrPlot.setTitle(self.spectrogramTitle, **{'color': '#0000ff', 'size': '14pt'})
@@ -396,6 +407,9 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.dataXLimitsIndexes.clear()
         self.tLimitsIndexes.clear()
         self.fLimitsIndexes.clear()
+
+        self.spectrogramTitle = ' '
+        self.spectrPlot.setTitle(' ')
 
         self.spectrPlot.removeItem( self.spectrogramImage)
         self.spectrogramImage = None

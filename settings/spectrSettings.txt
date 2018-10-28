@@ -8,7 +8,7 @@
     "nfft": 1024,
     "window": "hamming",
     "nperseg": 1024,
-    "noverlap": 921,
+    "noverlap": 950,
     "detrend": "constant",
     "scaling": "density",
     "mode": "psd",
@@ -37,23 +37,27 @@
             [
                 0.0,
                 [
-                    255,
-                    255,
-                    255,
+                    75,
+                    0,
+                    113,
                     255
                 ]
             ]
         ]
     },
     "applyBandPass": 2,
-    "bandpassLowcut_kHz": 10.0,
-    "bandpassHighcut_kHz": 120.0,
-    "order": 5,
+    "bandPassLowcut_kHz": 20.0,
+    "bandPassHighcut_kHz": 120.0,
+    "bandPassOrder": 7,
+    "applyBandStop": 2,
+    "bandStopLowcut_kHz": 42.0,
+    "bandStopHighcut_kHz": 52.0,
+    "bandStopOrder": 7,
     "applyDownsampling": 2,
     "targetFrq_kHz": 500.0,
     "setHistogramLevels": 2,
     "histogramLevelMin": 0.0,
-    "histogramLevelMax": 0.05,
+    "histogramLevelMax": 0.1,
     "saveHistogramColor": 0,
     "exportSpectrogramToImg": 2
 }

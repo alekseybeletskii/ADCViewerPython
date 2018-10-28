@@ -65,15 +65,15 @@ class DataFilters:
     def savitzky_golay_filt(self,data, window_length=1001, polyorder=0, deriv=0, delta=1.0, axis=-1, mode='interp'):
         return savgol_filter(data,window_length,polyorder,mode=mode)
 
-
-    def butter_bandpass(self, lowcut, highcut, fs, order=5):
+    def butter_bandpass(self, lowcut, highcut, fs, buttertype='bandpass', order=5):
             nyq = 0.5 * fs
             low = lowcut / nyq
             high = highcut / nyq
-            sos = butter(order, [low, high], analog=False, btype='band', output='sos')
+            sos = butter(order, [low, high], analog=False, btype=buttertype, output='sos')
             return sos
 
-    def butterworthBandpassZeroPhase(self, data, lowcut, highcut, fs, order=5):
-        sos = self.butter_bandpass(lowcut, highcut, fs, order=order)
+#https://stackoverflow.com/questions/12093594/how-to-implement-band-pass-butterworth-filter-with-scipy-signal-butter
+    def butterworthBandFilterZeroPhase(self, data, lowcut, highcut, fs, order, buttertype):
+        sos = self.butter_bandpass(lowcut, highcut, fs, order=order, buttertype=buttertype)
         filtered = sosfiltfilt(sos, data)
         return filtered

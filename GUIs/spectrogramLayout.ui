@@ -52,6 +52,9 @@
           <height>20</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>'Shift'+'D'</string>
+        </property>
         <property name="text">
          <string>draw</string>
         </property>
@@ -70,6 +73,9 @@
           <width>55</width>
           <height>20</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>'Shift'+'S'</string>
         </property>
         <property name="text">
          <string>settings</string>

@@ -121,9 +121,14 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
 
 
         self.settings["applyBandPass"] = self.applyBandPass_ui.checkState()
-        self.settings["bandpassLowcut_kHz"] = float(self.bandpassLowcut_kHz_ui.text())
-        self.settings["bandpassHighcut_kHz"] = float(self.bandpassHighcut_kHz_ui.text())
-        self.settings["order"] = int(self.order_ui.text())
+        self.settings["bandPassLowcut_kHz"] = float(self.bandPassLowcut_kHz_ui.text())
+        self.settings["bandPassHighcut_kHz"] = float(self.bandPassHighcut_kHz_ui.text())
+        self.settings["bandPassOrder"] = int(self.bandPassOrder_ui.text())
+
+        self.settings["applyBandStop"] = self.applyBandStop_ui.checkState()
+        self.settings["bandStopLowcut_kHz"] = float(self.bandStopLowcut_kHz_ui.text())
+        self.settings["bandStopHighcut_kHz"] = float(self.bandStopHighcut_kHz_ui.text())
+        self.settings["bandStopOrder"] = int(self.bandStopOrder_ui.text())
 
         self.settings["applyDownsampling"] = self.applyDownsampling_ui.checkState()
         self.settings["targetFrq_kHz"] = float(self.targetFrq_kHz_ui.text())
@@ -163,9 +168,14 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         # self.callingObj.hist.gradient.restoreState(self.settings["histoGradient"])
 
         self.applyBandPass_ui.setCheckState(self.settings["applyBandPass"])
-        self.bandpassLowcut_kHz_ui.setText(str(self.settings["bandpassLowcut_kHz"]))
-        self.bandpassHighcut_kHz_ui.setText(str(self.settings["bandpassHighcut_kHz"]))
-        self.order_ui.setText(str(self.settings["order"]))
+        self.bandPassLowcut_kHz_ui.setText(str(self.settings["bandPassLowcut_kHz"]))
+        self.bandPassHighcut_kHz_ui.setText(str(self.settings["bandPassHighcut_kHz"]))
+        self.bandPassOrder_ui.setText(str(self.settings["bandPassOrder"]))
+
+        self.applyBandStop_ui.setCheckState(self.settings["applyBandStop"])
+        self.bandStopLowcut_kHz_ui.setText(str(self.settings["bandStopLowcut_kHz"]))
+        self.bandStopHighcut_kHz_ui.setText(str(self.settings["bandStopHighcut_kHz"]))
+        self.bandStopOrder_ui.setText(str(self.settings["bandStopOrder"]))
 
         self.applyDownsampling_ui.setCheckState(self.settings["applyDownsampling"])
         self.targetFrq_kHz_ui.setText(str(self.settings["targetFrq_kHz"]))
@@ -200,9 +210,14 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
             self.settings["histoGradient"] = settingsFromFile["histoGradient"]
 
             self.settings["applyBandPass"] = settingsFromFile["applyBandPass"]
-            self.settings["bandpassLowcut_kHz"] = settingsFromFile["bandpassLowcut_kHz"]
-            self.settings["bandpassHighcut_kHz"] = settingsFromFile["bandpassHighcut_kHz"]
-            self.settings["order"] = settingsFromFile["order"]
+            self.settings["bandPassLowcut_kHz"] = settingsFromFile["bandPassLowcut_kHz"]
+            self.settings["bandPassHighcut_kHz"] = settingsFromFile["bandPassHighcut_kHz"]
+            self.settings["bandPassOrder"] = settingsFromFile["bandPassOrder"]
+
+            self.settings["applyBandStop"] = settingsFromFile["applyBandStop"]
+            self.settings["bandStopLowcut_kHz"] = settingsFromFile["bandStopLowcut_kHz"]
+            self.settings["bandStopHighcut_kHz"] = settingsFromFile["bandStopHighcut_kHz"]
+            self.settings["bandStopOrder"] = settingsFromFile["bandStopOrder"]
 
             self.settings["applyDownsampling"] = settingsFromFile["applyDownsampling"]
             self.settings["targetFrq_kHz"] = settingsFromFile["targetFrq_kHz"]
@@ -229,31 +244,37 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         self.settings["endMdsplusTime"]='*'
         self.settings["deltaMdsplusTime"]='*'
 
-        self.settings["nfft"]=5000
+        self.settings["nfft"]=1024
         self.settings["fs_kHz"]=2000
         self.settings["window"]='hamming'
-        self.settings["nperseg"]=5000
-        self.settings["noverlap"]=4000
+        self.settings["nperseg"]=1024
+        self.settings["noverlap"]=950
         self.settings["detrend"]='constant'
         self.settings["scaling"]='density'
         self.settings["mode"]='psd'
         self.settings["scaleLinLogSqrt"]='sqrt'
-        self.settings["histoGradient"]= {'mode': 'rgb',
-             'ticks': [(0.5, (0, 182, 188, 255)),
+
+        self.settings["histoGradient"]= {"mode": "rgb",
+             "ticks": [(0.5, (0, 182, 188, 255)),
                        (1.0, (246, 111, 0, 255)),
                        (0.0, (75, 0, 113, 255))]}
 
         self.settings["applyBandPass"] = False
-        self.settings["bandpassLowcut_kHz"] = 5
-        self.settings["bandpassHighcut_kHz"] = 20
-        self.settings["order"] = 5
+        self.settings["bandPassLowcut_kHz"] = 1
+        self.settings["bandPassHighcut_kHz"] = 200
+        self.settings["bandPassOrder"] = 7
+
+        self.settings["applyBandStop"] = False
+        self.settings["bandStopLowcut_kHz"] = 42
+        self.settings["bandStopHighcut_kHz"] = 48
+        self.settings["bandStopOrder"] = 7
 
         self.settings["applyDownsampling"] = False
         self.settings["targetFrq_kHz"] = 500
 
         self.settings["setHistogramLevels"] = False
         self.settings["histogramLevelMin"] = 0
-        self.settings["histogramLevelMax"] = 0.01
+        self.settings["histogramLevelMax"] = 0.1
 
         self.settings["saveHistogramColor"] = False
         self.settings["exportSpectrogramToImg"] = False
@@ -274,8 +295,11 @@ class SpectgrogramSettings(QtWidgets.QMainWindow,spectrogramSettingsLayout.Ui_sp
         self.settings["nperseg"] = self.settings["nperseg"] if self.settings["nperseg"] < self.settings["nfft"] else self.settings["nfft"]
         self.settings["noverlap"] = self.settings["noverlap"] if self.settings["noverlap"] < self.settings["nperseg"] else int(0.9*(self.settings["nperseg"]))
         self.settings["targetFrq_kHz"] = self.settings["targetFrq_kHz"] if float(self.settings["targetFrq_kHz"]) < float(self.settings["fs_kHz"]) else self.settings["fs_kHz"]
-        self.settings["bandpassLowcut_kHz"] = self.settings["bandpassLowcut_kHz"] if 0 <  self.settings["bandpassLowcut_kHz"] < self.settings["fs_kHz"] else 0.1*self.settings["fs_kHz"]
-        self.settings["bandpassHighcut_kHz"] = self.settings["bandpassHighcut_kHz"] if self.settings["bandpassLowcut_kHz"] < self.settings["bandpassHighcut_kHz"] < self.settings["fs_kHz"] else 0.4*self.settings["fs_kHz"]
+        self.settings["bandPassLowcut_kHz"] = self.settings["bandPassLowcut_kHz"] if 0 <  self.settings["bandPassLowcut_kHz"] < self.settings["fs_kHz"] else 0.1*self.settings["fs_kHz"]
+        self.settings["bandPassHighcut_kHz"] = self.settings["bandPassHighcut_kHz"] if self.settings["bandPassLowcut_kHz"] < self.settings["bandPassHighcut_kHz"] < self.settings["fs_kHz"] else 0.4*self.settings["fs_kHz"]
+
+        self.settings["bandStopLowcut_kHz"] = self.settings["bandStopLowcut_kHz"] if 0 <  self.settings["bandStopLowcut_kHz"] < self.settings["fs_kHz"] else 0.1*self.settings["fs_kHz"]
+        self.settings["bandStopHighcut_kHz"] = self.settings["bandStopHighcut_kHz"] if self.settings["bandStopLowcut_kHz"] < self.settings["bandStopHighcut_kHz"] < self.settings["fs_kHz"] else 0.4*self.settings["fs_kHz"]
 
 
         self.putSettingsToUi()
