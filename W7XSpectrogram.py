@@ -162,6 +162,13 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.dataToSpectrogram = np.array([])
         self.spectrogramImage = None
         # self.generateData()
+        self.proxy = pg.SignalProxy(self.spectrPlot.scene().sigMouseMoved, rateLimit=60, slot=self.mouseMoved)
+
+    def mouseMoved(self, evt):
+        mousePoint =  self.spectrPlot.vb.mapSceneToView(evt[0])
+        self.mouseXY_UI.setText(
+            "<span style='font-size: 14pt; color: green'> x = %0.2f, <span style='color: green'> y = %0.2f</span>" % (
+            mousePoint.x(), mousePoint.y()))
 
     def openMdsplus(self):
         start = self.settings["startMdsplusTime"]
