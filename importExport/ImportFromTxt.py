@@ -58,7 +58,7 @@ class ImportFromTxt(QtWidgets.QMainWindow):
        self.callingObj = callingObj
 
    def openCsvTxt_dx(self):
-        # self.callingObj.clearAllViewer()
+        self.callingObj.clearAllViewer()
 
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
@@ -80,7 +80,7 @@ class ImportFromTxt(QtWidgets.QMainWindow):
             #print(type(dataX))
 
    def  openCsvTxt_fullX(self):
-        # self.callingObj.clearAllViewer()
+        self.callingObj.clearAllViewer()
 
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog

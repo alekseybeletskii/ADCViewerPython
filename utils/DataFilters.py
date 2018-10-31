@@ -53,11 +53,14 @@ class DataFilters:
         self.callingObj = callingObj
 
     def subtractSGFilter(self):
+        self.callingObj.mainPlotWidget.clear()
         for i in range(len(self.callingObj.dataIn)):
             smoothed = self.savitzky_golay_filt(self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight], self.callingObj.settings["sgFilterWindow"],self.callingObj.settings["sgFilterPolyOrder"])
             self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight] = self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight] - smoothed
 
     def replaceWithSGFilter(self):
+        self.callingObj.mainPlotWidget.clear()
+
         for i in range(len(self.callingObj.dataIn)):
             smoothed = self.savitzky_golay_filt(self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight], self.callingObj.settings["sgFilterWindow"],self.callingObj.settings["sgFilterPolyOrder"])
             self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight] =  smoothed
