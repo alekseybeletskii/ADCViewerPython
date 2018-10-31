@@ -61,18 +61,28 @@ class XYPlotter:
         self.dataXLimitsIndexes = {}
 
 
+        # self.callingObj.mainPlotWidget.addLegend( )
+
+        self.legend = pg.LegendItem()  # args are (size, offset)
+        # self.legend.setParentItem(self.callingObj.mainPlotWidget.graphicsItem())  # Note we do NOT call plt.addItem in this case
+        self.allPlotItems = []
+        # self.legend = pg.LegendItem()
 
     def drawPlots(self):
-        self.callingObj.mainPlotWidget.clear()
+        # self.callingObj.mainPlotWidget.clear()
+        self.clearPlots()
+        self.legend = pg.LegendItem((200, 50), offset=(70, 30))  # args are (size, offset)
+        self.legend.setParentItem(self.callingObj.mainPlotWidget.graphicsItem())  # Note we do NOT call plt.addItem in this case
 
         # Add labels to the axis
         self.callingObj.mainPlotWidget.setLabel('bottom', "Time", units='s')
         # If you include the units, Pyqtgraph automatically scales the axis and adjusts the SI prefix (in this case kHz)
         self.callingObj.mainPlotWidget.setLabel('left', "Amplitude", units='a.u.')
 
-        self.callingObj.mainPlotWidget.addLegend( )
+
 
         for i in range(len(self.callingObj.dataIn)):
+
             signal = self.callingObj.dataIn[i]
             dti = self.callingObj.dti[i]
             # time = np.arange(len(signal))
@@ -80,12 +90,13 @@ class XYPlotter:
             # time = np.arange(0, (len(signal)) * dti, dti) if len(self.callingObj.dti[i])==1 else dti
             time = np.arange(0, (signal.size) * dti, dti) if self.callingObj.dti[i].size==1 else dti
 
-            self.nextPen = self.nextPen + 5
+            self.nextPen = self.nextPen + 2
 
             # self.callingObj.mainPlotWidget.plot(time, signal, pen=None, symbol='t' + str(i + 1), symbolBrush=self.nextPen,
             #                symbolPen=self.nextPen + 3, symbolSize=10 + 3 * i)
-            self.callingObj.mainPlotWidget.plot(time,signal, pen=(self.nextPen),  name='    '+self.callingObj.dataInLabels[i])
-
+            plt = self.callingObj.mainPlotWidget.plot(time,signal, pen=(self.nextPen),  name='    '+self.callingObj.dataInLabels[i])
+            self.allPlotItems.append(plt)
+            self.legend.addItem(plt, self.callingObj.dataInLabels[i])
 
             ax = self.callingObj.mainPlotWidget.plotItem.getAxis('bottom')
 
@@ -112,6 +123,27 @@ class XYPlotter:
                 self.callingObj.mainPlotWidget.plot(time, smoothed, pen=pg.mkPen(color='k'))
             print('samplingRate,Hz: ', np.double(self.callingObj.frq[i]))
             print('size, points: ', np.double(len(signal)))
+
+
+    def clearPlots(self):
+        self.allPlotItems.clear()
+        self.nextPen = 0
+        for itm in self.allPlotItems:
+            self.legend.removeItem(itm)
+
+        if self.legend.scene() is not None:
+            self.legend.scene().removeItem(self.legend)
+
+    def clearAllPlotsAndData(self):
+        self.callingObj.mainPlotWidget.clear()
+        for itm in self.allPlotItems:
+            self.callingObj.mainPlotWidget.removeItem(itm)
+            self.legend.removeItem(itm)
+        if self.legend.scene() is not None:
+               self.legend.scene().removeItem(self.legend)
+        self.allPlotItems.clear()
+
+
 
     # def getXaxisLimits(self, dti):
     #     axX = self.callingObj.mainPlotWidget.plotItem.getAxis('bottom')

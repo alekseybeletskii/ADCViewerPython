@@ -117,8 +117,16 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
         self.resampler =  DataResample(self)
 
+        # self.allPlotItems = []
+        self.xyPlotter = XYPlotter(self)
 
+        self.proxy = pg.SignalProxy(self.mainPlotWidget.scene().sigMouseMoved, rateLimit=60, slot=self.mouseMoved)
 
+    def mouseMoved(self, evt):
+        mousePoint = self.mainPlotWidget.plotItem.vb.mapSceneToView(evt[0])
+        self.mouseXY_UI.setText(
+            "<span style='font-size: 12pt; color: green'> x = %0.2f, <span style='color: green'> y = %0.2f</span>" % (
+                mousePoint.x(), mousePoint.y()))
 
     def settingsUi(self):
         self.w7xPyViewerSettingsWidget.show()
@@ -150,7 +158,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.clearAllViewer()
 
     def clearAllViewer(self):
-        self.mainPlotWidget.clear()
+        self.xyPlotter.clearAllPlotsAndData()
         self.mainPlotWidget.plotItem.enableAutoRange()
         self.files.clear()
         self.dataIn.clear()
@@ -209,8 +217,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         toTxt.export_to_csv_v2()
 
     def drawPlots(self):
-        xyPlotter = XYPlotter(self)
-        xyPlotter.drawPlots()
+        self.xyPlotter.drawPlots()
 
     def subtractSGFilter(self):
 

@@ -40,13 +40,13 @@
      <widget class="QGroupBox" name="groupBox">
       <property name="minimumSize">
        <size>
-        <width>350</width>
+        <width>550</width>
         <height>22</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>350</width>
+        <width>550</width>
         <height>22</height>
        </size>
       </property>
@@ -198,6 +198,31 @@
        </property>
        <property name="text">
         <string>SGF</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="mouseXY_UI">
+       <property name="geometry">
+        <rect>
+         <x>360</x>
+         <y>0</y>
+         <width>180</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>180</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>180</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>mouse X, Y</string>
        </property>
       </widget>
      </widget>
