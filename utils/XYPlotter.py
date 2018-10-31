@@ -48,12 +48,19 @@ import pyqtgraph as pg
 import numpy as np
 from utils.GetDataLimits import GetDataLimits
 from utils.DataFilters import  DataFilters
+
+
+
+
+
 class XYPlotter:
     def __init__(self, callingObj):
 
         self.callingObj = callingObj
         self.nextPen = 0
         self.dataXLimitsIndexes = {}
+
+
 
     def drawPlots(self):
         self.callingObj.mainPlotWidget.clear()
@@ -63,6 +70,8 @@ class XYPlotter:
         # If you include the units, Pyqtgraph automatically scales the axis and adjusts the SI prefix (in this case kHz)
         self.callingObj.mainPlotWidget.setLabel('left', "Amplitude", units='a.u.')
 
+        self.callingObj.mainPlotWidget.addLegend( )
+
         for i in range(len(self.callingObj.dataIn)):
             signal = self.callingObj.dataIn[i]
             dti = self.callingObj.dti[i]
@@ -71,10 +80,11 @@ class XYPlotter:
             # time = np.arange(0, (len(signal)) * dti, dti) if len(self.callingObj.dti[i])==1 else dti
             time = np.arange(0, (signal.size) * dti, dti) if self.callingObj.dti[i].size==1 else dti
 
-            self.nextPen = self.nextPen + 1
+            self.nextPen = self.nextPen + 5
+
             # self.callingObj.mainPlotWidget.plot(time, signal, pen=None, symbol='t' + str(i + 1), symbolBrush=self.nextPen,
             #                symbolPen=self.nextPen + 3, symbolSize=10 + 3 * i)
-            self.callingObj.mainPlotWidget.plot(time,signal, pen=(self.nextPen))
+            self.callingObj.mainPlotWidget.plot(time,signal, pen=(self.nextPen),  name='    '+self.callingObj.dataInLabels[i])
 
 
             ax = self.callingObj.mainPlotWidget.plotItem.getAxis('bottom')

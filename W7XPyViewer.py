@@ -51,6 +51,7 @@
 # pyuic5 -x name.ui -o name.py
 
 
+
 from PyQt5 import QtWidgets, QtGui
 
 from GUIs import w7xPyViewerLayout
@@ -102,9 +103,9 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.drawUI.clicked.connect(self.drawPlots)
         self.drawSpectrogramUI.clicked.connect(self.drawSpectrogram)
         self.settings_btn.clicked.connect(self.settingsUi)
-        self.subtractSGF.clicked.connect(self.subtractSGFilter)
         self.replaceWithSGF.clicked.connect(self.replaceWithSGFilter)
 
+        self.subtractSGF.clicked.connect(self.subtractSGFilter)
 
         self.w7xPyViewerSettingsWidget = w7xPyViewerSettings(self, self)
         self.settings = {}
@@ -115,6 +116,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.ui_hotkey('ajustSettings', "Shift+s", self.settingsUi)
 
         self.resampler =  DataResample(self)
+
 
 
 
@@ -136,10 +138,6 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
             return d, dt
 
 
-    def butterBandpassZeroPhase(self):
-        dataFilters = DataFilters(self)
-        for i in range(len(self.dataIn)):
-            self.dataIn[i] = dataFilters.butterworthBandpassZeroPhase(self.dataIn[i],5000,10000,44100,3)
 
 
     def drawSpectrogram(self):
