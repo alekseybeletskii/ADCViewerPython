@@ -86,12 +86,26 @@ class ImportFromMdsplus:
 
     def getMdsplusData(self, dataLabel, treeName, shotNum, startSecond, endSecond, resample):
 
+        # treeName = 'QSR02'
+        # shotNum = 180724058
+        # dataLabel = 'TUBE08'
+
+        switcher = {
+            'qxt1': 1e-9,
+            'qoc': 1e-9,
+            'qsr02': 1
+        }
+
         self.mdsConnection.get(self.setTimeContext(startSecond, endSecond, resample))
         self.mdsConnection.openTree(treeName, shotNum)
 
         dat_raw = np.asarray(self.mdsConnection.get(f'DATA:{dataLabel}'))
         t_raw = self.mdsConnection.get(f'DIM_OF(DATA:{dataLabel})')
-        dt = abs(np.double(t_raw[len(t_raw)-1]-t_raw[len(t_raw)-2]))*1e-9
+
+
+        dt = abs(np.double(t_raw[len(t_raw)-1]-t_raw[len(t_raw)-2]))*switcher.get(treeName, 1)
+
+
         return dat_raw, dt
 
     def setTimeContext(self, start, end, resample):

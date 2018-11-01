@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>680</width>
+    <width>720</width>
     <height>410</height>
    </rect>
   </property>
@@ -18,13 +18,13 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>680</width>
+    <width>720</width>
     <height>410</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>680</width>
+    <width>720</width>
     <height>410</height>
    </size>
   </property>
@@ -42,7 +42,7 @@
     <rect>
      <x>10</x>
      <y>11</y>
-     <width>674</width>
+     <width>704</width>
      <height>389</height>
     </rect>
    </property>
@@ -98,18 +98,18 @@
      <widget class="QLabel" name="label_21">
       <property name="minimumSize">
        <size>
-        <width>80</width>
+        <width>120</width>
         <height>15</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>90</width>
+        <width>120</width>
         <height>100</height>
        </size>
       </property>
       <property name="text">
-       <string>tree(qoc, qxt1)</string>
+       <string>tree(qoc, qxt1, qsr02)</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
