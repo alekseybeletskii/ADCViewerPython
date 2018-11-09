@@ -45,11 +45,11 @@
             ]
         ]
     },
-    "applyBandPass": 2,
+    "applyBandPass": 0,
     "bandPassLowcut_kHz": 20.0,
     "bandPassHighcut_kHz": 120.0,
     "bandPassOrder": 7,
-    "applyBandStop": 2,
+    "applyBandStop": 0,
     "bandStopLowcut_kHz": 42.0,
     "bandStopHighcut_kHz": 52.0,
     "bandStopOrder": 7,
@@ -57,7 +57,7 @@
     "targetFrq_kHz": 500.0,
     "setHistogramLevels": 2,
     "histogramLevelMin": 0.0,
-    "histogramLevelMax": 0.1,
+    "histogramLevelMax": 0.05,
     "saveHistogramColor": 0,
     "exportSpectrogramToImg": 2
 }

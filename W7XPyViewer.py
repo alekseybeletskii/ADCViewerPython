@@ -155,7 +155,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
             w7xSpectr.setDataToSpectrogram( self.dataInLabels[i], self.dataIn[i][self.xLeft:self.xRight],self.frq[i])
             w7xSpectr.drawSpectrogram()
             # w7xSpectr.close()
-        self.clearAllViewer()
+        # self.clearAllViewer()
 
     def clearAllViewer(self):
         self.xyPlotter.clearAllPlotsAndData()

@@ -44,8 +44,7 @@
 #
 
 
-
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 
@@ -77,18 +76,15 @@ from utils.DataResample import DataResample
 
 from importExport.ExportToTxtImg import ExportToTxtImg
 
-#from os import path
-#import pyqtgraph.exporters
-#from datetime import datetime
+# from os import path
+# import pyqtgraph.exporters
+# from datetime import datetime
 from utils.GetDataLimits import GetDataLimits
 
 from importExport.ImportFromMdsplus import ImportFromMdsplus
 
 
-
-
 class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
-
 
     def __init__(self, parent):
         super(self.__class__, self).__init__(parent)
@@ -98,14 +94,12 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         pg.setConfigOptions(imageAxisOrder='row-major')
         pg.setConfigOption('leftButtonPan', False)
 
-
         self.setupUi(self)  # This is defined in design.py file automatically
         # It sets up layout and widgets that are defined
 
         self.spectrogramSettingsWidget = SpectgrogramSettings(self, self)
         self.settings = {}
         self.spectrogramSettingsWidget.setDefaultSettings()
-
 
         self.redrawSpectrogramBtn.clicked.connect(self.drawSpectrogram)
         self.settings_btn.clicked.connect(self.settingsUi)
@@ -165,30 +159,28 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.proxy = pg.SignalProxy(self.spectrPlot.scene().sigMouseMoved, rateLimit=60, slot=self.mouseMoved)
 
     def mouseMoved(self, evt):
-        mousePoint =  self.spectrPlot.vb.mapSceneToView(evt[0])
+        mousePoint = self.spectrPlot.vb.mapSceneToView(evt[0])
         self.mouseXY_UI.setText(
             "<span style='font-size: 14pt; color: green'> x = %0.2f, <span style='color: green'> y = %0.2f</span>" % (
-            mousePoint.x(), mousePoint.y()))
+                mousePoint.x(), mousePoint.y()))
 
     def openMdsplus(self):
         start = self.settings["startMdsplusTime"]
         end = self.settings["endMdsplusTime"]
         resample = self.settings["deltaMdsplusTime"]
         shotNumber = self.settings["shotNum"]
-        treeName  =  self.settings["treeName"]
-
+        treeName = self.settings["treeName"]
 
         openMds = ImportFromMdsplus(self)
         self.dataInLabels = openMds.readDatainLabels()
 
         for i in range(len(self.dataInLabels)):
-            d, dt = openMds.getMdsplusData( self.dataInLabels[i], treeName, shotNumber, start, end, resample)
+            d, dt = openMds.getMdsplusData(self.dataInLabels[i], treeName, shotNumber, start, end, resample)
             self.frq = (int(round(np.power(dt, -1))))
             self.setDataToSpectrogram(self.dataInLabels[i], d, self.frq)
             self.drawSpectrogram()
-            if not i == len(self.dataInLabels) -1 :
+            if not i == len(self.dataInLabels) - 1:
                 self.dataToSpectrogram = np.array([])
-
 
     def findSpectroLimitsIndexes(self):
         axt = self.spectrPlot.getAxis('bottom')
@@ -202,7 +194,6 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
         self.dataXLimitsIndexes = GetDataLimits.getDataLimitsIndexes(axt, np.power(np.double(self.frq), -1))
 
-
         self.zoomedSxxMaxMin['max'] = np.max(
             self.Sxx[self.fLimitsIndexes.get('minIndex'): self.fLimitsIndexes.get('maxIndex'),
             self.tLimitsIndexes.get('minIndex'):self.tLimitsIndexes.get('maxIndex')])
@@ -210,29 +201,27 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
             self.Sxx[self.fLimitsIndexes.get('minIndex'): self.fLimitsIndexes.get('maxIndex'),
             self.tLimitsIndexes.get('minIndex'):self.tLimitsIndexes.get('maxIndex')])
 
-
     def ui_hotkey(self, key_name, key_combo, func):
         self.hotkey[key_name] = QtWidgets.QShortcut(QtGui.QKeySequence(key_combo), self)
         self.hotkey[key_name].activated.connect(func)
-
-    def resampleDataDecimation(self):
-        resampler = DataResample(self)
-        targetFrq_Hz = int(np.double(self.settings["targetFrq_kHz"])*1000) if self.frq > np.double(self.settings["targetFrq_kHz"])> 0.01 else self.frq
-        self.dataToSpectrogram = resampler.downSampleDecimate(self.dataToSpectrogram, self.frq, targetFrq_Hz)
-        self.frq = self.settings["targetFrq_kHz"]*1000
-        self.spectrogramSettingsWidget.settings["fs_kHz"] = self.frq/1000.0
-        self.spectrogramSettingsWidget.putSettingsToUi()
-        self.spectrogramSettingsWidget.checkAndApplySettins()
 
 
 
     def butterBandPassZeroPhase(self):
         dataFilters = DataFilters(self)
-        self.dataToSpectrogram = dataFilters.butterworthBandFilterZeroPhase(self.dataToSpectrogram,self.settings["bandPassLowcut_kHz"]*1000 ,self.settings["bandPassHighcut_kHz"]*1000, self.frq, self.settings["bandPassOrder"], 'bandpass')
+        self.dataToSpectrogram = dataFilters.butterworthBandFilterZeroPhase(self.dataToSpectrogram,
+                                                                            self.settings["bandPassLowcut_kHz"] * 1000,
+                                                                            self.settings["bandPassHighcut_kHz"] * 1000,
+                                                                            self.frq, self.settings["bandPassOrder"],
+                                                                            'bandpass')
 
     def butterBandStopZeroPhase(self):
         dataFilters = DataFilters(self)
-        self.dataToSpectrogram = dataFilters.butterworthBandFilterZeroPhase(self.dataToSpectrogram,self.settings["bandStopLowcut_kHz"]*1000 ,self.settings["bandStopHighcut_kHz"]*1000, self.frq, self.settings["bandStopOrder"], 'bandstop')
+        self.dataToSpectrogram = dataFilters.butterworthBandFilterZeroPhase(self.dataToSpectrogram,
+                                                                            self.settings["bandStopLowcut_kHz"] * 1000,
+                                                                            self.settings["bandStopHighcut_kHz"] * 1000,
+                                                                            self.frq, self.settings["bandStopOrder"],
+                                                                            'bandstop')
 
     def settingsUi(self):
         self.spectrogramSettingsWidget.show()
@@ -241,10 +230,8 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.findSpectroLimitsIndexes()
         self.peakSlider.setSliderMaxMin(self.zoomedSxxMaxMin['max'], self.zoomedSxxMaxMin['min'])
 
-
     def findSpectroPeaks(self):
         self.spectrPeaksDetection.findSpectroPeaks()
-
 
     def generateData(self):
         testDataGenerator = TestDataGenerator(self)
@@ -257,17 +244,29 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.spectrogramTitle = specTitle
         self.dataToSpectrogram = signalIn
         self.frq = frq
-        self.spectrogramSettingsWidget.settings["fs_kHz"] = self.frq/1000.0
+        self.spectrogramSettingsWidget.settings["fs_kHz"] = self.frq / 1000.0
         self.spectrogramSettingsWidget.putSettingsToUi()
         self.spectrogramSettingsWidget.checkAndApplySettins()
-        self.dataXLimitsIndexes["minIndex"]  = 0
-        self.dataXLimitsIndexes["maxIndex"]  = len(signalIn)-1
+        self.dataXLimitsIndexes["minIndex"] = 0
+        self.dataXLimitsIndexes["maxIndex"] = len(self.dataToSpectrogram) - 1
+
+    def resampleDataDecimation(self):
+        resampler = DataResample(self)
+        targetFrq_Hz = int(np.double(self.settings["targetFrq_kHz"]) * 1000) if self.frq > np.double(
+            self.settings["targetFrq_kHz"]) > 0.01 else self.frq
+        self.dataToSpectrogram = resampler.downSampleDecimate(self.dataToSpectrogram, self.frq, targetFrq_Hz)
+        self.frq = self.settings["targetFrq_kHz"] * 1000
+        self.spectrogramSettingsWidget.settings["fs_kHz"] = self.frq / 1000.0
+        self.spectrogramSettingsWidget.putSettingsToUi()
+        self.spectrogramSettingsWidget.checkAndApplySettins()
+        self.dataXLimitsIndexes["minIndex"] = 0
+        self.dataXLimitsIndexes["maxIndex"] = len(self.dataToSpectrogram) - 1
 
 
     def drawSpectrogram(self):
 
         if self.dataToSpectrogram.size > 0:
-           self.draw()
+            self.draw()
 
         if self.settings["exportSpectrogramToImg"]:
             self.exportToImg(self.spectrogramTitle)
@@ -276,9 +275,12 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         # self.frq = self.settings["fs_kHz"] * 1000.0
         print('input data frequency, *BEFORE* downsampling, Hz: ' + str(self.frq))
         self.spectrPlot.removeItem(self.spectrogramImage)
+        # self.peakSlider.slider.disconnect()
 
-        self.peakSlider.slider.disconnect()
-        if self.settings["applyDownsampling"] and self.settings["targetFrq_kHz"]<self.settings["fs_kHz"]:
+        self.dataToSpectrogram = self.dataToSpectrogram[self.dataXLimitsIndexes["minIndex"] : self.dataXLimitsIndexes["maxIndex"]]
+
+
+        if self.settings["applyDownsampling"] and self.settings["targetFrq_kHz"] < self.settings["fs_kHz"]:
             self.resampleDataDecimation()
             # self.spectrogramSettingsWidget.settings["applyDownsampling"] = False
             # self.spectrogramSettingsWidget.putSettingsToUi()
@@ -291,6 +293,12 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
         if self.settings["applyBandStop"]:
             self.butterBandStopZeroPhase()
+
+        if self.settings["nfft"] >= len(self.dataToSpectrogram):
+            # self.spectrogramSettingsWidget.settings["nfft"] = int(len(self.dataToSpectrogram) / 4.0)
+            self.spectrogramSettingsWidget.settings["nfft"] = 256
+            self.spectrogramSettingsWidget.putSettingsToUi()
+            self.spectrogramSettingsWidget.checkAndApplySettins()
 
         self.f, self.t, self.Sxx = signal.spectrogram(self.dataToSpectrogram,
                                                       nfft=self.settings["nfft"],
@@ -311,7 +319,6 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
             # self.Sxx = np.power(self.Sxx, 0.2)
             # self.Sxx = np.log(self.Sxx)
 
-
         self.SxxMin = np.min(self.Sxx)
         self.SxxMax = np.max(self.Sxx)
         self.spectrogramImage = pyqtgraph.ImageItem()
@@ -321,11 +328,10 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.spectrogramImage.setImage(self.Sxx)
         # Scale the X and Y Axis to time and frequency (standard is pixels)
         self.spectrogramImage.scale(self.t[-1] / np.size(self.Sxx, axis=1),
-                  self.f[-1] / np.size(self.Sxx, axis=0))
+                                    self.f[-1] / np.size(self.Sxx, axis=0))
         self.hist.setImageItem(self.spectrogramImage)
 
         # self.spectrPlot.removeItem( self.spectrogramImage)
-
 
         self.hist.setLevels(self.SxxMin, self.SxxMax)
         self.hist.gradient.restoreState(self.settings["histoGradient"])
@@ -339,17 +345,11 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
         self.spectrPlot.setTitle(self.spectrogramTitle, **{'color': '#0000ff', 'size': '14pt'})
 
-
     def exportToImg(self, imgTitle):
         # when widget is not displayed on the screen but used to export image
         # QtWidgets.QApplication.processEvents()
         imgExporter = ExportToTxtImg(self)
-        imgExporter.exportWidgetToImg(self.spectrogramWindow,imgTitle)
-
-
-
-
-
+        imgExporter.exportWidgetToImg(self.spectrogramWindow, imgTitle)
 
     def ajustPeakSliderWidget(self):
         self.spectrPlot.sigRangeChanged.connect(self.updatePeakSliderRange)
@@ -359,18 +359,17 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
 
     # def showOrExport(self):
 
-
     def exitApp(self):
-            # sys.exit()
-            self.close()
+        # sys.exit()
+        self.close()
 
     def closeEvent(self, event):
         # event.accept()
         # sys.exit()
 
         if __name__ == '__main__':
-                event.accept()
-                sys.exit()
+            event.accept()
+            sys.exit()
         else:
             event.accept()
 
@@ -418,8 +417,12 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.spectrogramTitle = ' '
         self.spectrPlot.setTitle(' ')
 
-        self.spectrPlot.removeItem( self.spectrogramImage)
+        self.spectrPlot.removeItem(self.spectrogramImage)
         self.spectrogramImage = None
+
+        self.peakSlider.slider.disconnect()
+
+
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
