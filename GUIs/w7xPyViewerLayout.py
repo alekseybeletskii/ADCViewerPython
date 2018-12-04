@@ -98,9 +98,12 @@ class Ui_w7xPyViewer(object):
         self.actionExport_time_to_separate_file.setObjectName("actionExport_time_to_separate_file")
         self.actionOpen_csv_fullX = QtWidgets.QAction(w7xPyViewer)
         self.actionOpen_csv_fullX.setObjectName("actionOpen_csv_fullX")
+        self.actionOpen_LGraph = QtWidgets.QAction(w7xPyViewer)
+        self.actionOpen_LGraph.setObjectName("actionOpen_LGraph")
         self.menuFile.addAction(self.actionOpen_mdsplus)
         self.menuFile.addAction(self.actionOpen_csv_dx)
         self.menuFile.addAction(self.actionOpen_csv_fullX)
+        self.menuFile.addAction(self.actionOpen_LGraph)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionExport_time_to_separate_file)
         self.menuFile.addAction(self.actionExport_to_csv)
@@ -137,6 +140,7 @@ class Ui_w7xPyViewer(object):
         self.actionExport_time_to_separate_file.setText(_translate("w7xPyViewer", "Export to csv (time separate)"))
         self.actionOpen_csv_fullX.setText(_translate("w7xPyViewer", "Open_csv_fullX"))
         self.actionOpen_csv_fullX.setToolTip(_translate("w7xPyViewer", "store full first column as X"))
+        self.actionOpen_LGraph.setText(_translate("w7xPyViewer", "Open_LGraph"))
 
 from pyqtgraph import PlotWidget
 

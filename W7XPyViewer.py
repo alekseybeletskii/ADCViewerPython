@@ -61,12 +61,14 @@ import numpy as np
 import pyqtgraph as pg
 from importExport.ImportFromTxt import ImportFromTxt
 from importExport.ImportFromMdsplus import ImportFromMdsplus
+from importExport.ImportFromLGraph import ImportFromLGraph
 from utils.XYPlotter import XYPlotter
 from importExport.ExportToTxtImg import ExportToTxtImg
 from utils.DataFilters import DataFilters
 from utils.DataResample import DataResample
 from W7XSpectrogram import W7XSpectrogram
 from utils.w7xPyViewerSettings import w7xPyViewerSettings
+from os import path as ospath
 
 
 
@@ -80,6 +82,8 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         pg.setConfigOption('background', 'w')
         pg.setConfigOption('foreground', 'k')
         pg.setConfigOption('leftButtonPan', False)
+
+        self.latestFilePath = ospath.expanduser('~')
         self.files = []
         self.dataIn = []
         self.dti = []
@@ -90,6 +94,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         # It sets up layout and widgets that are defined
         self.actionOpen_csv_dx.triggered.connect(self.openCsv_dx)
         self.actionOpen_csv_fullX.triggered.connect(self.openCsv_fullX)
+        self.actionOpen_LGraph.triggered.connect(self.openLGraph)
         self.actionOpen_mdsplus.triggered.connect(self.openMdsplus)
         # self.actionOpen_mdsplus_QOC.triggered.connect(self.openMdsplusQOC)
         self.actionDrawPlots.triggered.connect(self.drawPlots)
@@ -173,6 +178,11 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
     def openCsv_dx(self):
         CsvTxtR = ImportFromTxt(self)
         CsvTxtR.openCsvTxt_dx()
+        self.drawPlots()
+
+    def openLGraph(self):
+        LGraphR = ImportFromLGraph(self)
+        LGraphR.openLGraph()
         self.drawPlots()
 
     def openCsv_fullX(self):

@@ -48,61 +48,68 @@ from PyQt5 import QtWidgets
 
 import pandas as pd
 import numpy as np
+import struct
+from collections import namedtuple
 from os import path as ospath
 
 
-class ImportFromTxt(QtWidgets.QMainWindow):
+class ImportFromLGraph(QtWidgets.QMainWindow):
 
    def __init__(self,callingObj,  *args, **kwargs):
        super().__init__(*args, **kwargs)
        self.callingObj = callingObj
 
-   def openCsvTxt_dx(self):
+   def openLGraph(self):
         self.callingObj.clearAllViewer()
 
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
-        files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, None, "QFileDialog.getOpenFileNames()", "All Files (*)",
-                                                     "All Files (*)", options=options)
-        if files:
-            self.callingObj.latestFilePath = ospath.abspath(files[0])
+        dataFiles, _ = QtWidgets.QFileDialog.getOpenFileNames(self,"ADC binary files", self.callingObj.latestFilePath,"*.dat;;All Files (*)", options=options)
 
-        for i in range(len(files)):
-            dataTxt = pd.read_csv(files[i], names=['x', 'y'], header=None)
-            dataX = dataTxt['x']
-            dti = abs(np.double(dataX[len(dataX)-1]-dataX[len(dataX)-2]))
-            self.callingObj.dti.append(dti)
-            self.callingObj.frq.append(int(round(np.power(dti, -1))))
-            self.callingObj.dataIn.append(np.asarray(dataTxt['y']))
-            filename_and_ext = ospath.basename(files[i])
+        if dataFiles:
+            self.callingObj.latestFilePath = ospath.abspath(dataFiles[0])
+
+        for i in range(len(dataFiles)):
+            path_to_dir, filename_and_ext = ospath.split(dataFiles[i])
             filename, _ = ospath.splitext(filename_and_ext)
             self.callingObj.dataInLabels.append(filename)
+            parFile = ospath.join(path_to_dir, filename + ".par")
+
+
+
+            dataParameters = namedtuple('dataParameters','adcSignature, deviceName, createDateTime')
+                                        #                  ', channelsMax,'
+                                        # ' realChannelsQuantity, realCadresQuantity, realSamplesQuantity,'
+                                        # ' totalTime, adcRate, interCadreDelay, channelRate,'
+                                        # ' activeAdcChannelArray, adcChannelArray, adcGainArray,'
+                                        # ' isSignalArray, dataFormat, realCadres64, adcScale,'
+                                        # ' adcOffset, calibrOffset, calibrScale, segments  '
+                                        # )
+            with open(parFile, "rb") as binary_parFile:
+                # Seek a specific position in the file and read N bytes
+                # binary_parFile.seek(0, 0)  # Go to beginning of the file
+                # adcSignature = binary_parFile.read(20).decode('utf-8').strip()
+                allBytes = binary_parFile.read()
+                # dataParameters.adcSignature = str(struct.unpack_from('<20s', allBytes , offset=0)).strip()
+                # dataParameters.ActiveAdcChannelArray = struct.unpack_from('<32B', allBytes , offset=95)
+
+                dataParameters._make(struct.unpack_from('20s17s26s', allBytes,  offset=0))
+
+
+
+
+
+
+                print(dataParameters)
+                # print(str(dataParameters.deviceName))
+                # print(str(dataParameters.createDateTime))
+            # dataTxt = pd.read_csv(files[i], names=['x', 'y'], header=None)
+            # dataX = dataTxt['x']
+            # dti = abs(np.double(dataX[len(dataX)-1]-dataX[len(dataX)-2]))
+            # self.callingObj.dti.append(dti)
+            # self.callingObj.frq.append(int(round(np.power(dti, -1))))
+            # self.callingObj.dataIn.append(np.asarray(dataTxt['y']))
+
 
             #print(type(dataX))
-
-   def  openCsvTxt_fullX(self):
-        self.callingObj.clearAllViewer()
-
-        options = QtWidgets.QFileDialog.Options()
-        options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
-        files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, None, "QFileDialog.getOpenFileNames()", "All Files (*)",
-                                                     "All Files (*)", options=options)
-        if files:
-            self.callingObj.latestFilePath = ospath.abspath(files[0])
-
-        for i in range(len(files)):
-            dataTxt = pd.read_csv(files[i], names=['x', 'y'], header=None)
-            dataX = np.asarray(dataTxt['x'])
-
-            #print(type(dataX))
-            dti = abs(np.double(dataX[len(dataX) - 1] - dataX[len(dataX) - 2]))
-            self.callingObj.frq.append(int(round(np.power(dti, -1))))
-            self.callingObj.dti.append(dataX)
-            self.callingObj.dataIn.append(np.asarray(dataTxt['y']))
-            filename_and_ext = ospath.basename(files[i])
-            filename, _ = ospath.splitext(filename_and_ext)
-            self.callingObj.dataInLabels.append(filename)
-
 

@@ -256,6 +256,7 @@
     <addaction name="actionOpen_mdsplus"/>
     <addaction name="actionOpen_csv_dx"/>
     <addaction name="actionOpen_csv_fullX"/>
+    <addaction name="actionOpen_LGraph"/>
     <addaction name="separator"/>
     <addaction name="actionExport_time_to_separate_file"/>
     <addaction name="actionExport_to_csv"/>
@@ -321,6 +322,11 @@
    </property>
    <property name="toolTip">
     <string>store full first column as X</string>
+   </property>
+  </action>
+  <action name="actionOpen_LGraph">
+   <property name="text">
+    <string>Open_LGraph</string>
    </property>
   </action>
  </widget>
