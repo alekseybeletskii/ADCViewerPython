@@ -51,6 +51,7 @@ import numpy as np
 import struct
 from collections import namedtuple
 from os import path as ospath
+from io import BytesIO
 
 
 class ImportFromLGraph(QtWidgets.QMainWindow):
@@ -75,33 +76,73 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
             self.callingObj.dataInLabels.append(filename)
             parFile = ospath.join(path_to_dir, filename + ".par")
 
+            # parBinary_stream = BytesIO()
 
+            dataParameters = namedtuple('dataParameters',
+                                        ['adcSignature', 'deviceName', 'createDateTime', 'channelsMax',
+                                        'realChannelsQuantity', 'realCadresQuantity', 'realSamplesQuantity',
+                                        'totalTime', 'adcRate', 'interCadreDelay', 'channelRate',
+                                        # 'activeAdcChannelArray', 'adcChannelArray', 'adcGainArray',
+                                        # 'isSignalArray', 'dataFormat', 'realCadres64', 'adcScale',
+                                        # 'adcOffset', 'calibrOffset', 'calibrScale', 'segments'
+                                                          ])
 
-            dataParameters = namedtuple('dataParameters','adcSignature, deviceName, createDateTime')
-                                        #                  ', channelsMax,'
-                                        # ' realChannelsQuantity, realCadresQuantity, realSamplesQuantity,'
-                                        # ' totalTime, adcRate, interCadreDelay, channelRate,'
-                                        # ' activeAdcChannelArray, adcChannelArray, adcGainArray,'
-                                        # ' isSignalArray, dataFormat, realCadres64, adcScale,'
-                                        # ' adcOffset, calibrOffset, calibrScale, segments  '
-                                        # )
+                   #  //In LGraph-2, "ADC rate" was somehow written equal to "channel rate",
+                   # // but real value of "ADC rate" is  "channelRate" * "RealChannelsQuantity", or 1/("TotalTime"/"RealCadresQuantity")
+                   # //So it is recalculated below:
             with open(parFile, "rb") as binary_parFile:
+
+
+                allBytes = BytesIO(binary_parFile.read())
+
+                mutable_allbytes = allBytes.getbuffer()
+
+                adcSignature = allBytes.read(20).decode('utf-8').strip()
+                deviceName = allBytes.read(17).decode('utf-8').strip()
+
+
+                allBytes.seek(95, 0)
+
+
+                ActiveAdcChannelArray = np.empty(0)
+                for i in range(32):
+                    ActiveAdcChannelArray = np.append(ActiveAdcChannelArray,int.from_bytes(allBytes.read(1), byteorder='little'))
+
+                # allBytes = binary_parFile.read()
                 # Seek a specific position in the file and read N bytes
                 # binary_parFile.seek(0, 0)  # Go to beginning of the file
-                # adcSignature = binary_parFile.read(20).decode('utf-8').strip()
-                allBytes = binary_parFile.read()
-                # dataParameters.adcSignature = str(struct.unpack_from('<20s', allBytes , offset=0)).strip()
+                # dataParameters.adcSignature = binary_parFile.read(20).decode('utf-8').strip()
+                # binary_parFile.seek(95, 0)  # Go to beginning of the file
+                # dataParameters.adcSignature = binary_parFile.read(20).decode('utf-8').strip()
+                # dataParameters.adcSignature = struct.unpack_from('<20c', allBytes , offset=0)
+                # dataParameters.deviceName = struct.unpack_from('<17s', allBytes , offset=20)
+                # dataParameters.createDateTime = struct.unpack_from('<26s', allBytes , offset=37)
+                # dataParameters.channelsMax = struct.unpack_from('<h', allBytes , offset=63)
+                # dataParameters.realChannelsQuantity = struct.unpack_from('<h', allBytes , offset=65)
+                # dataParameters.realCadresQuantity = struct.unpack_from('<i', allBytes , offset=67)
+                # dataParameters.realSamplesQuantity = struct.unpack_from('<i', allBytes , offset=71)
+                # dataParameters.totalTime = struct.unpack_from('<d', allBytes , offset=75)
+                # dataParameters.adcRate = struct.unpack_from('<f', allBytes , offset=83)
+
+
                 # dataParameters.ActiveAdcChannelArray = struct.unpack_from('<32B', allBytes , offset=95)
+                # dataParameters.channelRate = struct.unpack_from('<4f', allBytes , offset=81)
+                # dataPars = dataParameters._make(struct.unpack_from('<20s17s26shhiidfff', allBytes,  offset=0))
 
-                dataParameters._make(struct.unpack_from('20s17s26s', allBytes,  offset=0))
+                print(adcSignature)
+                print(deviceName)
+                print(ActiveAdcChannelArray)
 
-
-
-
-
-
-                print(dataParameters)
-                # print(str(dataParameters.deviceName))
+                # print(dataPars.adcSignature)
+                # print(dataPars.deviceName)
+                # print(dataPars.createDateTime)
+                # print(dataPars.realChannelsQuantity)
+                # print(dataPars.realCadresQuantity)
+                # print(dataPars.realSamplesQuantity)
+                # print(dataPars.totalTime)
+                # print(dataPars.adcRate)
+                # print(dataPars.interCadreDelay)
+                # print(dataPars.channelRate)
                 # print(str(dataParameters.createDateTime))
             # dataTxt = pd.read_csv(files[i], names=['x', 'y'], header=None)
             # dataX = dataTxt['x']
