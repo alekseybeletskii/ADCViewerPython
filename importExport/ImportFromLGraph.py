@@ -58,7 +58,36 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
 
    def __init__(self,callingObj,  *args, **kwargs):
        super().__init__(*args, **kwargs)
+
        self.callingObj = callingObj
+
+       self.adcSignature = ''
+       self.deviceName  = ''
+       self.createDateTime  = ''
+       self.channelsMax  = ''
+       self.realChannelsQuantity  = 0
+       self.realCadresQuantity  = 0
+       self.realSamplesQuantity   = 0
+       self.totalTime  = 0.0
+       self.adcRate  = 0.0
+       self.interCadreDelay  = 0.0
+       self.channelRate  = 0.0
+       self.activeAdcChannelArray  = np.empty(0)
+       self.adcChannelArray  = np.empty(0)
+       self.adcGainArray  = np.empty(0)
+       self.isSignalArray  = np.empty(0)
+       self.dataFormat  = 0
+       self.realCadres64  = 0
+       self.adcScale  = np.empty(0)
+       self.adcOffset  = np.empty(0)
+       self.calibrOffset  = np.empty(0)
+       self.calibrScale  = np.empty(0)
+       self.segments   = 0
+
+       self.adcData = np.empty(0)
+       self.chanAdcOrdinal = np.empty(0)
+       self.chanAdcGain = np.empty(0)
+
 
    def openLGraph(self):
         self.callingObj.clearAllViewer()
@@ -76,81 +105,74 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
             self.callingObj.dataInLabels.append(filename)
             parFile = ospath.join(path_to_dir, filename + ".par")
 
-            # parBinary_stream = BytesIO()
+            self.readPar(parFile)
 
-            dataParameters = namedtuple('dataParameters',
-                                        ['adcSignature', 'deviceName', 'createDateTime', 'channelsMax',
-                                        'realChannelsQuantity', 'realCadresQuantity', 'realSamplesQuantity',
-                                        'totalTime', 'adcRate', 'interCadreDelay', 'channelRate',
-                                        # 'activeAdcChannelArray', 'adcChannelArray', 'adcGainArray',
-                                        # 'isSignalArray', 'dataFormat', 'realCadres64', 'adcScale',
-                                        # 'adcOffset', 'calibrOffset', 'calibrScale', 'segments'
-                                                          ])
+            self.getRealChannelsOrdinalAndGainCoefs()
 
-                   #  //In LGraph-2, "ADC rate" was somehow written equal to "channel rate",
-                   # // but real value of "ADC rate" is  "channelRate" * "RealChannelsQuantity", or 1/("TotalTime"/"RealCadresQuantity")
-                   # //So it is recalculated below:
-            with open(parFile, "rb") as binary_parFile:
+            print('test...')
 
 
-                allBytes = BytesIO(binary_parFile.read())
-
-                mutable_allbytes = allBytes.getbuffer()
-
-                adcSignature = allBytes.read(20).decode('utf-8').strip()
-                deviceName = allBytes.read(17).decode('utf-8').strip()
 
 
-                allBytes.seek(95, 0)
+   def getRealChannelsOrdinalAndGainCoefs(self):
+        switcher = {
+            '0': 1,
+            '1': 2,
+            '2': 4,
+            '3': 8
+        }
+        activeCh = 0
+        for nextCh in range(self.activeAdcChannelArray.size):
+            if self.activeAdcChannelArray[nextCh] == 1:
+                self.chanAdcOrdinal = np.append(self.chanAdcOrdinal, nextCh + 1)
+                self.chanAdcGain = np.append(self.chanAdcGain, switcher.get(self.adcGainArray[nextCh], 1))
+                # activeCh += 1
 
 
-                ActiveAdcChannelArray = np.empty(0)
-                for i in range(32):
-                    ActiveAdcChannelArray = np.append(ActiveAdcChannelArray,int.from_bytes(allBytes.read(1), byteorder='little'))
-
-                # allBytes = binary_parFile.read()
-                # Seek a specific position in the file and read N bytes
-                # binary_parFile.seek(0, 0)  # Go to beginning of the file
-                # dataParameters.adcSignature = binary_parFile.read(20).decode('utf-8').strip()
-                # binary_parFile.seek(95, 0)  # Go to beginning of the file
-                # dataParameters.adcSignature = binary_parFile.read(20).decode('utf-8').strip()
-                # dataParameters.adcSignature = struct.unpack_from('<20c', allBytes , offset=0)
-                # dataParameters.deviceName = struct.unpack_from('<17s', allBytes , offset=20)
-                # dataParameters.createDateTime = struct.unpack_from('<26s', allBytes , offset=37)
-                # dataParameters.channelsMax = struct.unpack_from('<h', allBytes , offset=63)
-                # dataParameters.realChannelsQuantity = struct.unpack_from('<h', allBytes , offset=65)
-                # dataParameters.realCadresQuantity = struct.unpack_from('<i', allBytes , offset=67)
-                # dataParameters.realSamplesQuantity = struct.unpack_from('<i', allBytes , offset=71)
-                # dataParameters.totalTime = struct.unpack_from('<d', allBytes , offset=75)
-                # dataParameters.adcRate = struct.unpack_from('<f', allBytes , offset=83)
 
 
-                # dataParameters.ActiveAdcChannelArray = struct.unpack_from('<32B', allBytes , offset=95)
-                # dataParameters.channelRate = struct.unpack_from('<4f', allBytes , offset=81)
-                # dataPars = dataParameters._make(struct.unpack_from('<20s17s26shhiidfff', allBytes,  offset=0))
+   def readPar(self, parFile):
+       with open(parFile, "rb") as binary_parFile:
+           allBytes = BytesIO(binary_parFile.read())
+           self.adcSignature = allBytes.read(20).decode('utf-8').strip()
+           self.deviceName = allBytes.read(17).decode('utf-8').strip()
+           self.createDateTime = allBytes.read(26).decode('utf-8').strip()
+           self.channelsMax = struct.unpack('<h', allBytes.read(2))[0]
+           self.realChannelsQuantity = struct.unpack('<h', allBytes.read(2))[0]
+           self.realCadresQuantity = struct.unpack('<i', allBytes.read(4))[0]
+           self.realSamplesQuantity = struct.unpack('<i', allBytes.read(4))[0]
+           self.totalTime = struct.unpack('<d', allBytes.read(8))[0]
+           self.adcRate = struct.unpack('<f', allBytes.read(4))[0]
+           self.interCadreDelay = struct.unpack('<f', allBytes.read(4))[0]
+           self.channelRate = struct.unpack('<f', allBytes.read(4))[0]
+           # In LGraph-2, "ADC rate" was somehow written equal to "channel rate",
+           # but real value of "ADC rate" is  "channelRate" * "RealChannelsQuantity", or 1/("TotalTime"/"RealCadresQuantity")
+           # So it is recalculated below:
+           self.adcRate = self.realChannelsQuantity * self.channelRate
 
-                print(adcSignature)
-                print(deviceName)
-                print(ActiveAdcChannelArray)
+           for i in range(32):
+               self.activeAdcChannelArray = np.append(self.activeAdcChannelArray,
+                                                      int.from_bytes(allBytes.read(1), byteorder='little'))
+           for i in range(32):
+               self.adcChannelArray = np.append(self.adcChannelArray,
+                                                int.from_bytes(allBytes.read(1), byteorder='little'))
+           for i in range(32):
+               self.adcGainArray = np.append(self.adcGainArray, int.from_bytes(allBytes.read(1), byteorder='little'))
+           for i in range(32):
+               self.isSignalArray = np.append(self.isSignalArray, int.from_bytes(allBytes.read(1), byteorder='little'))
+           self.dataFormat = struct.unpack('<i', allBytes.read(4))[0]
+           self.realCadres64 = struct.unpack('<q', allBytes.read(8))[0]
+           for i in range(32):
+               self.adcScale = np.append(self.adcScale, struct.unpack('<d', allBytes.read(8))[0])
+           for i in range(32):
+               self.adcOffset = np.append(self.adcOffset, struct.unpack('<d', allBytes.read(8))[0])
+           for i in range(1024):
+               self.calibrOffset = np.append(self.calibrOffset, struct.unpack('<d', allBytes.read(8))[0])
+           for i in range(1024):
+               self.calibrScale = np.append(self.calibrScale, struct.unpack('<d', allBytes.read(8))[0])
+           self.segments = struct.unpack('<i', allBytes.read(4))
 
-                # print(dataPars.adcSignature)
-                # print(dataPars.deviceName)
-                # print(dataPars.createDateTime)
-                # print(dataPars.realChannelsQuantity)
-                # print(dataPars.realCadresQuantity)
-                # print(dataPars.realSamplesQuantity)
-                # print(dataPars.totalTime)
-                # print(dataPars.adcRate)
-                # print(dataPars.interCadreDelay)
-                # print(dataPars.channelRate)
-                # print(str(dataParameters.createDateTime))
-            # dataTxt = pd.read_csv(files[i], names=['x', 'y'], header=None)
-            # dataX = dataTxt['x']
-            # dti = abs(np.double(dataX[len(dataX)-1]-dataX[len(dataX)-2]))
-            # self.callingObj.dti.append(dti)
-            # self.callingObj.frq.append(int(round(np.power(dti, -1))))
-            # self.callingObj.dataIn.append(np.asarray(dataTxt['y']))
 
 
-            #print(type(dataX))
+
 
