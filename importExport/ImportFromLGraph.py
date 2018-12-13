@@ -84,9 +84,12 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
        self.calibrScale  = np.empty(0)
        self.segments   = 0
 
+       self.filename = ''
        self.adcData = np.empty(0)
        self.chanAdcOrdinal = np.empty(0)
        self.chanAdcGain = np.empty(0)
+
+
 
 
    def openLGraph(self):
@@ -101,14 +104,16 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
 
         for i in range(len(dataFiles)):
             path_to_dir, filename_and_ext = ospath.split(dataFiles[i])
-            filename, _ = ospath.splitext(filename_and_ext)
-            self.callingObj.dataInLabels.append(filename)
-            parFile = ospath.join(path_to_dir, filename + ".par")
+            self.filename, _ = ospath.splitext(filename_and_ext)
+            parFile = ospath.join(path_to_dir, self.filename + ".par")
+            datFile = ospath.join(path_to_dir, self.filename + ".dat")
 
             self.readPar(parFile)
 
             self.getRealChannelsOrdinalAndGainCoefs()
 
+
+            self.readDat(datFile)
             print('test...')
 
 
@@ -121,12 +126,10 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
             '2': 4,
             '3': 8
         }
-        activeCh = 0
         for nextCh in range(self.activeAdcChannelArray.size):
             if self.activeAdcChannelArray[nextCh] == 1:
                 self.chanAdcOrdinal = np.append(self.chanAdcOrdinal, nextCh + 1)
                 self.chanAdcGain = np.append(self.chanAdcGain, switcher.get(self.adcGainArray[nextCh], 1))
-                # activeCh += 1
 
 
 
@@ -172,6 +175,38 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
                self.calibrScale = np.append(self.calibrScale, struct.unpack('<d', allBytes.read(8))[0])
            self.segments = struct.unpack('<i', allBytes.read(4))
 
+   def readDat(self, datFile):
+       # calibration:
+       # L783: 5.12 (V)/2048(adc) = 0.0025
+       # E2010: 3.31776(V)/8192(adc) = 0.000405
+       # l783 = 5.12/2048.0
+       # e2010 = 3.31776/8192.0
+       with open(datFile, "rb") as binary_parFile:
+           # allBytes = BytesIO(binary_parFile.read())
+
+            # //index of a channel input range,
+            # //define what part of ADC calibration table is used
+            # //corresponding to input voltage range (+-3V, +-1V, +-0.3V in case of ADC e20-10)
+           indexOfADCInputRange = 0
+           if self.deviceName.__contains__('L783'):
+               coef = 5.12/2048.0
+           elif self.deviceName.__contains__('E2010'):
+               coef = 3.31776/8192.0
+           else:
+               coef = 1
+
+           self.adcData = np.fromfile(datFile, np.int16) * coef
+
+           self.adcData = np.reshape(self.adcData,(self.realCadresQuantity,self.realChannelsQuantity))
+
+           for i in range(self.realChannelsQuantity):
+
+               self.callingObj.dataIn.append(np.reshape(self.adcData[::, i:i+1],self.realCadresQuantity))
+
+               self.callingObj.dataInLabels.append(self.filename+'_ch#'+str(self.chanAdcOrdinal[i]))
+
+               self.callingObj.dti.append(np.power(self.channelRate*1000.0, -1))
+               self.callingObj.frq.append(int(round(self.channelRate*1000.0)))
 
 
 
