@@ -40,13 +40,13 @@
      <widget class="QGroupBox" name="groupBox">
       <property name="minimumSize">
        <size>
-        <width>550</width>
+        <width>600</width>
         <height>22</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>550</width>
+        <width>600</width>
         <height>22</height>
        </size>
       </property>
@@ -205,19 +205,19 @@
         <rect>
          <x>360</x>
          <y>0</y>
-         <width>180</width>
+         <width>250</width>
          <height>20</height>
         </rect>
        </property>
        <property name="minimumSize">
         <size>
-         <width>180</width>
+         <width>250</width>
          <height>20</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>180</width>
+         <width>250</width>
          <height>20</height>
         </size>
        </property>

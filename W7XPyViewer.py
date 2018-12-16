@@ -130,7 +130,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
     def mouseMoved(self, evt):
         mousePoint = self.mainPlotWidget.plotItem.vb.mapSceneToView(evt[0])
         self.mouseXY_UI.setText(
-            "<span style='font-size: 12pt; color: green'> x = %0.2f, <span style='color: green'> y = %0.2f</span>" % (
+            "<span style='font-size: 12pt; color: green'> x = %0.6f, <span style='color: green'> y = %0.6f</span>" % (
                 mousePoint.x(), mousePoint.y()))
 
     def settingsUi(self):
