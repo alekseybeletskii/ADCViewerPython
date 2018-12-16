@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_w7xPyViewer(object):
     def setupUi(self, w7xPyViewer):
         w7xPyViewer.setObjectName("w7xPyViewer")
-        w7xPyViewer.resize(1093, 667)
+        w7xPyViewer.resize(618, 433)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -69,11 +69,8 @@ class Ui_w7xPyViewer(object):
         self.mainPlotWidget.setObjectName("mainPlotWidget")
         self.verticalLayout.addWidget(self.mainPlotWidget)
         w7xPyViewer.setCentralWidget(self.centralwidget)
-        self.statusbar = QtWidgets.QStatusBar(w7xPyViewer)
-        self.statusbar.setObjectName("statusbar")
-        w7xPyViewer.setStatusBar(self.statusbar)
         self.menubar = QtWidgets.QMenuBar(w7xPyViewer)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1093, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 618, 21))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")

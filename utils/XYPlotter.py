@@ -71,9 +71,6 @@ class XYPlotter:
     def drawPlots(self):
         # self.callingObj.mainPlotWidget.clear()
         self.clearPlots()
-        self.legend = pg.LegendItem((200, 50), offset=(70, 30))  # args are (size, offset)
-        self.legend.setParentItem(self.callingObj.mainPlotWidget.graphicsItem())  # Note we do NOT call plt.addItem in this case
-
         # Add labels to the axis
         self.callingObj.mainPlotWidget.setLabel('bottom', "Time", units='s')
         # If you include the units, Pyqtgraph automatically scales the axis and adjusts the SI prefix (in this case kHz)
@@ -96,7 +93,6 @@ class XYPlotter:
             #                symbolPen=self.nextPen + 3, symbolSize=10 + 3 * i)
             plt = self.callingObj.mainPlotWidget.plot(time,signal, pen=(self.nextPen),  name='    '+self.callingObj.dataInLabels[i])
             self.allPlotItems.append(plt)
-            self.legend.addItem(plt, self.callingObj.dataInLabels[i])
 
             ax = self.callingObj.mainPlotWidget.plotItem.getAxis('bottom')
 
@@ -124,24 +120,29 @@ class XYPlotter:
             print('samplingRate,Hz: ', np.double(self.callingObj.frq[i]))
             print('size, points: ', np.double(len(signal)))
 
+        # self.createPyqtgraphLegend()
+
 
     def clearPlots(self):
         self.allPlotItems.clear()
         self.nextPen = 0
-        for itm in self.allPlotItems:
-            self.legend.removeItem(itm)
+        self.clearPyqtgraphLegend()
 
-        if self.legend.scene() is not None:
-            self.legend.scene().removeItem(self.legend)
 
     def clearAllPlotsAndData(self):
         self.callingObj.mainPlotWidget.clear()
         for itm in self.allPlotItems:
             self.callingObj.mainPlotWidget.removeItem(itm)
+        self.allPlotItems.clear()
+        self.clearPyqtgraphLegend()
+
+
+    def clearPyqtgraphLegend(self):
+        for itm in self.allPlotItems:
             self.legend.removeItem(itm)
         if self.legend.scene() is not None:
-               self.legend.scene().removeItem(self.legend)
-        self.allPlotItems.clear()
+            self.legend.scene().removeItem(self.legend)
+
 
 
 
@@ -156,3 +157,12 @@ class XYPlotter:
     # x =  np.linspace(0.01,0.05,10)
     # y =  np.linspace(100000,200000,10)
     # self.spectrPlot.plot(x, y, pen=pg.mkPen(color=(255,0,0), width=5), name="Red curve", symbol='o' , symbolBrush = "k", symbolPen = "k", symbolSize=18)
+    def createPyqtgraphLegend(self):
+        self.legend = pg.LegendItem((200, 50), offset=(70, 30))  # args are (size, offset)
+        self.legend.setParentItem(self.callingObj.mainPlotWidget.graphicsItem())  # Note we do NOT call plt.addItem in this case
+
+        for i in range(len(self.allPlotItems)):
+            self.legend.addItem(self.allPlotItems[i], self.callingObj.dataInLabels[i])
+
+
+

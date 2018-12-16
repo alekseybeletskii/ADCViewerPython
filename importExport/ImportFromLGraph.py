@@ -114,7 +114,6 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
 
 
             self.readDat(datFile)
-            print('test...')
 
 
 

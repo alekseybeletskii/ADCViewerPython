@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1093</width>
-    <height>667</height>
+    <width>618</width>
+    <height>433</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -239,13 +239,12 @@
     </item>
    </layout>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1093</width>
+     <width>618</width>
      <height>21</height>
     </rect>
    </property>

@@ -218,6 +218,10 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
             self.dataIn.append(d)
             self.dti.append(dt)
             self.frq.append(int(round(np.power(dt, -1))))
+
+            self.dataInADCChannel.append(int(0))
+            self.dataInADCChannelTimeShift.append(np.power(self.adcRate*1000.0, -1)*self.chanAdcOrdinal[0])
+
         self.drawPlots()
 
     def export_to_csv_v1(self):

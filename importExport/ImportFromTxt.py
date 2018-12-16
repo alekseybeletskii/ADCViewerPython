@@ -78,6 +78,8 @@ class ImportFromTxt(QtWidgets.QMainWindow):
             filename_and_ext = ospath.basename(files[i])
             filename, _ = ospath.splitext(filename_and_ext)
             self.callingObj.dataInLabels.append(filename)
+            self.callingObj.dataInADCChannel.append(int(0))
+            self.callingObj.dataInADCChannelTimeShift.append(np.power(self.adcRate*1000.0, -1)*self.chanAdcOrdinal[0])
 
             #print(type(dataX))
 
@@ -104,5 +106,8 @@ class ImportFromTxt(QtWidgets.QMainWindow):
             filename_and_ext = ospath.basename(files[i])
             filename, _ = ospath.splitext(filename_and_ext)
             self.callingObj.dataInLabels.append(filename)
+
+            self.callingObj.dataInADCChannel.append(int(0))
+            self.callingObj.dataInADCChannelTimeShift.append(np.power(self.adcRate*1000.0, -1)*self.chanAdcOrdinal[0])
 
 
