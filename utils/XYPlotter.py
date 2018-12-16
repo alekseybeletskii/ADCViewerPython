@@ -88,7 +88,7 @@ class XYPlotter:
             # time = np.arange(len(signal))
             # time = self.callingObj.dti[i]
             # time = np.arange(0, (len(signal)) * dti, dti) if len(self.callingObj.dti[i])==1 else dti
-            time = np.arange(0, (signal.size) * dti, dti) if self.callingObj.dti[i].size==1 else dti
+            time = np.arange(0, (signal.size) * dti, dti)+self.callingObj.dataInADCChannelTimeShift[i] if self.callingObj.dti[i].size==1 else dti
 
             self.nextPen = self.nextPen + 2
 

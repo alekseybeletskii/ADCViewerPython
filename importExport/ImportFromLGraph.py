@@ -131,9 +131,6 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
                 self.chanAdcOrdinal = np.append(self.chanAdcOrdinal, nextCh + 1)
                 self.chanAdcGain = np.append(self.chanAdcGain, switcher.get(self.adcGainArray[nextCh], 1))
 
-
-
-
     def readPar(self, parFile):
         with open(parFile, "rb") as binary_parFile:
             allBytes = BytesIO(binary_parFile.read())
@@ -212,6 +209,9 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
 
             self.callingObj.dti.append(np.power(self.channelRate*1000.0, -1))
             self.callingObj.frq.append(int(round(self.channelRate * 1000.0)))
+            self.callingObj.dataInADCChannel.append(int(chan))
+            self.callingObj.dataInADCChannelTimeShift.append(np.power(self.adcRate*1000.0, -1)*self.chanAdcOrdinal[chan])
+            # print('adcDelay: ('+str(self.chanAdcOrdinal[chan])+'):', np.power(self.adcRate*1000.0, -1)*self.chanAdcOrdinal[chan])
 
 
 

@@ -86,6 +86,8 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.latestFilePath = ospath.expanduser('~')
         self.files = []
         self.dataIn = []
+        self.dataInADCChannel = []
+        self.dataInADCChannelTimeShift = []
         self.dti = []
         self.frq = []
         self.dataInLabels = []
