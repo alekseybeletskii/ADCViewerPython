@@ -43,32 +43,27 @@
 #  */
 #
 
-
+import seaborn
 import numpy as np
-class GetDataLimits:
-    dataLimits = {}
+class ColorPalette:
+    colorPalette = []
 
     @classmethod
-    def getDataLimitsIndexes(cls, axIn, x):
-        cls.dataLimits = {}
-        if type(x) is not np.ndarray :
-            cls.dataLimits["minIndex"] = int(round(axIn.range[0]/x))
-            cls.dataLimits["maxIndex"] = int(round(axIn.range[1]/x))
-        elif type(x) is np.ndarray:
-            i = 0
-            while i < x.size:
-                if x[i] > axIn.range[0]:
-                   cls.dataLimits["minIndex"] = i
-                   break
-                i+=1
-            i = len(x)-1
-            while i > 0:
-                if x[i] < axIn.range[1]:
-                   cls.dataLimits["maxIndex"] = i
-                   break
-                i-=1
+    def getColorPalette(cls, paletteSize):
+        cls.colorPalette.clear()
+        size = 1
+        HSV_tuples = []
+        # HSV_tuples = [(x * 1.0 / N, 1, 1) for x in range(N)]
+        hex_out = []
+        repeatColors = int(np.ceil(size / paletteSize)) if np.ceil(size / paletteSize) >= 1 else 1
+        for i in range(repeatColors):
+            # HSV_tuples.extend(sns.husl_palette(n_colors=N, h=.003, s=1-0.3*i if i <3 else 1, l=.65))
+            HSV_tuples.extend(seaborn.husl_palette(n_colors=paletteSize, h=.003, s=1, l=0.5))
+            # HSV_tuples.extend(sns.color_palette("Paired", 10))
+            # HSV_tuples.extend(sns.color_palette("bright", 10))
+        for rgb in HSV_tuples:
+            rgb = map(lambda x: int(x * 255), rgb)
+            hex_out.append('#%02x%02x%02x' % tuple(rgb))
+        return hex_out
 
-        #print('axis range: {}'.format(axIn.range))  # <------- get range of x axis
-        #print('data indexes: {}'.format(cls.dataLimits))  # <------- get range of x axis
-
-        return cls.dataLimits
+        return cls.colorPalette

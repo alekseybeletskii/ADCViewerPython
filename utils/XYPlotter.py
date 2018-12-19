@@ -46,7 +46,7 @@
 
 import pyqtgraph as pg
 import numpy as np
-from utils.GetDataLimits import GetDataLimits
+from utils.DataLimits import DataLimits
 from utils.DataFilters import  DataFilters
 
 
@@ -88,6 +88,7 @@ class XYPlotter:
             time = np.arange(0, (signal.size) * dti, dti)+self.callingObj.dataInADCChannelTimeShift[i] if self.callingObj.dti[i].size==1 else dti
 
             self.nextPen = self.nextPen + 2
+            # nextPen = pg.mkPen(colors[i], width=3, style=QtCore.Qt.DashLine)
 
             # self.callingObj.mainPlotWidget.plot(time, signal, pen=None, symbol='t' + str(i + 1), symbolBrush=self.nextPen,
             #                symbolPen=self.nextPen + 3, symbolSize=10 + 3 * i)
@@ -96,7 +97,7 @@ class XYPlotter:
 
             ax = self.callingObj.mainPlotWidget.plotItem.getAxis('bottom')
 
-            self.dataXLimitsIndexes = GetDataLimits.getDataLimitsIndexes(ax, dti)
+            self.dataXLimitsIndexes = DataLimits.getDataLimitsIndexes(ax, dti)
 
             # if not self.SGFilt.checkState() and not self.subtrFilt.checkState() and not self.replaceWithSGFilt.checkState():
             #     self.plot.plot(time, signal, pen=(self.nextPen))

@@ -53,6 +53,7 @@
 
 
 from PyQt5 import QtWidgets, QtGui
+from PyQt5.Qt import Qt
 
 from GUIs import w7xPyViewerLayout
 # it also keeps events etc that we defined in Qt Design
@@ -128,6 +129,27 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.xyPlotter = XYPlotter(self)
 
         self.proxy = pg.SignalProxy(self.mainPlotWidget.scene().sigMouseMoved, rateLimit=60, slot=self.mouseMoved)
+
+        self.listOfDataLablesWidget.setStyleSheet("QListWidget { background: transparent }")
+
+        # self.listOfDataLablesWidget.itemEntered.connect(
+        #     lambda item:
+        #     item.setCheckState(Qt.Checked if item.checkState() == Qt.Unchecked else Qt.Unchecked)
+        #
+        # )
+        # self.listOfDataLablesWidget.itemEntered.connect(self.showHidePlot )
+        self.listOfDataLablesWidget.itemClicked.connect(lambda item:
+        item.setCheckState(Qt.Checked if item.checkState() == Qt.Unchecked else Qt.Unchecked) )
+        self.listOfDataLablesWidget.itemClicked.connect(self.showHidePlot )
+
+        # self.listOfDataLablesWidget.currentItemChanged.connect(self.showHidePlot)
+
+    def showHidePlot(self):
+         print ( self.listOfDataLablesWidget.currentItem().text())
+         print ( self.listOfDataLablesWidget.currentItem().checkState())
+         print ( self.listOfDataLablesWidget.currentRow())
+
+
 
     def mouseMoved(self, evt):
         mousePoint = self.mainPlotWidget.plotItem.vb.mapSceneToView(evt[0])
@@ -232,8 +254,25 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         toTxt = ExportToTxtImg(self)
         toTxt.export_to_csv_v2()
 
+
     def drawPlots(self):
         self.xyPlotter.drawPlots()
+        self.populateListOfDataLables()
+
+
+    def populateListOfDataLables(self):
+        for lb in self.dataInLabels:
+            item = QtWidgets.QListWidgetItem(lb, self.listOfDataLablesWidget)
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Unchecked)
+
+    def getAllCheckedItemsIndices(self):
+        checked_items = []
+        for index in range(self.listOfDataLablesWidget.count()):
+            if self.listWidgetLabels.item(index).checkState() == Qt.Checked:
+                checked_items.append(self.listWidgetLabels.item(index))
+
+
 
     def subtractSGFilter(self):
 

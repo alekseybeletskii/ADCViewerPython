@@ -48,7 +48,7 @@ from skimage.feature.peak import peak_local_max
 import numpy as np
 import pyqtgraph as pg
 from  importExport.ExportToTxtImg import ExportToTxtImg
-from utils.GetDataLimits import GetDataLimits
+from utils.DataLimits import DataLimits
 
 
 class SpectrogramPeaksDetection:
