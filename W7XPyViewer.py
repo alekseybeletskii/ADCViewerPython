@@ -70,6 +70,7 @@ from utils.DataResample import DataResample
 from W7XSpectrogram import W7XSpectrogram
 from utils.w7xPyViewerSettings import w7xPyViewerSettings
 from os import path as ospath
+from PyQt5.QtGui import QColor
 
 
 
@@ -139,14 +140,18 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         # )
         # self.listOfDataLablesWidget.itemEntered.connect(self.showHidePlot )
         self.listOfDataLablesWidget.itemClicked.connect(lambda item:
-        item.setCheckState(Qt.Checked if item.checkState() == Qt.Unchecked else Qt.Unchecked) )
+        item.setCheckState(Qt.Checked if item.checkState() == Qt.Unchecked else Qt.Unchecked))
+
         self.listOfDataLablesWidget.itemClicked.connect(self.showHidePlot )
+        self.listOfDataLablesWidget.itemClicked.connect(lambda item:
+        item.setBackground(QtWidgets.QColorDialog.getColor()))
 
         # self.listOfDataLablesWidget.currentItemChanged.connect(self.showHidePlot)
 
     def showHidePlot(self):
          print ( self.listOfDataLablesWidget.currentItem().text())
          print ( self.listOfDataLablesWidget.currentItem().checkState())
+         # print ( self.listOfDataLablesWidget.currentItem().setBackground(QtWidgets.QColorDialog.getColor()))
          print ( self.listOfDataLablesWidget.currentRow())
 
 

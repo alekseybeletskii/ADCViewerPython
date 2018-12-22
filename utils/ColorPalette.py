@@ -49,7 +49,7 @@ class ColorPalette:
     colorPalette = []
 
     @classmethod
-    def getColorPalette(cls, paletteSize):
+    def getColorPalette(cls, paletteSize=10):
         cls.colorPalette.clear()
         size = 1
         HSV_tuples = []
@@ -57,13 +57,14 @@ class ColorPalette:
         hex_out = []
         repeatColors = int(np.ceil(size / paletteSize)) if np.ceil(size / paletteSize) >= 1 else 1
         for i in range(repeatColors):
-            # HSV_tuples.extend(sns.husl_palette(n_colors=N, h=.003, s=1-0.3*i if i <3 else 1, l=.65))
+            # HSV_tuples.extend(seaborn.husl_palette(n_colors=N, h=.003, s=1-0.3*i if i <3 else 1, l=.65))
             HSV_tuples.extend(seaborn.husl_palette(n_colors=paletteSize, h=.003, s=1, l=0.5))
-            # HSV_tuples.extend(sns.color_palette("Paired", 10))
-            # HSV_tuples.extend(sns.color_palette("bright", 10))
+            # HSV_tuples.extend(seaborn.color_palette("Paired", 10))
+            # HSV_tuples.extend(seaborn.color_palette("bright", 10))
         for rgb in HSV_tuples:
             rgb = map(lambda x: int(x * 255), rgb)
-            hex_out.append('#%02x%02x%02x' % tuple(rgb))
-        return hex_out
-
+            #convet to hex string
+            cls.colorPalette.append('#%02x%02x%02x' % tuple(rgb))
         return cls.colorPalette
+
+

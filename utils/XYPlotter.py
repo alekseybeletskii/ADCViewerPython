@@ -48,6 +48,7 @@ import pyqtgraph as pg
 import numpy as np
 from utils.DataLimits import DataLimits
 from utils.DataFilters import  DataFilters
+from utils.ColorPalette import ColorPalette
 
 
 
@@ -57,9 +58,8 @@ class XYPlotter:
     def __init__(self, callingObj):
 
         self.callingObj = callingObj
-        self.nextPen = 0
+        # self.nextPen = 0
         self.dataXLimitsIndexes = {}
-
 
         # self.callingObj.mainPlotWidget.addLegend( )
 
@@ -68,6 +68,7 @@ class XYPlotter:
         self.allPlotItems = []
         # self.legend = pg.LegendItem()
 
+        self.colors = ColorPalette.getColorPalette()
     def drawPlots(self):
         # self.callingObj.mainPlotWidget.clear()
         self.clearPlots()
@@ -77,8 +78,10 @@ class XYPlotter:
         self.callingObj.mainPlotWidget.setLabel('left', "Amplitude", units='a.u.')
 
 
-
+        nextColor = 0
         for i in range(len(self.callingObj.dataIn)):
+
+            nextColor = nextColor + 1 if nextColor < len(self.colors)-1 else 0
 
             signal = self.callingObj.dataIn[i]
             dti = self.callingObj.dti[i]
@@ -87,12 +90,12 @@ class XYPlotter:
             # time = np.arange(0, (len(signal)) * dti, dti) if len(self.callingObj.dti[i])==1 else dti
             time = np.arange(0, (signal.size) * dti, dti)+self.callingObj.dataInADCChannelTimeShift[i] if self.callingObj.dti[i].size==1 else dti
 
-            self.nextPen = self.nextPen + 2
+            # self.nextPen = self.nextPen + 2
             # nextPen = pg.mkPen(colors[i], width=3, style=QtCore.Qt.DashLine)
 
             # self.callingObj.mainPlotWidget.plot(time, signal, pen=None, symbol='t' + str(i + 1), symbolBrush=self.nextPen,
             #                symbolPen=self.nextPen + 3, symbolSize=10 + 3 * i)
-            plt = self.callingObj.mainPlotWidget.plot(time,signal, pen=(self.nextPen),  name='    '+self.callingObj.dataInLabels[i])
+            plt = self.callingObj.mainPlotWidget.plot(time, signal, pen=self.colors[nextColor], name='    ' + self.callingObj.dataInLabels[i])
             self.allPlotItems.append(plt)
 
             ax = self.callingObj.mainPlotWidget.plotItem.getAxis('bottom')
