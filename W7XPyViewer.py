@@ -139,20 +139,23 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         #
         # )
         # self.listOfDataLablesWidget.itemEntered.connect(self.showHidePlot )
-        self.listOfDataLablesWidget.itemClicked.connect(lambda item:
-        item.setCheckState(Qt.Checked if item.checkState() == Qt.Unchecked else Qt.Unchecked))
 
-        self.listOfDataLablesWidget.itemClicked.connect(self.showHidePlot )
-        self.listOfDataLablesWidget.itemClicked.connect(lambda item:
-        item.setBackground(QtWidgets.QColorDialog.getColor()))
+        # self.listOfDataLablesWidget.itemClicked.connect(lambda item:
+        # item.setCheckState(Qt.Checked if item.checkState() == Qt.Unchecked else Qt.Unchecked))
+
+        # self.listOfDataLablesWidget.itemClicked.connect(self.showHidePlot )
+        # self.listOfDataLablesWidget.itemClicked.connect(lambda item:
+        # item.setBackground(QtWidgets.QColorDialog.getColor()))
 
         # self.listOfDataLablesWidget.currentItemChanged.connect(self.showHidePlot)
 
-    def showHidePlot(self):
-         print ( self.listOfDataLablesWidget.currentItem().text())
-         print ( self.listOfDataLablesWidget.currentItem().checkState())
+    # def showHideColorPlot(self):
+    def testing(self):
+        # print ( self.listOfDataLablesWidget.currentItem().text())
+        # print ( self.listOfDataLablesWidget.currentItem().checkState())
          # print ( self.listOfDataLablesWidget.currentItem().setBackground(QtWidgets.QColorDialog.getColor()))
-         print ( self.listOfDataLablesWidget.currentRow())
+        # print ( self.listOfDataLablesWidget.currentRow())
+        QtWidgets.QColorDialog.getColor()
 
 
 
@@ -266,10 +269,36 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
 
     def populateListOfDataLables(self):
+
         for lb in self.dataInLabels:
-            item = QtWidgets.QListWidgetItem(lb, self.listOfDataLablesWidget)
-            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-            item.setCheckState(Qt.Unchecked)
+            itemN = QtWidgets.QListWidgetItem()
+            # Create widget
+            widget = QtWidgets.QWidget()
+            widgetCheckbox = QtWidgets.QCheckBox()
+            widgetCheckbox.setChecked(True)
+            widgetText = QtWidgets.QLabel("a plot name")
+            widgetButton = QtWidgets.QPushButton("changeColor")
+
+            widgetButton.clicked.connect(self.testing)
+
+            widgetLayout = QtWidgets.QHBoxLayout()
+
+            widgetLayout.addWidget(widgetCheckbox)
+            widgetLayout.addWidget(widgetText)
+            widgetLayout.addWidget(widgetButton)
+            widgetLayout.addStretch()
+
+            widgetLayout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
+            widget.setLayout(widgetLayout)
+            itemN.setSizeHint(widget.sizeHint())
+            self.listOfDataLablesWidget.addItem(itemN)
+            self.listOfDataLablesWidget.setItemWidget(itemN, widget)
+
+    # def populateListOfDataLables(self):
+    #     for lb in self.dataInLabels:
+    #         item = QtWidgets.QListWidgetItem(lb, self.listOfDataLablesWidget)
+    #         item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+    #         item.setCheckState(Qt.Unchecked)
 
     def getAllCheckedItemsIndices(self):
         checked_items = []
