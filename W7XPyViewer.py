@@ -96,12 +96,17 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.nextPen = 0
         self.setupUi(self)  # This is defined in design.py file automatically
         # It sets up layout and widgets that are defined
-        self.actionOpen_csv_dx.triggered.connect(self.openCsv_dx)
-        self.actionOpen_csv_fullX.triggered.connect(self.openCsv_fullX)
-        self.actionOpen_LGraph.triggered.connect(self.openLGraph)
-        self.actionOpen_mdsplus.triggered.connect(self.openMdsplus)
-        # self.actionOpen_mdsplus_QOC.triggered.connect(self.openMdsplusQOC)
+
+        # self.actionOpen_csv_dx.triggered.connect(self.openCsv_dx)
+        self.actionOpen_csv_dx.triggered.connect(lambda: self.openSource(self.actionOpen_csv_dx))
+        # self.actionOpen_csv_fullX.triggered.connect(self.openCsv_fullX)
+        self.actionOpen_csv_fullX.triggered.connect(lambda: self.openSource(self.actionOpen_csv_fullX))
+        # self.actionOpen_mdsplus.triggered.connect(self.openMdsplus)
+        self.actionOpen_mdsplus.triggered.connect(lambda: self.openSource(self.actionOpen_mdsplus))
+        # self.actionOpen_LGraph.triggered.connect(self.openLGraph)
+        self.actionOpen_LGraph.triggered.connect(lambda: self.openSource(self.actionOpen_LGraph))
         self.actionDrawPlots.triggered.connect(self.drawPlots)
+
         self.actionExport_to_csv.triggered.connect(self.export_to_csv_v1)
         self.actionExport_time_to_separate_file.triggered.connect(self.export_to_csv_v2)
 
@@ -150,6 +155,27 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         # self.listOfDataLablesWidget.currentItemChanged.connect(self.showHidePlot)
 
     # def showHideColorPlot(self):
+
+    def openSource(self, buttonPressed):
+        print("clicked button is " + buttonPressed.text())
+
+        switcher = {
+            'Open_mdsplus': self.openMdsplus,
+            'Open_csv_dx': self.openCsv_dx,
+            'Open_csv_fullX': self.openCsv_fullX,
+            'Open_LGraph': self.openLGraph,
+
+        }
+
+        f = switcher.get(buttonPressed.text(), 'unknown')
+        f()
+
+        print("clicked button is " + buttonPressed.text())
+
+        self.drawPlots()
+
+
+
     def testing(self):
         # print ( self.listOfDataLablesWidget.currentItem().text())
         # print ( self.listOfDataLablesWidget.currentItem().checkState())
@@ -210,17 +236,14 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
     def openCsv_dx(self):
         CsvTxtR = ImportFromTxt(self)
         CsvTxtR.openCsvTxt_dx()
-        self.drawPlots()
 
     def openLGraph(self):
         LGraphR = ImportFromLGraph(self)
         LGraphR.openLGraph()
-        self.drawPlots()
 
     def openCsv_fullX(self):
         CsvTxtR = ImportFromTxt(self)
         CsvTxtR.openCsvTxt_fullX()
-        self.drawPlots()
 
     # def openMdsplusQXT(self):
     #     self.openMdsplus('qxt1', 'importExport/QXTchList.txt')
@@ -252,7 +275,6 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
             self.dataInADCChannel.append(int(0))
             self.dataInADCChannelTimeShift.append(np.power(self.adcRate*1000.0, -1)*self.chanAdcOrdinal[0])
 
-        self.drawPlots()
 
     def export_to_csv_v1(self):
         toTxt = ExportToTxtImg(self)
