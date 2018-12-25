@@ -118,7 +118,7 @@ class ImportFromMdsplus:
     #     with open(fileName, 'r') as text_file:
     #         self.callingObj.dataInLabels = text_file.read().splitlines()
 
-    def readDatainLabels(self):
+    def readCurveDataLabels(self):
         dataInLabels = []
         fileName = 'importExport/DatainLabelsFile.txt'
         with open(fileName, 'r') as txtFile:

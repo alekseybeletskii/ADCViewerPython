@@ -69,8 +69,11 @@ from utils.DataFilters import DataFilters
 from utils.DataResample import DataResample
 from W7XSpectrogram import W7XSpectrogram
 from utils.w7xPyViewerSettings import w7xPyViewerSettings
+from GUIs.LegendItem import LegendItem
 from os import path as ospath
-from PyQt5.QtGui import QColor
+
+
+# from PyQt5.QtGui import QColor
 
 
 
@@ -98,13 +101,13 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         # It sets up layout and widgets that are defined
 
         # self.actionOpen_csv_dx.triggered.connect(self.openCsv_dx)
-        self.actionOpen_csv_dx.triggered.connect(lambda: self.openSource(self.actionOpen_csv_dx))
+        self.actionOpen_csv_dx.triggered.connect(lambda: self.openDataSource(self.actionOpen_csv_dx))
         # self.actionOpen_csv_fullX.triggered.connect(self.openCsv_fullX)
-        self.actionOpen_csv_fullX.triggered.connect(lambda: self.openSource(self.actionOpen_csv_fullX))
+        self.actionOpen_csv_fullX.triggered.connect(lambda: self.openDataSource(self.actionOpen_csv_fullX))
         # self.actionOpen_mdsplus.triggered.connect(self.openMdsplus)
-        self.actionOpen_mdsplus.triggered.connect(lambda: self.openSource(self.actionOpen_mdsplus))
+        self.actionOpen_mdsplus.triggered.connect(lambda: self.openDataSource(self.actionOpen_mdsplus))
         # self.actionOpen_LGraph.triggered.connect(self.openLGraph)
-        self.actionOpen_LGraph.triggered.connect(lambda: self.openSource(self.actionOpen_LGraph))
+        self.actionOpen_LGraph.triggered.connect(lambda: self.openDataSource(self.actionOpen_LGraph))
         self.actionDrawPlots.triggered.connect(self.drawPlots)
 
         self.actionExport_to_csv.triggered.connect(self.export_to_csv_v1)
@@ -129,7 +132,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
         self.ui_hotkey('ajustSettings', "Shift+s", self.settingsUi)
 
-        self.resampler =  DataResample(self)
+        self.resampler = DataResample(self)
 
         # self.allPlotItems = []
         self.xyPlotter = XYPlotter(self)
@@ -156,9 +159,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
     # def showHideColorPlot(self):
 
-    def openSource(self, buttonPressed):
-        print("clicked button is " + buttonPressed.text())
-
+    def openDataSource(self, buttonPressed):
         switcher = {
             'Open_mdsplus': self.openMdsplus,
             'Open_csv_dx': self.openCsv_dx,
@@ -170,7 +171,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         f = switcher.get(buttonPressed.text(), 'unknown')
         f()
 
-        print("clicked button is " + buttonPressed.text())
+        self.populateListOfDataLables()
 
         self.drawPlots()
 
@@ -260,7 +261,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
 
         openMds = ImportFromMdsplus(self)
-        self.dataInLabels = openMds.readDatainLabels()
+        self.dataInLabels = openMds.readCurveDataLabels()
 
         for i in range(len(self.dataInLabels)):
             d, dt = openMds.getMdsplusData( self.dataInLabels[i], treeName, shotNumber, start, end, resample)
@@ -287,34 +288,23 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
     def drawPlots(self):
         self.xyPlotter.drawPlots()
-        self.populateListOfDataLables()
-
 
     def populateListOfDataLables(self):
 
-        for lb in self.dataInLabels:
-            itemN = QtWidgets.QListWidgetItem()
-            # Create widget
-            widget = QtWidgets.QWidget()
-            widgetCheckbox = QtWidgets.QCheckBox()
-            widgetCheckbox.setChecked(True)
-            widgetText = QtWidgets.QLabel("a plot name")
-            widgetButton = QtWidgets.QPushButton("changeColor")
+        self.listOfDataLablesWidget.clear()
+        # self.listOfDataLablesWidget.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+        colors = self.xyPlotter.colors
+        nextColor = 0
 
-            widgetButton.clicked.connect(self.testing)
+        for i in range(len(self.dataInLabels)):
+            nextColor = nextColor + 1 if nextColor < len(colors) - 1 else 0
 
-            widgetLayout = QtWidgets.QHBoxLayout()
-
-            widgetLayout.addWidget(widgetCheckbox)
-            widgetLayout.addWidget(widgetText)
-            widgetLayout.addWidget(widgetButton)
-            widgetLayout.addStretch()
-
-            widgetLayout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
-            widget.setLayout(widgetLayout)
-            itemN.setSizeHint(widget.sizeHint())
-            self.listOfDataLablesWidget.addItem(itemN)
-            self.listOfDataLablesWidget.setItemWidget(itemN, widget)
+            legendItem = LegendItem(self.xyPlotter, i, True, self.dataInLabels[i], colors[nextColor])
+            item = QtWidgets.QListWidgetItem()
+            item.setSizeHint(legendItem.sizeHint())
+            item.setFlags(Qt.NoItemFlags)
+            self.listOfDataLablesWidget.addItem(item)
+            self.listOfDataLablesWidget.setItemWidget(item, legendItem)
 
     # def populateListOfDataLables(self):
     #     for lb in self.dataInLabels:

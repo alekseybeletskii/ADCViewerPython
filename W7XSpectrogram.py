@@ -172,7 +172,7 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         treeName = self.settings["treeName"]
 
         openMds = ImportFromMdsplus(self)
-        self.dataInLabels = openMds.readDatainLabels()
+        self.dataInLabels = openMds.readCurveDataLabels()
 
         for i in range(len(self.dataInLabels)):
             d, dt = openMds.getMdsplusData(self.dataInLabels[i], treeName, shotNumber, start, end, resample)

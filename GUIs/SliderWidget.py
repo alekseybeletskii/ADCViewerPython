@@ -1,10 +1,8 @@
-import sys
-
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QGraphicsWidget, QApplication, QHBoxLayout, QLabel, QSizePolicy, QSlider, QSpacerItem, QVBoxLayout, QWidget, QPushButton
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QSizePolicy, QSlider, QSpacerItem, QVBoxLayout, QWidget, QPushButton
 
 
-class SliderWidget(QWidget, QGraphicsWidget):
+class SliderWidget(QWidget):
     def __init__(self, minimum, maximum, parent=None):
         super(SliderWidget, self).__init__(parent=parent)
         self.verticalLayout = QVBoxLayout(self)

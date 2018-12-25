@@ -49,6 +49,8 @@ import numpy as np
 from utils.DataLimits import DataLimits
 from utils.DataFilters import  DataFilters
 from utils.ColorPalette import ColorPalette
+from PyQt5.QtGui import QColor
+from PyQt5.Qt import Qt
 
 
 
@@ -69,6 +71,20 @@ class XYPlotter:
         # self.legend = pg.LegendItem()
 
         self.colors = ColorPalette.getColorPalette()
+
+    def setCurveColor(self, index, color=QColor(Qt.black)):
+        self.allPlotItems[index].setPen(color)
+
+    def setCurveVisibility(self, index, isVisible=True):
+        # newColor =  QColor(Qt.transparent)
+        if isVisible:
+            self.allPlotItems[index].curve.show()
+        else:
+            self.allPlotItems[index].curve.hide()
+
+        print('item status: ', index, isVisible)
+
+
     def drawPlots(self):
         # self.callingObj.mainPlotWidget.clear()
         self.clearPlots()
@@ -120,7 +136,8 @@ class XYPlotter:
                 dataFilters = DataFilters(self.callingObj)
 
                 smoothed = dataFilters.savitzky_golay_filt(signal,self.callingObj.settings["sgFilterWindow"],self.callingObj.settings["sgFilterPolyOrder"])
-                self.callingObj.mainPlotWidget.plot(time, smoothed, pen=pg.mkPen(color='k'))
+                plt = self.callingObj.mainPlotWidget.plot(time, smoothed, pen=pg.mkPen(color='k'))
+                self.allPlotItems.append(plt)
             print('samplingRate,Hz: ', np.double(self.callingObj.frq[i]))
             print('size, points: ', np.double(len(signal)))
 
@@ -128,6 +145,8 @@ class XYPlotter:
 
 
     def clearPlots(self):
+        for itm in self.allPlotItems:
+            self.callingObj.mainPlotWidget.removeItem(itm)
         self.allPlotItems.clear()
         self.nextPen = 0
         self.clearPyqtgraphLegend()
