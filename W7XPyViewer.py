@@ -117,11 +117,10 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.actionExit.triggered.connect(self.exitApp)
         self.xLeft=0
         self.xRight=0
-        self.drawUI.clicked.connect(self.drawPlots)
         self.drawSpectrogramUI.clicked.connect(self.drawSpectrogram)
         self.settings_btn.clicked.connect(self.settingsUi)
+        self.applySGF.clicked.connect(self.drawPlots)
         self.replaceWithSGF.clicked.connect(self.replaceWithSGFilter)
-
         self.subtractSGF.clicked.connect(self.subtractSGFilter)
 
         self.w7xPyViewerSettingsWidget = w7xPyViewerSettings(self, self)
@@ -274,7 +273,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
             self.frq.append(int(round(np.power(dt, -1))))
 
             self.dataInADCChannel.append(int(0))
-            self.dataInADCChannelTimeShift.append(np.power(self.adcRate*1000.0, -1)*self.chanAdcOrdinal[0])
+            self.dataInADCChannelTimeShift.append(np.double(0))
 
 
     def export_to_csv_v1(self):
@@ -297,7 +296,6 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         nextColor = 0
 
         for i in range(len(self.dataInLabels)):
-            nextColor = nextColor + 1 if nextColor < len(colors) - 1 else 0
 
             legendItem = LegendItem(self.xyPlotter, i, True, self.dataInLabels[i], colors[nextColor])
             item = QtWidgets.QListWidgetItem()
@@ -305,7 +303,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
             item.setFlags(Qt.NoItemFlags)
             self.listOfDataLablesWidget.addItem(item)
             self.listOfDataLablesWidget.setItemWidget(item, legendItem)
-
+            nextColor = nextColor + 1 if nextColor < len(colors) - 1 else 0
     # def populateListOfDataLables(self):
     #     for lb in self.dataInLabels:
     #         item = QtWidgets.QListWidgetItem(lb, self.listOfDataLablesWidget)

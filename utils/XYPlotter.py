@@ -47,7 +47,7 @@
 import pyqtgraph as pg
 import numpy as np
 from utils.DataLimits import DataLimits
-from utils.DataFilters import  DataFilters
+from utils.DataFilters import DataFilters
 from utils.ColorPalette import ColorPalette
 from PyQt5.QtGui import QColor
 from PyQt5.Qt import Qt
@@ -68,12 +68,18 @@ class XYPlotter:
         self.legend = pg.LegendItem()  # args are (size, offset)
         # self.legend.setParentItem(self.callingObj.mainPlotWidget.graphicsItem())  # Note we do NOT call plt.addItem in this case
         self.allPlotItems = []
+        self.allSmoothedPlotItems = []
         # self.legend = pg.LegendItem()
 
         self.colors = ColorPalette.getColorPalette()
 
     def setCurveColor(self, index, color=QColor(Qt.black)):
-        self.allPlotItems[index].setPen(color)
+        self.allPlotItems[index].setPen(color.name())
+
+        iColor = index % len(self.colors)
+        # self.colors.insert(iColor,color)
+
+        self.colors[iColor] = color.name()
 
     def setCurveVisibility(self, index, isVisible=True):
         # newColor =  QColor(Qt.transparent)
@@ -82,10 +88,11 @@ class XYPlotter:
         else:
             self.allPlotItems[index].curve.hide()
 
-        print('item status: ', index, isVisible)
+        # print('item status: ', index, isVisible)
 
 
     def drawPlots(self):
+
         # self.callingObj.mainPlotWidget.clear()
         self.clearPlots()
         # Add labels to the axis
@@ -96,8 +103,6 @@ class XYPlotter:
 
         nextColor = 0
         for i in range(len(self.callingObj.dataIn)):
-
-            nextColor = nextColor + 1 if nextColor < len(self.colors)-1 else 0
 
             signal = self.callingObj.dataIn[i]
             dti = self.callingObj.dti[i]
@@ -137,9 +142,12 @@ class XYPlotter:
 
                 smoothed = dataFilters.savitzky_golay_filt(signal,self.callingObj.settings["sgFilterWindow"],self.callingObj.settings["sgFilterPolyOrder"])
                 plt = self.callingObj.mainPlotWidget.plot(time, smoothed, pen=pg.mkPen(color='k'))
-                self.allPlotItems.append(plt)
-            print('samplingRate,Hz: ', np.double(self.callingObj.frq[i]))
-            print('size, points: ', np.double(len(signal)))
+                self.allSmoothedPlotItems.append(plt)
+            # print('samplingRate,Hz: ', np.double(self.callingObj.frq[i]))
+            # print('size, points: ', np.double(len(signal)))
+
+            nextColor = nextColor + 1 if nextColor < len(self.colors) - 1 else 0
+
 
         # self.createPyqtgraphLegend()
 
@@ -147,24 +155,27 @@ class XYPlotter:
     def clearPlots(self):
         for itm in self.allPlotItems:
             self.callingObj.mainPlotWidget.removeItem(itm)
+        for itm in self.allSmoothedPlotItems:
+            self.callingObj.mainPlotWidget.removeItem(itm)
         self.allPlotItems.clear()
         self.nextPen = 0
-        self.clearPyqtgraphLegend()
+        # self.clearPyqtgraphLegend()
 
 
     def clearAllPlotsAndData(self):
         self.callingObj.mainPlotWidget.clear()
         for itm in self.allPlotItems:
             self.callingObj.mainPlotWidget.removeItem(itm)
+        for itm in self.allSmoothedPlotItems:
+            self.callingObj.mainPlotWidget.removeItem(itm)
         self.allPlotItems.clear()
-        self.clearPyqtgraphLegend()
+        # self.clearPyqtgraphLegend()
 
-
-    def clearPyqtgraphLegend(self):
-        for itm in self.allPlotItems:
-            self.legend.removeItem(itm)
-        if self.legend.scene() is not None:
-            self.legend.scene().removeItem(self.legend)
+    # def clearPyqtgraphLegend(self):
+    #     for itm in self.allPlotItems:
+    #         self.legend.removeItem(itm)
+    #     if self.legend.scene() is not None:
+    #         self.legend.scene().removeItem(self.legend)
 
 
 

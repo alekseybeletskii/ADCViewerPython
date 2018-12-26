@@ -2,20 +2,18 @@
 <ui version="4.0">
  <class>w7xPyViewer</class>
  <widget class="QMainWindow" name="w7xPyViewer">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>618</width>
-    <height>459</height>
-   </rect>
-  </property>
   <property name="sizePolicy">
    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
+     <property name="minimumSize">
+         <size>
+             <width>618</width>
+             <height>402</height>
+         </size>
+     </property>
   <property name="windowTitle">
    <string>w7xPyViewer</string>
   </property>
@@ -23,6 +21,12 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
+      <property name="minimumSize">
+          <size>
+              <width>618</width>
+              <height>382</height>
+          </size>
+      </property>
    <property name="sizeIncrement">
     <size>
      <width>0</width>
@@ -41,19 +45,19 @@
       <property name="minimumSize">
        <size>
         <width>600</width>
-        <height>22</height>
+           <height>20</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
         <width>600</width>
-        <height>22</height>
+           <height>20</height>
        </size>
       </property>
       <widget class="QPushButton" name="replaceWithSGF">
        <property name="geometry">
         <rect>
-         <x>296</x>
+            <x>240</x>
          <y>0</y>
          <width>50</width>
          <height>20</height>
@@ -75,35 +79,10 @@
         <string>=SGF</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="drawUI">
-       <property name="geometry">
-        <rect>
-         <x>6</x>
-         <y>0</y>
-         <width>50</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>50</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>50</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>draw</string>
-       </property>
-      </widget>
       <widget class="QPushButton" name="settings_btn">
        <property name="geometry">
         <rect>
-         <x>118</x>
+            <x>0</x>
          <y>0</y>
          <width>60</width>
          <height>20</height>
@@ -153,7 +132,7 @@
       <widget class="QPushButton" name="subtractSGF">
        <property name="geometry">
         <rect>
-         <x>240</x>
+            <x>184</x>
          <y>0</y>
          <width>50</width>
          <height>20</height>
@@ -178,7 +157,7 @@
       <widget class="QCheckBox" name="applySGF">
        <property name="geometry">
         <rect>
-         <x>196</x>
+            <x>134</x>
          <y>0</y>
          <width>50</width>
          <height>20</height>
@@ -203,7 +182,7 @@
       <widget class="QLabel" name="mouseXY_UI">
        <property name="geometry">
         <rect>
-         <x>360</x>
+            <x>310</x>
          <y>0</y>
          <width>250</width>
          <height>20</height>
@@ -262,7 +241,7 @@
      <x>0</x>
      <y>0</y>
      <width>618</width>
-     <height>21</height>
+        <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
