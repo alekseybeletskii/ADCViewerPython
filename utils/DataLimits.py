@@ -49,26 +49,30 @@ class DataLimits:
     dataLimits = {}
 
     @classmethod
-    def getDataLimitsIndexes(cls, axIn, x):
+    def getDataLimitsIndexes(cls, axisIn, x, dataLength):
         cls.dataLimits = {}
         if type(x) is not np.ndarray :
-            cls.dataLimits["minIndex"] = int(round(axIn.range[0]/x))
-            cls.dataLimits["maxIndex"] = int(round(axIn.range[1]/x))
+            cls.dataLimits["minIndex"] = int(round(axisIn.range[0] / x))
+            cls.dataLimits["maxIndex"] = int(round(axisIn.range[1] / x))
         elif type(x) is np.ndarray:
             i = 0
             while i < x.size:
-                if x[i] > axIn.range[0]:
+                if x[i] > axisIn.range[0]:
                    cls.dataLimits["minIndex"] = i
                    break
                 i+=1
             i = len(x)-1
             while i > 0:
-                if x[i] < axIn.range[1]:
+                if x[i] < axisIn.range[1]:
                    cls.dataLimits["maxIndex"] = i
                    break
                 i-=1
 
         #print('axis range: {}'.format(axIn.range))  # <------- get range of x axis
         #print('data indexes: {}'.format(cls.dataLimits))  # <------- get range of x axis
+
+        cls.dataLimits["minIndex"] = cls.dataLimits.get("minIndex") if cls.dataLimits.get("minIndex") > 0 else 0
+        cls.dataLimits["maxIndex"] = cls.dataLimits.get("maxIndex") if cls.dataLimits.get(
+            "maxIndex") < dataLength else dataLength
 
         return cls.dataLimits

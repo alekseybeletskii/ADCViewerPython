@@ -49,6 +49,8 @@ import numpy as np
 import pyqtgraph as pg
 import pyqtgraph.exporters
 from datetime import datetime
+from utils.DataLimits import DataLimits
+
 
 from PyQt5.QtGui import QScreen
 
@@ -63,51 +65,53 @@ class ExportToTxtImg:
         if not path.exists(self.exportDirPath):
             makedirs(self.exportDirPath)
 
-    def export_to_csv_v1(self):
+    def export_to_csv(self, var):
 
-
-
-        for i in range(len(self.callingObj.dataIn)):
+        for i in range(len(self.callingObj.allData)):
             # filename = str(i) + ".csv"
-            filename = self.callingObj.dataInLabels[i] + ".csv"
+            filename = self.callingObj.allData[i].getPlotDataItem().name() + ".csv"
             filepath = path.join(self.exportDirPath, filename.replace(":", "-"))
 
-            signal = self.callingObj.dataIn[i]
-            # time = self.callingObj.dti[i]
-            # time = np.arange(0, (len(signal)) * self.callingObj.dti[i], self.callingObj.dti[i])
-            dti = self.callingObj.dti[i]
-            time = np.arange(0, (signal.size) * dti, dti) if self.callingObj.dti[i].size==1 else dti
+            time, signal = self.callingObj.allData[i].getPlotDataItem().getData()
+            dti = self.callingObj.allData[i].getDt()
+            axis = self.callingObj.mainPlotWidget.plotItem.getAxis('bottom')
+            self.dataXLimitsIndexes = DataLimits.getDataLimitsIndexes(axis, dti, len(signal))
+            minXindex = self.dataXLimitsIndexes.get("minIndex")
+            maxXindex = self.dataXLimitsIndexes.get("maxIndex")
 
-            xLeft = self.callingObj.xLeft if self.callingObj.xLeft > 0 else 0
-            xRight = self.callingObj.xRight if self.callingObj.xRight < len(signal) else len(signal) - 1
-            np.savetxt(filepath, np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T, delimiter=', ')
+            signal = signal[minXindex:maxXindex]
+            time = time[minXindex:maxXindex]
+
+            if var == 'v1':
+                np.savetxt(filepath, np.array([time, signal]).T, delimiter=', ')
+            elif var == 'v2':
+                np.savetxt(filepath + "_time_" + ".csv", time)
+                np.savetxt(filepath + "_data_" + ".csv", signal)
 
         #print('data exported to csv files')
 
-    def export_to_csv_v2(self):
-
-
-
-        for i in range(len(self.callingObj.dataIn)):
-            filename = self.callingObj.dataInLabels[i]
-            filepath = path.join(self.exportDirPath, filename.replace(":", "-"))
-
-            signal = self.callingObj.dataIn[i]
-            # time = self.callingObj.dti[i]
-            # time = np.arange(0, (len(signal)) * self.callingObj.dti[i], self.callingObj.dti[i])
-            dti = self.callingObj.dti[i]
-            time = np.arange(0, (signal.size) * dti, dti) if self.callingObj.dti[i].size==1 else dti
-            xLeft = self.callingObj.xLeft if self.callingObj.xLeft > 0 else 0
-
-            xRight = self.callingObj.xRight if self.callingObj.xRight < len(signal) else len(signal) - 1
-
-            np.savetxt(filepath + "_time_" + ".csv", time[xLeft:xRight])
-            np.savetxt(filepath + "_data_" + ".csv", signal[xLeft:xRight])
-
-            # df = pd.DataFrame(np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T,index=None, columns=None)
-            # df.to_csv(filename, header=None, index=None)
-
-        #print('data exported to csv files, time separated')
+    # def export_to_csv_v2(self):
+    #
+    #     for i in range(len(self.callingObj.dataIn)):
+    #         filename = self.callingObj.dataInLabels[i]
+    #         filepath = path.join(self.exportDirPath, filename.replace(":", "-"))
+    #
+    #         signal = self.callingObj.dataIn[i]
+    #         # time = self.callingObj.dti[i]
+    #         # time = np.arange(0, (len(signal)) * self.callingObj.dti[i], self.callingObj.dti[i])
+    #         dti = self.callingObj.dti[i]
+    #         time = np.arange(0, (signal.size) * dti, dti) if self.callingObj.dti[i].size==1 else dti
+    #         xLeft = self.callingObj.xLeft if self.callingObj.xLeft > 0 else 0
+    #
+    #         xRight = self.callingObj.xRight if self.callingObj.xRight < len(signal) else len(signal) - 1
+    #
+    #         np.savetxt(filepath + "_time_" + ".csv", time[xLeft:xRight])
+    #         np.savetxt(filepath + "_data_" + ".csv", signal[xLeft:xRight])
+    #
+    #         # df = pd.DataFrame(np.array([time[xLeft:xRight], signal[xLeft:xRight]]).T,index=None, columns=None)
+    #         # df.to_csv(filename, header=None, index=None)
+    #
+    #     #print('data exported to csv files, time separated')
 
 
     def savePlotTofile(self, x, y):

@@ -46,6 +46,8 @@
 
 from scipy.signal import savgol_filter
 from scipy.signal import butter, sosfiltfilt
+from utils.DataLimits import DataLimits
+
 
 class DataFilters:
     def __init__(self, callingObj):
@@ -53,17 +55,34 @@ class DataFilters:
         self.callingObj = callingObj
 
     def subtractSGFilter(self):
-        self.callingObj.mainPlotWidget.clear()
-        for i in range(len(self.callingObj.dataIn)):
-            smoothed = self.savitzky_golay_filt(self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight], self.callingObj.settings["sgFilterWindow"],self.callingObj.settings["sgFilterPolyOrder"])
-            self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight] = self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight] - smoothed
+        # self.callingObj.mainPlotWidget.clear()
+        for i in range(len(self.callingObj.allData)):
+            time, signal = self.callingObj.allData[i].getPlotDataItem().getData()
+            dti = self.callingObj.allData[i].getDt()
+            axis = self.callingObj.mainPlotWidget.plotItem.getAxis('bottom')
+            self.dataXLimitsIndexes = DataLimits.getDataLimitsIndexes(axis, dti, len(signal))
+            minXindex = self.dataXLimitsIndexes.get("minIndex")
+            maxXindex = self.dataXLimitsIndexes.get("maxIndex")
+            smoothed = self.savitzky_golay_filt(signal[minXindex:maxXindex], self.callingObj.settings["sgFilterWindow"],
+                                                self.callingObj.settings["sgFilterPolyOrder"])
+            signal[minXindex:maxXindex] = signal[minXindex:maxXindex] - smoothed
+            self.callingObj.allData[i].getPlotDataItem().setData(time, signal)
 
     def replaceWithSGFilter(self):
-        self.callingObj.mainPlotWidget.clear()
+        # self.callingObj.mainPlotWidget.clear()
 
-        for i in range(len(self.callingObj.dataIn)):
-            smoothed = self.savitzky_golay_filt(self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight], self.callingObj.settings["sgFilterWindow"],self.callingObj.settings["sgFilterPolyOrder"])
-            self.callingObj.dataIn[i][self.callingObj.xLeft:self.callingObj.xRight] =  smoothed
+        for i in range(len(self.callingObj.allData)):
+            time, signal = self.callingObj.allData[i].getPlotDataItem().getData()
+            dti = self.callingObj.allData[i].getDt()
+            axis = self.callingObj.mainPlotWidget.plotItem.getAxis('bottom')
+            self.dataXLimitsIndexes = DataLimits.getDataLimitsIndexes(axis, dti, len(signal))
+            minXindex = self.dataXLimitsIndexes.get("minIndex")
+            maxXindex = self.dataXLimitsIndexes.get("maxIndex")
+            smoothed = self.savitzky_golay_filt(signal[minXindex:maxXindex], self.callingObj.settings["sgFilterWindow"],
+                                                self.callingObj.settings["sgFilterPolyOrder"])
+            signal[minXindex:maxXindex] = smoothed
+            self.callingObj.allData[i].getPlotDataItem().setData(time, signal)
+
 
     def savitzky_golay_filt(self,data, window_length=1001, polyorder=0, deriv=0, delta=1.0, axis=-1, mode='interp'):
         return savgol_filter(data,window_length,polyorder,mode=mode)

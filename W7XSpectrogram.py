@@ -187,12 +187,13 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         axf = self.spectrPlot.getAxis('left')
         dt = abs(np.double(
             self.t[len(self.t) - 1] - self.t[len(self.t) - 2]))
-        self.tLimitsIndexes = DataLimits.getDataLimitsIndexes(axt, dt)
+        self.tLimitsIndexes = DataLimits.getDataLimitsIndexes(axt, dt, len(self.t))
         df = abs(np.double(
             self.f[len(self.f) - 1] - self.f[len(self.f) - 2]))
-        self.fLimitsIndexes = DataLimits.getDataLimitsIndexes(axf, df)
+        self.fLimitsIndexes = DataLimits.getDataLimitsIndexes(axf, df, len(self.f))
 
-        self.dataXLimitsIndexes = DataLimits.getDataLimitsIndexes(axt, np.power(np.double(self.frq), -1))
+        self.dataXLimitsIndexes = DataLimits.getDataLimitsIndexes(axt, np.power(np.double(self.frq), -1),
+                                                                  len(self.dataToSpectrogram))
 
         self.zoomedSxxMaxMin['max'] = np.max(
             self.Sxx[self.fLimitsIndexes.get('minIndex'): self.fLimitsIndexes.get('maxIndex'),

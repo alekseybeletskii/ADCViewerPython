@@ -46,6 +46,10 @@
 
 import numpy as np
 import MDSplus as mdspl
+from utils.DataResample import DataResample
+from pyqtgraph import PlotDataItem as plotDataItem
+from importExport.DataModel import DataModel
+
 # from datetime import datetime
 class ImportFromMdsplus:
 
@@ -82,7 +86,39 @@ class ImportFromMdsplus:
     def __init__(self, callingObj):
         self.callingObj = callingObj
         self.mdsConnection = mdspl.Connection('mds-data-1')
+        self.allData = []
+
+
         # self.mdsConnection = mdspl.Connection('ssh://user@mds-trm-1.ipp-hgw.mpg.de')
+
+    def openMdsPlus(self):
+        start = self.callingObj.settings["startMdsplusTime"]
+        end = self.callingObj.settings["endMdsplusTime"]
+        resample = self.callingObj.settings["deltaMdsplusTime"]
+        shotNumber = self.callingObj.settings["shotNum"]
+        treeName = self.callingObj.settings["treeName"]
+
+        dataInLabels = self.readDataLabels()
+
+        resampler = DataResample(self)
+        target_frq_Hz = self.callingObj.settings["targetFrq_kHz"] * 1000
+
+        for i in range(len(dataInLabels)):
+            data, dt = self.getMdsplusData(dataInLabels[i], treeName, shotNumber, start, end, resample)
+
+            if self.callingObj.settings["applyDownsampling"]:
+                data = resampler.downSampleDecimate(data, 1.0 / dt, target_frq_Hz)
+                dt = np.double(1.0 / target_frq_Hz)
+
+            adcChannelTimeShift = 0
+            adcChannel = -1
+            time = np.arange(0, (data.size) * dt, dt) + adcChannelTimeShift
+            pdi = plotDataItem(time, data, name=dataInLabels[i])
+            dataModel = DataModel(pdi, dt, adcChannel, adcChannelTimeShift)
+            self.allData.append(dataModel)
+
+        return self.allData
+
 
     def getMdsplusData(self, dataLabel, treeName, shotNum, startSecond, endSecond, resample):
 
@@ -118,7 +154,7 @@ class ImportFromMdsplus:
     #     with open(fileName, 'r') as text_file:
     #         self.callingObj.dataInLabels = text_file.read().splitlines()
 
-    def readCurveDataLabels(self):
+    def readDataLabels(self):
         dataInLabels = []
         fileName = 'importExport/DatainLabelsFile.txt'
         with open(fileName, 'r') as txtFile:

@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>w7xPyViewer</class>
  <widget class="QMainWindow" name="w7xPyViewer">
+     <property name="geometry">
+         <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>618</width>
+             <height>402</height>
+         </rect>
+     </property>
   <property name="sizePolicy">
    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
@@ -249,8 +257,7 @@
      <string>Data</string>
     </property>
     <addaction name="actionOpen_mdsplus"/>
-    <addaction name="actionOpen_csv_dx"/>
-    <addaction name="actionOpen_csv_fullX"/>
+       <addaction name="actionOpen_csv"/>
     <addaction name="actionOpen_LGraph"/>
     <addaction name="separator"/>
     <addaction name="actionExport_time_to_separate_file"/>
@@ -263,14 +270,6 @@
    </widget>
    <addaction name="menuFile"/>
   </widget>
-  <action name="actionOpen_csv_dx">
-   <property name="text">
-    <string>Open_csv_dx</string>
-   </property>
-   <property name="toolTip">
-    <string>store only dx calculated from the first column</string>
-   </property>
-  </action>
   <action name="actionClear">
    <property name="text">
     <string>ClearPlots</string>
@@ -291,11 +290,6 @@
     <string>Export to csv</string>
    </property>
   </action>
-  <action name="actionDrawPlotsFromCsv">
-   <property name="text">
-    <string>DrawPlotsFromCsv</string>
-   </property>
-  </action>
   <action name="actionOpen_mdsplus">
    <property name="text">
     <string>Open_mdsplus</string>
@@ -311,9 +305,9 @@
     <string>Export to csv (time separate)</string>
    </property>
   </action>
-  <action name="actionOpen_csv_fullX">
+     <action name="actionOpen_csv">
    <property name="text">
-    <string>Open_csv_fullX</string>
+       <string>Open_csv</string>
    </property>
    <property name="toolTip">
     <string>store full first column as X</string>

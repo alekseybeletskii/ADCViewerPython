@@ -67,14 +67,14 @@ class XYPlotter:
 
         self.legend = pg.LegendItem()  # args are (size, offset)
         # self.legend.setParentItem(self.callingObj.mainPlotWidget.graphicsItem())  # Note we do NOT call plt.addItem in this case
-        self.allPlotItems = []
+        # self.allPlotItems = []
         self.allSmoothedPlotItems = []
         # self.legend = pg.LegendItem()
 
         self.colors = ColorPalette.getColorPalette()
 
     def setCurveColor(self, index, color=QColor(Qt.black)):
-        self.allPlotItems[index].setPen(color.name())
+        self.callingObj.allData[index].getPlotDataItem().setPen(color.name())
 
         iColor = index % len(self.colors)
         # self.colors.insert(iColor,color)
@@ -84,11 +84,14 @@ class XYPlotter:
     def setCurveVisibility(self, index, isVisible=True):
         # newColor =  QColor(Qt.transparent)
         if isVisible:
-            self.allPlotItems[index].curve.show()
-        else:
-            self.allPlotItems[index].curve.hide()
+            # self.allPlotItems[index].curve.show()
+            self.callingObj.mainPlotWidget.addItem(self.callingObj.allData[index].getPlotDataItem())
 
-        # print('item status: ', index, isVisible)
+        else:
+            # self.allPlotItems[index].curve.hide()
+            self.callingObj.mainPlotWidget.removeItem(self.callingObj.allData[index].getPlotDataItem())
+
+        print('item status: ', index, self.callingObj.allData[index].getPlotDataItem().curve.isVisible())
 
 
     def drawPlots(self):
@@ -102,27 +105,31 @@ class XYPlotter:
 
 
         nextColor = 0
-        for i in range(len(self.callingObj.dataIn)):
+        for i in range(len(self.callingObj.allData)):
 
-            signal = self.callingObj.dataIn[i]
-            dti = self.callingObj.dti[i]
             # time = np.arange(len(signal))
             # time = self.callingObj.dti[i]
             # time = np.arange(0, (len(signal)) * dti, dti) if len(self.callingObj.dti[i])==1 else dti
-            time = np.arange(0, (signal.size) * dti, dti)+self.callingObj.dataInADCChannelTimeShift[i] if self.callingObj.dti[i].size==1 else dti
+
+            # time = np.arange(0, (signal.size) * dti, dti)+self.callingObj.dataInADCChannelTimeShift[i] if self.callingObj.dti[i].size==1 else dti
 
             # self.nextPen = self.nextPen + 2
             # nextPen = pg.mkPen(colors[i], width=3, style=QtCore.Qt.DashLine)
 
             # self.callingObj.mainPlotWidget.plot(time, signal, pen=None, symbol='t' + str(i + 1), symbolBrush=self.nextPen,
             #                symbolPen=self.nextPen + 3, symbolSize=10 + 3 * i)
-            plt = self.callingObj.mainPlotWidget.plot(time, signal, pen=self.colors[nextColor], name='    ' + self.callingObj.dataInLabels[i])
-            self.allPlotItems.append(plt)
 
-            ax = self.callingObj.mainPlotWidget.plotItem.getAxis('bottom')
+            # plt = self.callingObj.mainPlotWidget.plot(time, signal, pen=self.colors[nextColor], name='    ' + self.callingObj.dataInLabels[i])
 
-            self.dataXLimitsIndexes = DataLimits.getDataLimitsIndexes(ax, dti)
+            self.callingObj.allData[i].getPlotDataItem().setPen(self.colors[nextColor])
+            self.callingObj.mainPlotWidget.addItem(self.callingObj.allData[i].getPlotDataItem())
 
+            # self.allPlotItems.append(self.callingObj.allData[i].getPlotDataItem())
+
+            print(self.callingObj.allData[i].getPlotDataItem().name())
+
+            # minXindex = self.callingObj.xLeft = minXindex if minXindex > 0 else 0
+            # maxXindex = self.callingObj.xRight = maxXindex if maxXindex < len(signal) else len(signal)
             # if not self.SGFilt.checkState() and not self.subtrFilt.checkState() and not self.replaceWithSGFilt.checkState():
             #     self.plot.plot(time, signal, pen=(self.nextPen))
             # self.plot.plot(time[0:len(signal)],signal, pen=(self.nextPen))
@@ -130,16 +137,18 @@ class XYPlotter:
             # self.callingObj.xLeft = self.callingObj.xLeft if self.callingObj.xLeft > 0 else 0
             # self.callingObj.xRight = self.callingObj.xRight if self.callingObj.xRight < len(signal) else len(signal)
 
-            minXindex  = self.dataXLimitsIndexes.get("minIndex")
-            maxXindex  = self.dataXLimitsIndexes.get("maxIndex")
-            minXindex = self.callingObj.xLeft = minXindex if minXindex > 0 else 0
-            maxXindex = self.callingObj.xRight = maxXindex if maxXindex < len(signal) else len(signal)
-
-            signal = signal[minXindex:maxXindex]
-            time = time[minXindex:maxXindex]
             if self.callingObj.applySGF.checkState():
-                dataFilters = DataFilters(self.callingObj)
+                time, signal = self.callingObj.allData[i].getPlotDataItem().getData()
+                dti = self.callingObj.allData[i].getDt()
+                axis = self.callingObj.mainPlotWidget.plotItem.getAxis('bottom')
+                self.dataXLimitsIndexes = DataLimits.getDataLimitsIndexes(axis, dti, len(signal))
+                minXindex = self.dataXLimitsIndexes.get("minIndex")
+                maxXindex = self.dataXLimitsIndexes.get("maxIndex")
 
+                signal = signal[minXindex:maxXindex]
+                time = time[minXindex:maxXindex]
+
+                dataFilters = DataFilters(self.callingObj)
                 smoothed = dataFilters.savitzky_golay_filt(signal,self.callingObj.settings["sgFilterWindow"],self.callingObj.settings["sgFilterPolyOrder"])
                 plt = self.callingObj.mainPlotWidget.plot(time, smoothed, pen=pg.mkPen(color='k'))
                 self.allSmoothedPlotItems.append(plt)
@@ -148,27 +157,32 @@ class XYPlotter:
 
             nextColor = nextColor + 1 if nextColor < len(self.colors) - 1 else 0
 
+        # self.callingObj.allData[0].setTimeShift(0.03)
+        # x,y = self.allPlotItems[0].getData()
+        # print(x)
+        # print(y)
+
 
         # self.createPyqtgraphLegend()
 
 
     def clearPlots(self):
-        for itm in self.allPlotItems:
-            self.callingObj.mainPlotWidget.removeItem(itm)
+        for itm in self.callingObj.allData:
+            self.callingObj.mainPlotWidget.removeItem(itm.getPlotDataItem())
         for itm in self.allSmoothedPlotItems:
             self.callingObj.mainPlotWidget.removeItem(itm)
-        self.allPlotItems.clear()
-        self.nextPen = 0
+        self.allSmoothedPlotItems.clear()
+        # self.nextPen = 0
         # self.clearPyqtgraphLegend()
 
 
     def clearAllPlotsAndData(self):
         self.callingObj.mainPlotWidget.clear()
-        for itm in self.allPlotItems:
-            self.callingObj.mainPlotWidget.removeItem(itm)
+        for itm in self.callingObj.allData:
+            self.callingObj.mainPlotWidget.removeItem(itm.getPlotDataItem())
         for itm in self.allSmoothedPlotItems:
             self.callingObj.mainPlotWidget.removeItem(itm)
-        self.allPlotItems.clear()
+        self.allSmoothedPlotItems.clear()
         # self.clearPyqtgraphLegend()
 
     # def clearPyqtgraphLegend(self):
@@ -191,12 +205,9 @@ class XYPlotter:
     # x =  np.linspace(0.01,0.05,10)
     # y =  np.linspace(100000,200000,10)
     # self.spectrPlot.plot(x, y, pen=pg.mkPen(color=(255,0,0), width=5), name="Red curve", symbol='o' , symbolBrush = "k", symbolPen = "k", symbolSize=18)
-    def createPyqtgraphLegend(self):
-        self.legend = pg.LegendItem((200, 50), offset=(70, 30))  # args are (size, offset)
-        self.legend.setParentItem(self.callingObj.mainPlotWidget.graphicsItem())  # Note we do NOT call plt.addItem in this case
-
-        for i in range(len(self.allPlotItems)):
-            self.legend.addItem(self.allPlotItems[i], self.callingObj.dataInLabels[i])
-
-
-
+    # def createPyqtgraphLegend(self):
+    #     self.legend = pg.LegendItem((200, 50), offset=(70, 30))  # args are (size, offset)
+    #     self.legend.setParentItem(self.callingObj.mainPlotWidget.graphicsItem())  # Note we do NOT call plt.addItem in this case
+    #
+    #     for i in range(len(self.allPlotItems)):
+    #         self.legend.addItem(self.allPlotItems[i], self.callingObj.dataInLabels[i])

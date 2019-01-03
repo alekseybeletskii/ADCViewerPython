@@ -46,12 +46,13 @@
 
 from PyQt5 import QtWidgets
 
-import pandas as pd
+from importExport.DataModel import DataModel
 import numpy as np
 import struct
 from collections import namedtuple
 from os import path as ospath
 from io import BytesIO
+from pyqtgraph import PlotDataItem as plotDataItem
 
 
 class ImportFromLGraph(QtWidgets.QMainWindow):
@@ -59,7 +60,7 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
     def __init__(self,callingObj,  *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.callingObj = callingObj
+        self.mainObject = callingObj
 
         self.adcSignature = ''
         self.deviceName  = ''
@@ -89,18 +90,21 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
         self.chanAdcOrdinal = np.empty(0)
         self.chanAdcGain = np.empty(0)
 
+        self.allData = []
+
 
 
 
     def openLGraph(self):
-        self.callingObj.clearAllViewer()
+        # self.mainObject.clearAllViewer()
 
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        dataFiles, _ = QtWidgets.QFileDialog.getOpenFileNames(self,"ADC binary files", self.callingObj.latestFilePath,"*.dat;;All Files (*)", options=options)
+        dataFiles, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "ADC binary files", self.mainObject.latestFilePath,
+                                                              "*.dat;;All Files (*)", options=options)
 
         if dataFiles:
-            self.callingObj.latestFilePath = ospath.abspath(dataFiles[0])
+            self.mainObject.latestFilePath = ospath.abspath(dataFiles[0])
 
         for i in range(len(dataFiles)):
             path_to_dir, filename_and_ext = ospath.split(dataFiles[i])
@@ -115,6 +119,7 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
 
             self.readDat(datFile)
 
+        return self.allData
 
 
 
@@ -201,17 +206,23 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
                 adcOffset = 0
                 adcScale = 1
 
+            data = np.reshape(
+                (self.adcData[::, chan:chan + 1] + adcOffset) * adcScale * adcCountsToVolts / self.chanAdcGain[chan],
+                self.realCadresQuantity)
+            # self.mainObject.dataIn.append(np.reshape((self.adcData[::, chan:chan + 1] + adcOffset) * adcScale * adcCountsToVolts / self.chanAdcGain[chan], self.realCadresQuantity))
 
-            self.callingObj.dataIn.append(np.reshape((self.adcData[::, chan:chan+1]  + adcOffset) * adcScale*adcCountsToVolts/ self.chanAdcGain[chan], self.realCadresQuantity))
+            # self.mainObject.dataInLabels.append(self.filename + '_ch#' + str(self.chanAdcOrdinal[chan]))
 
-            self.callingObj.dataInLabels.append(self.filename+'_ch#'+str(self.chanAdcOrdinal[chan]))
-
-            self.callingObj.dti.append(np.power(self.channelRate*1000.0, -1))
-            self.callingObj.frq.append(int(round(self.channelRate * 1000.0)))
-            self.callingObj.dataInADCChannel.append(int(chan))
-            self.callingObj.dataInADCChannelTimeShift.append(np.power(self.adcRate*1000.0, -1)*self.chanAdcOrdinal[chan])
+            # self.mainObject.dti.append(np.power(self.channelRate * 1000.0, -1))
+            # self.callingObj.frq.append(int(round(self.channelRate * 1000.0)))
+            # self.mainObject.dataInADCChannel.append(int(self.chanAdcOrdinal[chan]))
+            # self.mainObject.dataInADCChannelTimeShift.append(np.power(self.adcRate * 1000.0, -1) * self.chanAdcOrdinal[chan])
             # print('adcDelay: ('+str(self.chanAdcOrdinal[chan])+'):', np.power(self.adcRate*1000.0, -1)*self.chanAdcOrdinal[chan])
 
-
-
-
+            adcChannelTimeShift = np.power(self.adcRate * 1000.0, -1) * self.chanAdcOrdinal[chan]
+            adcChannel = int(self.chanAdcOrdinal[chan])
+            dt = np.power(self.channelRate * 1000.0, -1)
+            time = np.arange(0, (data.size) * dt, dt) + adcChannelTimeShift
+            pdi = plotDataItem(time, data, name=self.filename + '_ch#' + str(self.chanAdcOrdinal[chan]))
+            dataModel = DataModel(pdi, dt, adcChannel, adcChannelTimeShift)
+            self.allData.append(dataModel)
