@@ -92,26 +92,21 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
         self.allData = []
 
-        self.latestFilePath = ospath.expanduser('~')
-        # self.files = []
-        # self.dataIn = []
-        # self.dataInADCChannel = []
-        # self.dataInADCChannelTimeShift = []
-        # self.dti = []
-        # self.frq = []
-        # self.dataInLabels = []
-        # self.nextPen = 0
-        self.setupUi(self)  # This is defined in design.py file automatically
-        # It sets up layout and widgets that are defined
+        self.importFromSource = None
 
-        # self.actionOpen_csv_dx.triggered.connect(self.openCsv_dx)
-        # self.actionOpen_csv_dx.triggered.connect(lambda: self.openDataSource(self.actionOpen_csv_dx))
-        # self.actionOpen_csv_fullX.triggered.connect(self.openCsv_fullX)
-        self.actionOpen_csv.triggered.connect(lambda: self.openDataSource(self.actionOpen_csv))
-        # self.actionOpen_mdsplus.triggered.connect(self.openMdsplus)
-        self.actionOpen_mdsplus.triggered.connect(lambda: self.openDataSource(self.actionOpen_mdsplus))
-        # self.actionOpen_LGraph.triggered.connect(self.openLGraph)
-        self.actionOpen_LGraph.triggered.connect(lambda: self.openDataSource(self.actionOpen_LGraph))
+        self.latestFilePath = ospath.expanduser('~')
+
+        self.setupUi(self)  # This is defined in design.py file automatically
+
+        self.w7xPyViewerSettingsWidget = w7xPyViewerSettings(self, self)
+        self.settings = {}
+        self.w7xPyViewerSettingsWidget.setDefaultSettings()
+
+        # self.actionOpen_csv.triggered.connect(lambda: self.openDataSource(self.actionOpen_csv))
+        # self.actionOpen_mdsplus.triggered.connect(lambda: self.openDataSource(self.actionOpen_mdsplus))
+        # self.actionOpen_LGraph.triggered.connect(lambda: self.openDataSource(self.actionOpen_LGraph))
+        self.actionOpen_Source.triggered.connect(lambda: self.openDataSource())
+
         self.actionDrawPlots.triggered.connect(self.drawPlots)
 
         self.actionExport_to_csv.triggered.connect(self.export_to_csv_v1)
@@ -119,25 +114,19 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
         self.actionClear.triggered.connect(self.clearAllViewer)
         self.actionExit.triggered.connect(self.exitApp)
-        # self.xLeft=0
-        # self.xRight=0
+
         self.drawSpectrogramUI.clicked.connect(self.drawSpectrogram)
         self.settings_btn.clicked.connect(self.settingsUi)
         self.applySGF.clicked.connect(self.drawPlots)
         self.replaceWithSGF.clicked.connect(self.replaceWithSGFilter)
         self.subtractSGF.clicked.connect(self.subtractSGFilter)
 
-        self.w7xPyViewerSettingsWidget = w7xPyViewerSettings(self, self)
-        self.settings = {}
-        self.w7xPyViewerSettingsWidget.setDefaultSettings()
 
         self.hotkey = {}
 
         self.ui_hotkey('ajustSettings', "Shift+s", self.settingsUi)
+        self.ui_hotkey('openSource', "Shift+o", self.openDataSource)
 
-        # self.resampler = DataResample(self)
-
-        # self.allPlotItems = []
         self.xyPlotter = XYPlotter(self)
 
         self.proxy = pg.SignalProxy(self.mainPlotWidget.scene().sigMouseMoved, rateLimit=60, slot=self.mouseMoved)
@@ -149,42 +138,28 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         #     item.setCheckState(Qt.Checked if item.checkState() == Qt.Unchecked else Qt.Unchecked)
         #
         # )
-        # self.listOfDataLablesWidget.itemEntered.connect(self.showHidePlot )
 
-        # self.listOfDataLablesWidget.itemClicked.connect(lambda item:
-        # item.setCheckState(Qt.Checked if item.checkState() == Qt.Unchecked else Qt.Unchecked))
 
-        # self.listOfDataLablesWidget.itemClicked.connect(self.showHidePlot )
-        # self.listOfDataLablesWidget.itemClicked.connect(lambda item:
-        # item.setBackground(QtWidgets.QColorDialog.getColor()))
-
-        # self.listOfDataLablesWidget.currentItemChanged.connect(self.showHidePlot)
-
-    # def showHideColorPlot(self):
-
-    def openDataSource(self, buttonPressed):
+    def openDataSource(self):
         switcher = {
-            'Open_mdsplus': self.openMdsplus,
-            'Open_csv': self.openCsv,
-            'Open_LGraph': self.openLGraph,
+            'MDSplus': self.openMdsplus,
+            'csv_txt': self.openCsv,
+            'LGraph2': self.openLGraph,
+            # 'Open_mdsplus': self.openMdsplus,
+            # 'Open_csv': self.openCsv,
+            # 'Open_LGraph': self.openLGraph,
 
         }
 
-        f = switcher.get(buttonPressed.text(), 'unknown')
+
+        # f = switcher.get(buttonPressed.text(), 'unknown')
+        f = switcher.get(self.settings["dataSource"], 'unknown')
         f()
+        self.importFromSource = None
 
         self.populateListOfDataLables()
 
         self.drawPlots()
-
-
-
-    def testing(self):
-        # print ( self.listOfDataLablesWidget.currentItem().text())
-        # print ( self.listOfDataLablesWidget.currentItem().checkState())
-         # print ( self.listOfDataLablesWidget.currentItem().setBackground(QtWidgets.QColorDialog.getColor()))
-        # print ( self.listOfDataLablesWidget.currentRow())
-        QtWidgets.QColorDialog.getColor()
 
 
 
@@ -202,19 +177,6 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.hotkey[key_name] = QtWidgets.QShortcut(QtGui.QKeySequence(key_combo), self)
         self.hotkey[key_name].activated.connect(func)
 
-    # def resampleDataResampy(self):
-    #     resampler = DataResample(self)
-    #     newSampleRateHz = int(np.double(self.NewSamplingRate_kHz.text())*1000) if np.double(self.NewSamplingRate_kHz.text())>0.01 else 1000000
-    #     resampler.downSampleResampy(newSampleRateHz)
-
-    # def resampleDataDecimation(self, dataToResample, frq_Hz, target_frq_Hz):
-    #         d = self.resampler.downSampleDecimate(dataToResample, frq_Hz, target_frq_Hz)
-    #         dt = np.double(1.0/target_frq_Hz)
-    #         return d, dt
-
-
-
-
     def drawSpectrogram(self):
         w7xSpectr = W7XSpectrogram(self)
         w7xSpectr.show()
@@ -228,74 +190,35 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
             w7xSpectr.setDataToSpectrogram(self.allData[i].getPlotDataItem().name(), signal[minXindex:maxXindex],
                                            int(round(np.power(dti, -1))))
             w7xSpectr.drawSpectrogram()
-            # w7xSpectr.close()
-        # self.clearAllViewer()
 
     def clearAllViewer(self):
         self.xyPlotter.clearAllPlotsAndData()
         self.mainPlotWidget.plotItem.enableAutoRange()
-        # self.files.clear()
-        # self.dataIn.clear()
-        # self.dti.clear()
-        # self.frq.clear()
-        # self.nextPen = 0
-        # self.dataInLabels.clear()
-        # self.xLeft=0
-        # self.xRight=0
-
-    # def openCsv_dx(self):
-    #     CsvTxtR = ImportFromTxt(self)
-    #     CsvTxtR.openCsvTxt_dx()
 
     def openLGraph(self):
         self.clearAllViewer()
-        LGraphR = ImportFromLGraph(self)
-        self.allData = LGraphR.openLGraph()
+        self.importFromSource = ImportFromLGraph(self)
+        self.allData = self.importFromSource.openLGraph()
 
     def openCsv(self):
         self.clearAllViewer()
-        CsvTxtR = ImportFromTxt(self)
-        self.allData = CsvTxtR.openCsvTxt()
-
-    # def openMdsplusQXT(self):
-    #     self.openMdsplus('qxt1', 'importExport/QXTchList.txt')
-    # def openMdsplusQOC(self):
-    #     self.openMdsplus('qoc','importExport/QOCchList.txt')
+        self.importFromSource = ImportFromTxt(self)
+        self.allData = self.importFromSource.openCsvTxt()
 
     def openMdsplus(self):
         self.clearAllViewer()
-        mdsPlusR = ImportFromMdsplus(self)
-        self.allData = mdsPlusR.openMdsPlus()
-
-        # start = self.settings["startMdsplusTime"]
-        # end = self.settings["endMdsplusTime"]
-        # resample = self.settings["deltaMdsplusTime"]
-        # shotNumber = self.settings["shotNum"]
-        # treeName  =  self.settings["treeName"]
-
-        # self.dataInLabels = openMds.readCurveDataLabels()
-
-        # for i in range(len(self.dataInLabels)):
-        #     d, dt = openMds.getMdsplusData( self.dataInLabels[i], treeName, shotNumber, start, end, resample)
-        #
-        #     if self.settings["applyDownsampling"]:
-        #         d, dt = self.resampleDataDecimation(d, 1.0/dt, self.settings["targetFrq_kHz"]*1000)
-        #
-        #     self.dataIn.append(d)
-        #     self.dti.append(dt)
-        #     self.frq.append(int(round(np.power(dt, -1))))
-        #
-        #     self.dataInADCChannel.append(int(0))
-        #     self.dataInADCChannelTimeShift.append(np.double(0))
-
+        self.importFromSource = ImportFromMdsplus(self)
+        self.allData = self.importFromSource.openMdsPlus()
 
     def export_to_csv_v1(self):
         toTxt = ExportToTxtImg(self)
         toTxt.export_to_csv('v1')
+        toTxt = None
 
     def export_to_csv_v2(self):
         toTxt = ExportToTxtImg(self)
         toTxt.export_to_csv('v2')
+        toTxt = None
 
 
     def drawPlots(self):
@@ -317,17 +240,14 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
             self.listOfDataLablesWidget.addItem(item)
             self.listOfDataLablesWidget.setItemWidget(item, legendItem)
             nextColor = nextColor + 1 if nextColor < len(colors) - 1 else 0
-    # def populateListOfDataLables(self):
-    #     for lb in self.dataInLabels:
-    #         item = QtWidgets.QListWidgetItem(lb, self.listOfDataLablesWidget)
-    #         item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-    #         item.setCheckState(Qt.Unchecked)
+
 
     def getAllCheckedItemsIndices(self):
         checked_items = []
         for index in range(self.listOfDataLablesWidget.count()):
             if self.listWidgetLabels.item(index).checkState() == Qt.Checked:
                 checked_items.append(self.listWidgetLabels.item(index))
+        return checked_items
 
 
 
@@ -335,12 +255,13 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
         xyFilt = DataFilters(self)
         xyFilt.subtractSGFilter()
-        # self.drawPlots()
+        xyFilt = None
 
     def replaceWithSGFilter(self):
         xyFilt = DataFilters(self)
         xyFilt.replaceWithSGFilter()
-        # self.drawPlots()
+        xyFilt = None
+
 
     def exitApp(self):
             sys.exit()
@@ -371,5 +292,5 @@ def main():
     sys.exit(app.exec_())
 
 
-if __name__ == '__main__':  # if we're running file directly and not importing it
-    main()  # run the main function
+if __name__ == '__main__':
+    main()

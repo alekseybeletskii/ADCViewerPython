@@ -102,7 +102,7 @@ class w7xPyViewerSettings(QtWidgets.QMainWindow, w7xPyViewerSettingsLayout.Ui_w7
         self.settings["targetFrq_kHz"]=float(self.targetFrq_kHz_ui.text())
         self.settings["sgFilterWindow"]=int(self.sgFilterWindow_ui.text())
         self.settings["sgFilterPolyOrder"]=int(self.sgFilterPolyOrder_ui.text())
-
+        self.settings["dataSource"] = self.dataSource_ui.currentText()
 
     def putSettingsToUi(self):
 
@@ -115,6 +115,8 @@ class w7xPyViewerSettings(QtWidgets.QMainWindow, w7xPyViewerSettingsLayout.Ui_w7
         self.targetFrq_kHz_ui.setText(str(self.settings["targetFrq_kHz"]))
         self.sgFilterWindow_ui.setText(str(self.settings["sgFilterWindow"]))
         self.sgFilterPolyOrder_ui.setText(str(self.settings["sgFilterPolyOrder"]))
+        self.dataSource_ui.setCurrentText(self.settings["dataSource"])
+
 
 
     def loadSettingsFromFile(self):
@@ -129,6 +131,7 @@ class w7xPyViewerSettings(QtWidgets.QMainWindow, w7xPyViewerSettingsLayout.Ui_w7
             self.settings["targetFrq_kHz"] = settingsFromFile["targetFrq_kHz"]
             self.settings["sgFilterWindow"] = settingsFromFile["sgFilterWindow"]
             self.settings["sgFilterPolyOrder"] = settingsFromFile["sgFilterPolyOrder"]
+            self.settings["dataSource"] = settingsFromFile["dataSource"]
 
         self.putSettingsToUi()
 
@@ -147,6 +150,7 @@ class w7xPyViewerSettings(QtWidgets.QMainWindow, w7xPyViewerSettingsLayout.Ui_w7
         self.settings["targetFrq_kHz"]=1
         self.settings["sgFilterWindow"]=101
         self.settings["sgFilterPolyOrder"]=1
+        self.settings["dataSource"] = 'csv_txt'
 
         self.putSettingsToUi()
         self.checkAndApplySettins()

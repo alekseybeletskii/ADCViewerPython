@@ -57,11 +57,11 @@ class ImportFromTxt(QtWidgets.QMainWindow):
 
     def __init__(self, callingObj, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.callingObj = callingObj
+        self.mainObject = callingObj
         self.allData = []
 
     # def openCsvTxt_dx(self):
-    #      self.callingObj.clearAllViewer()
+    #      self.mainObject.clearAllViewer()
     #
     #      options = QtWidgets.QFileDialog.Options()
     #      options |= QtWidgets.QFileDialog.DontUseNativeDialog
@@ -69,49 +69,49 @@ class ImportFromTxt(QtWidgets.QMainWindow):
     #      files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, None, "QFileDialog.getOpenFileNames()", "All Files (*)",
     #                                                   "All Files (*)", options=options)
     #      if files:
-    #          self.callingObj.latestFilePath = ospath.abspath(files[0])
+    #          self.mainObject.latestFilePath = ospath.abspath(files[0])
     #
     #      for i in range(len(files)):
     #          dataTxt = pd.read_csv(files[i], names=['x', 'y'], header=None)
     #          dataX = dataTxt['x']
     #          dti = abs(np.double(dataX[len(dataX)-1]-dataX[len(dataX)-2]))
-    #          self.callingObj.dti.append(dti)
-    #          self.callingObj.frq.append(int(round(np.power(dti, -1))))
-    #          self.callingObj.dataIn.append(np.asarray(dataTxt['y']))
+    #          self.mainObject.dti.append(dti)
+    #          self.mainObject.frq.append(int(round(np.power(dti, -1))))
+    #          self.mainObject.dataIn.append(np.asarray(dataTxt['y']))
     #          filename_and_ext = ospath.basename(files[i])
     #          filename, _ = ospath.splitext(filename_and_ext)
-    #          self.callingObj.dataInLabels.append(filename)
-    #          self.callingObj.dataInADCChannel.append(int(0))
-    #          self.callingObj.dataInADCChannelTimeShift.append(np.double(0))
+    #          self.mainObject.dataInLabels.append(filename)
+    #          self.mainObject.dataInADCChannel.append(int(0))
+    #          self.mainObject.dataInADCChannelTimeShift.append(np.double(0))
     #
     #          #print(type(dataX))
 
     def openCsvTxt(self):
-        # self.callingObj.clearAllViewer()
+        # self.mainObject.clearAllViewer()
 
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
 
-        files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "QFileDialog.getOpenFileNames()", "All Files (*)",
+        files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "open csv(txt) files", self.mainObject.latestFilePath, "All Files (*)",
                                                       "All Files (*)", options=options)
         if files:
-            self.callingObj.latestFilePath = ospath.abspath(files[0])
+            self.mainObject.latestFilePath = ospath.abspath(files[0])
 
         for i in range(len(files)):
             dataTxt = pd.read_csv(files[i], names=['x', 'y'], header=None)
             time = np.asarray(dataTxt['x'])
             data = np.asarray(dataTxt['y'])
             dti = abs(np.double(time[len(time) - 1] - time[len(time) - 2]))
-            # self.callingObj.frq.append(int(round(np.power(dti, -1))))
-            # self.callingObj.dti.append(dataX)
-            # self.callingObj.dataIn.append(np.asarray(dataTxt['y']))
+            # self.mainObject.frq.append(int(round(np.power(dti, -1))))
+            # self.mainObject.dti.append(dataX)
+            # self.mainObject.dataIn.append(np.asarray(dataTxt['y']))
             filename_and_ext = ospath.basename(files[i])
             filename, _ = ospath.splitext(filename_and_ext)
-            # self.callingObj.dataInLabels.append(filename)
+            # self.mainObject.dataInLabels.append(filename)
 
-            # self.callingObj.dataInADCChannel.append(int(0))
-            # self.callingObj.dataInADCChannelTimeShift.append(np.double(0))
+            # self.mainObject.dataInADCChannel.append(int(0))
+            # self.mainObject.dataInADCChannelTimeShift.append(np.double(0))
 
             adcChannelTimeShift = 0
             adcChannel = -1
