@@ -114,7 +114,8 @@ class ImportFromMdsplus:
             adcChannel = -1
             time = np.arange(0, (data.size) * dt, dt) + adcChannelTimeShift
             pdi = plotDataItem(time, data, name=dataInLabels[i])
-            dataModel = DataModel(pdi, dt, adcChannel, adcChannelTimeShift)
+            dataModel = DataModel(pdi, dataInLabels[i], dt,  adcChannel, adcChannelTimeShift)
+
             self.allData.append(dataModel)
 
         return self.allData

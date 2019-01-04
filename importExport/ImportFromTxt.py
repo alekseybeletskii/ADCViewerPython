@@ -60,34 +60,8 @@ class ImportFromTxt(QtWidgets.QMainWindow):
         self.mainObject = callingObj
         self.allData = []
 
-    # def openCsvTxt_dx(self):
-    #      self.mainObject.clearAllViewer()
-    #
-    #      options = QtWidgets.QFileDialog.Options()
-    #      options |= QtWidgets.QFileDialog.DontUseNativeDialog
-    #      #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
-    #      files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, None, "QFileDialog.getOpenFileNames()", "All Files (*)",
-    #                                                   "All Files (*)", options=options)
-    #      if files:
-    #          self.mainObject.latestFilePath = ospath.abspath(files[0])
-    #
-    #      for i in range(len(files)):
-    #          dataTxt = pd.read_csv(files[i], names=['x', 'y'], header=None)
-    #          dataX = dataTxt['x']
-    #          dti = abs(np.double(dataX[len(dataX)-1]-dataX[len(dataX)-2]))
-    #          self.mainObject.dti.append(dti)
-    #          self.mainObject.frq.append(int(round(np.power(dti, -1))))
-    #          self.mainObject.dataIn.append(np.asarray(dataTxt['y']))
-    #          filename_and_ext = ospath.basename(files[i])
-    #          filename, _ = ospath.splitext(filename_and_ext)
-    #          self.mainObject.dataInLabels.append(filename)
-    #          self.mainObject.dataInADCChannel.append(int(0))
-    #          self.mainObject.dataInADCChannelTimeShift.append(np.double(0))
-    #
-    #          #print(type(dataX))
 
     def openCsvTxt(self):
-        # self.mainObject.clearAllViewer()
 
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
@@ -103,21 +77,16 @@ class ImportFromTxt(QtWidgets.QMainWindow):
             time = np.asarray(dataTxt['x'])
             data = np.asarray(dataTxt['y'])
             dti = abs(np.double(time[len(time) - 1] - time[len(time) - 2]))
-            # self.mainObject.frq.append(int(round(np.power(dti, -1))))
-            # self.mainObject.dti.append(dataX)
-            # self.mainObject.dataIn.append(np.asarray(dataTxt['y']))
+
             filename_and_ext = ospath.basename(files[i])
             filename, _ = ospath.splitext(filename_and_ext)
-            # self.mainObject.dataInLabels.append(filename)
-
-            # self.mainObject.dataInADCChannel.append(int(0))
-            # self.mainObject.dataInADCChannelTimeShift.append(np.double(0))
 
             adcChannelTimeShift = 0
             adcChannel = -1
             time = np.arange(0, (data.size) * dti, dti) + adcChannelTimeShift
             pdi = plotDataItem(time, data, name=filename)
-            dataModel = DataModel(pdi, dti, adcChannel, adcChannelTimeShift)
+            dataModel = DataModel(pdi, filename,  dti, adcChannel, adcChannelTimeShift)
+
             self.allData.append(dataModel)
 
 

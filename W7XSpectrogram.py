@@ -129,6 +129,7 @@ class W7XSpectrogram(QtWidgets.QMainWindow, spectrogramLayout.Ui_Spectrogram):
         self.spectrogramTitle = ' '
 
         self.peakSlider = SliderWidget(0.1, 1)
+        self.peakSlider.setToolTip('peaks detection')
 
         self.horizontalLayout_spectr.addWidget(self.peakSlider)
 

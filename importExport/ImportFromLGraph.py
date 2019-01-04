@@ -209,20 +209,11 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
             data = np.reshape(
                 (self.adcData[::, chan:chan + 1] + adcOffset) * adcScale * adcCountsToVolts / self.chanAdcGain[chan],
                 self.realCadresQuantity)
-            # self.mainObject.dataIn.append(np.reshape((self.adcData[::, chan:chan + 1] + adcOffset) * adcScale * adcCountsToVolts / self.chanAdcGain[chan], self.realCadresQuantity))
-
-            # self.mainObject.dataInLabels.append(self.filename + '_ch#' + str(self.chanAdcOrdinal[chan]))
-
-            # self.mainObject.dti.append(np.power(self.channelRate * 1000.0, -1))
-            # self.callingObj.frq.append(int(round(self.channelRate * 1000.0)))
-            # self.mainObject.dataInADCChannel.append(int(self.chanAdcOrdinal[chan]))
-            # self.mainObject.dataInADCChannelTimeShift.append(np.power(self.adcRate * 1000.0, -1) * self.chanAdcOrdinal[chan])
-            # print('adcDelay: ('+str(self.chanAdcOrdinal[chan])+'):', np.power(self.adcRate*1000.0, -1)*self.chanAdcOrdinal[chan])
 
             adcChannelTimeShift = np.power(self.adcRate * 1000.0, -1) * self.chanAdcOrdinal[chan]
             adcChannel = int(self.chanAdcOrdinal[chan])
             dt = np.power(self.channelRate * 1000.0, -1)
             time = np.arange(0, (data.size) * dt, dt) + adcChannelTimeShift
             pdi = plotDataItem(time, data, name=self.filename + '_ch#' + str(self.chanAdcOrdinal[chan]))
-            dataModel = DataModel(pdi, dt, adcChannel, adcChannelTimeShift)
+            dataModel = DataModel(pdi, self.filename, dt,  adcChannel, adcChannelTimeShift)
             self.allData.append(dataModel)

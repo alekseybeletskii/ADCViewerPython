@@ -56,7 +56,6 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5.Qt import Qt
 
 from GUIs import w7xPyViewerLayout
-# it also keeps events etc that we defined in Qt Design
 import sys
 import numpy as np
 import pyqtgraph as pg
@@ -66,19 +65,11 @@ from importExport.ImportFromLGraph import ImportFromLGraph
 from utils.XYPlotter import XYPlotter
 from importExport.ExportToTxtImg import ExportToTxtImg
 from utils.DataFilters import DataFilters
-from utils.DataResample import DataResample
 from W7XSpectrogram import W7XSpectrogram
 from utils.w7xPyViewerSettings import w7xPyViewerSettings
 from GUIs.LegendItem import LegendItem
 from os import path as ospath
 from utils.DataLimits import DataLimits
-
-
-
-# from PyQt5.QtGui import QColor
-
-
-
 
 class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
@@ -102,13 +93,11 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.settings = {}
         self.w7xPyViewerSettingsWidget.setDefaultSettings()
 
-        # self.actionOpen_csv.triggered.connect(lambda: self.openDataSource(self.actionOpen_csv))
-        # self.actionOpen_mdsplus.triggered.connect(lambda: self.openDataSource(self.actionOpen_mdsplus))
-        # self.actionOpen_LGraph.triggered.connect(lambda: self.openDataSource(self.actionOpen_LGraph))
         self.actionOpen_Source.triggered.connect(lambda: self.openDataSource())
 
-        self.actionDrawPlots.triggered.connect(self.drawPlots)
+        self.actionCheckUncheckAll.triggered.connect(self.checkUncheckAllItems)
 
+        self.actionSettings.triggered.connect(self.settingsUi)
         self.actionExport_to_csv.triggered.connect(self.export_to_csv_v1)
         self.actionExport_time_to_separate_file.triggered.connect(self.export_to_csv_v2)
 
@@ -116,7 +105,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.actionExit.triggered.connect(self.exitApp)
 
         self.drawSpectrogramUI.clicked.connect(self.drawSpectrogram)
-        self.settings_btn.clicked.connect(self.settingsUi)
+        # self.settings_btn.clicked.connect(self.settingsUi)
         self.applySGF.clicked.connect(self.drawPlots)
         self.replaceWithSGF.clicked.connect(self.replaceWithSGFilter)
         self.subtractSGF.clicked.connect(self.subtractSGFilter)
@@ -132,27 +121,22 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.proxy = pg.SignalProxy(self.mainPlotWidget.scene().sigMouseMoved, rateLimit=60, slot=self.mouseMoved)
 
         self.listOfDataLablesWidget.setStyleSheet("QListWidget { background: transparent }")
+        self.listOfDataLablesWidget.doubleClicked.connect(self.checkUncheckAllItems)
+        self.listOfDataLablesWidget.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
 
-        # self.listOfDataLablesWidget.itemEntered.connect(
-        #     lambda item:
-        #     item.setCheckState(Qt.Checked if item.checkState() == Qt.Unchecked else Qt.Unchecked)
-        #
-        # )
+
 
 
     def openDataSource(self):
+
+        self.allData.clear()
         switcher = {
             'MDSplus': self.openMdsplus,
             'csv_txt': self.openCsv,
             'LGraph2': self.openLGraph,
-            # 'Open_mdsplus': self.openMdsplus,
-            # 'Open_csv': self.openCsv,
-            # 'Open_LGraph': self.openLGraph,
 
         }
 
-
-        # f = switcher.get(buttonPressed.text(), 'unknown')
         f = switcher.get(self.settings["dataSource"], 'unknown')
         f()
         self.importFromSource = None
@@ -192,8 +176,11 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
             w7xSpectr.drawSpectrogram()
 
     def clearAllViewer(self):
-        self.xyPlotter.clearAllPlotsAndData()
+        # self.mainPlotWidget.clear()
+        self.xyPlotter.clearPlots()
+        self.listOfDataLablesWidget.clear()
         self.mainPlotWidget.plotItem.enableAutoRange()
+        self.allData.clear()
 
     def openLGraph(self):
         self.clearAllViewer()
@@ -225,9 +212,14 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.xyPlotter.drawPlots()
 
     def populateListOfDataLables(self):
+        # self.listOfDataLablesWidget.itemEntered.connect(
+        #     lambda item:
+        #     item.setCheckState(Qt.Checked if item.checkState() == Qt.Unchecked else Qt.Unchecked)
+        #
+        # )
 
         self.listOfDataLablesWidget.clear()
-        # self.listOfDataLablesWidget.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+
         colors = self.xyPlotter.colors
         nextColor = 0
 
@@ -236,7 +228,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
                                     colors[nextColor])
             item = QtWidgets.QListWidgetItem()
             item.setSizeHint(legendItem.sizeHint())
-            item.setFlags(Qt.NoItemFlags)
+            # item.setFlags(Qt.NoItemFlags)
             self.listOfDataLablesWidget.addItem(item)
             self.listOfDataLablesWidget.setItemWidget(item, legendItem)
             nextColor = nextColor + 1 if nextColor < len(colors) - 1 else 0
@@ -245,9 +237,19 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
     def getAllCheckedItemsIndices(self):
         checked_items = []
         for index in range(self.listOfDataLablesWidget.count()):
-            if self.listWidgetLabels.item(index).checkState() == Qt.Checked:
-                checked_items.append(self.listWidgetLabels.item(index))
+            if self.listOfDataLablesWidget.item(index).checkState() == Qt.Checked:
+                checked_items.append(self.listOfDataLablesWidget.item(index))
         return checked_items
+
+    def checkUncheckAllItems(self):
+        for index in range(self.listOfDataLablesWidget.count()):
+            self.listOfDataLablesWidget.itemWidget(self.listOfDataLablesWidget.item(index)).itemCheckbox.click()
+            # if self.listOfDataLablesWidget.itemWidget(self.listOfDataLablesWidget.item(index)).itemCheckbox.checkState() == Qt.Checked:
+            #     self.listOfDataLablesWidget.itemWidget(self.listOfDataLablesWidget.item(index)).itemCheckbox.setChecked(False)
+            # else:
+            #     self.listOfDataLablesWidget.itemWidget(self.listOfDataLablesWidget.item(index)).itemCheckbox.setChecked(True)
+
+            # print(self.listOfDataLablesWidget.itemWidget(self.listOfDataLablesWidget.item(index)).itemCheckbox.checkState())
 
 
 
@@ -287,7 +289,6 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 def main():
     app = QtWidgets.QApplication(sys.argv)
     window = W7XPyViewer()
-    # window.show()
     window.showMaximized()
     sys.exit(app.exec_())
 
