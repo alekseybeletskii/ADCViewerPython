@@ -366,7 +366,8 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 def main():
     app = QtWidgets.QApplication(sys.argv)
     window = W7XPyViewer()
-    window.show()
+    # window.show()
+    window.showMaximized()
     sys.exit(app.exec_())
 
 

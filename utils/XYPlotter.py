@@ -84,12 +84,13 @@ class XYPlotter:
     def setCurveVisibility(self, index, isVisible=True):
         # newColor =  QColor(Qt.transparent)
         if isVisible:
-            # self.allPlotItems[index].curve.show()
             self.callingObj.mainPlotWidget.addItem(self.callingObj.allData[index].getPlotDataItem())
+            self.callingObj.allData[index].getPlotDataItem().curve.show()
 
         else:
-            # self.allPlotItems[index].curve.hide()
             self.callingObj.mainPlotWidget.removeItem(self.callingObj.allData[index].getPlotDataItem())
+            self.callingObj.allData[index].getPlotDataItem().curve.hide()
+
 
         print('item status: ', index, self.callingObj.allData[index].getPlotDataItem().curve.isVisible())
 

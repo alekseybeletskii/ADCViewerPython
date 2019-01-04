@@ -53,48 +53,48 @@ from pyqtgraph import PlotDataItem as plotDataItem
 from importExport.DataModel import DataModel
 
 
-
 class ImportFromTxt(QtWidgets.QMainWindow):
 
-   def __init__(self,callingObj,  *args, **kwargs):
-       super().__init__(*args, **kwargs)
-       self.callingObj = callingObj
-       self.allData = []
+    def __init__(self, callingObj, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.callingObj = callingObj
+        self.allData = []
 
-   # def openCsvTxt_dx(self):
-   #      self.callingObj.clearAllViewer()
-   #
-   #      options = QtWidgets.QFileDialog.Options()
-   #      options |= QtWidgets.QFileDialog.DontUseNativeDialog
-   #      #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
-   #      files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, None, "QFileDialog.getOpenFileNames()", "All Files (*)",
-   #                                                   "All Files (*)", options=options)
-   #      if files:
-   #          self.callingObj.latestFilePath = ospath.abspath(files[0])
-   #
-   #      for i in range(len(files)):
-   #          dataTxt = pd.read_csv(files[i], names=['x', 'y'], header=None)
-   #          dataX = dataTxt['x']
-   #          dti = abs(np.double(dataX[len(dataX)-1]-dataX[len(dataX)-2]))
-   #          self.callingObj.dti.append(dti)
-   #          self.callingObj.frq.append(int(round(np.power(dti, -1))))
-   #          self.callingObj.dataIn.append(np.asarray(dataTxt['y']))
-   #          filename_and_ext = ospath.basename(files[i])
-   #          filename, _ = ospath.splitext(filename_and_ext)
-   #          self.callingObj.dataInLabels.append(filename)
-   #          self.callingObj.dataInADCChannel.append(int(0))
-   #          self.callingObj.dataInADCChannelTimeShift.append(np.double(0))
-   #
-   #          #print(type(dataX))
+    # def openCsvTxt_dx(self):
+    #      self.callingObj.clearAllViewer()
+    #
+    #      options = QtWidgets.QFileDialog.Options()
+    #      options |= QtWidgets.QFileDialog.DontUseNativeDialog
+    #      #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
+    #      files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, None, "QFileDialog.getOpenFileNames()", "All Files (*)",
+    #                                                   "All Files (*)", options=options)
+    #      if files:
+    #          self.callingObj.latestFilePath = ospath.abspath(files[0])
+    #
+    #      for i in range(len(files)):
+    #          dataTxt = pd.read_csv(files[i], names=['x', 'y'], header=None)
+    #          dataX = dataTxt['x']
+    #          dti = abs(np.double(dataX[len(dataX)-1]-dataX[len(dataX)-2]))
+    #          self.callingObj.dti.append(dti)
+    #          self.callingObj.frq.append(int(round(np.power(dti, -1))))
+    #          self.callingObj.dataIn.append(np.asarray(dataTxt['y']))
+    #          filename_and_ext = ospath.basename(files[i])
+    #          filename, _ = ospath.splitext(filename_and_ext)
+    #          self.callingObj.dataInLabels.append(filename)
+    #          self.callingObj.dataInADCChannel.append(int(0))
+    #          self.callingObj.dataInADCChannelTimeShift.append(np.double(0))
+    #
+    #          #print(type(dataX))
 
-   def openCsvTxt(self):
-       # self.callingObj.clearAllViewer()
+    def openCsvTxt(self):
+        # self.callingObj.clearAllViewer()
 
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         #         files, _ = QFileDialog.getOpenFileNames(None,"QFileDialog.getOpenFileNames()", "csv files (*.csv)","csv files (*.csv);;All Files (*)", options=options)
-       files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "QFileDialog.getOpenFileNames()", "All Files (*)",
-                                                     "All Files (*)", options=options)
+
+        files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "QFileDialog.getOpenFileNames()", "All Files (*)",
+                                                      "All Files (*)", options=options)
         if files:
             self.callingObj.latestFilePath = ospath.abspath(files[0])
 
@@ -120,4 +120,5 @@ class ImportFromTxt(QtWidgets.QMainWindow):
             dataModel = DataModel(pdi, dti, adcChannel, adcChannelTimeShift)
             self.allData.append(dataModel)
 
-       return self.allData
+
+        return self.allData
