@@ -117,7 +117,7 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
             self.getRealChannelsOrdinalAndGainadcCountsToVoltss()
 
 
-            self.readDat(datFile)
+            self.readDat(datFile, i)
 
         return self.allData
 
@@ -176,7 +176,7 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
                 self.calibrScale = np.append(self.calibrScale, struct.unpack('<d', allBytes.read(8))[0])
             self.segments = struct.unpack('<i', allBytes.read(4))
 
-    def readDat(self, datFile):
+    def readDat(self, datFile, fileCounter):
         # calibration:
         # L783: 5.12 (V)/2048(adc) = 0.0025
         # E2010: 3.31776(V)/8192(adc) = 0.000405
@@ -214,6 +214,11 @@ class ImportFromLGraph(QtWidgets.QMainWindow):
             adcChannel = int(self.chanAdcOrdinal[chan])
             dt = np.power(self.channelRate * 1000.0, -1)
             time = np.arange(0, (data.size) * dt, dt) + adcChannelTimeShift
-            pdi = plotDataItem(time, data, name=self.filename + '_ch#' + str(self.chanAdcOrdinal[chan]))
-            dataModel = DataModel(pdi, self.filename, dt,  adcChannel, adcChannelTimeShift)
+            label = self.filename + '_ch#' + str(self.chanAdcOrdinal[chan])
+            pdi = plotDataItem(time, data, name=label)
+            dataModel = DataModel(pdi, label, dt,  adcChannel, adcChannelTimeShift)
+            dataModifiers = {'timeshift': 0.0, 'datamultiplier': 1.0, 'datashift': 0.0, 'independentvar': fileCounter,
+                                  'datatype': 'whatever'}
+            dataModel.setDataModifiers(dataModifiers)
+
             self.allData.append(dataModel)

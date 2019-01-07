@@ -106,15 +106,20 @@ class ImportFromMdsplus:
         for i in range(len(dataInLabels)):
             data, dt = self.getMdsplusData(dataInLabels[i], treeName, shotNumber, start, end, resample)
 
-            if self.callingObj.settings["applyDownsampling"]:
+            if self.callingObj.settings["applyDownsampling"] and self.callingObj.settings["targetFrq_kHz"] < self.callingObj.settings["fs_kHz"]:
                 data = resampler.downSampleDecimate(data, 1.0 / dt, target_frq_Hz)
                 dt = np.double(1.0 / target_frq_Hz)
+                print('input data frequency, *AFTER* downsampling, Hz: ' + str(target_frq_Hz))
 
             adcChannelTimeShift = 0
-            adcChannel = -1
+            adcChannel = 0
             time = np.arange(0, (data.size) * dt, dt) + adcChannelTimeShift
-            pdi = plotDataItem(time, data, name=dataInLabels[i])
-            dataModel = DataModel(pdi, dataInLabels[i], dt,  adcChannel, adcChannelTimeShift)
+            label = dataInLabels[i] + '_ch#' + str(adcChannel)
+            pdi = plotDataItem(time, data, name=label)
+            dataModel = DataModel(pdi, label, dt,  adcChannel, adcChannelTimeShift)
+            dataModifiers = {'timeshift': 0.0, 'datamultiplier': 1.0, 'datashift': 0.0, 'independentvar': i,
+                                  'datatype': 'whatever'}
+            dataModel.setDataModifiers(dataModifiers)
 
             self.allData.append(dataModel)
 

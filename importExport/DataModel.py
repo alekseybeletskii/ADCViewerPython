@@ -46,17 +46,17 @@
 import numpy as np
 class DataModel():
 
-    def __init__(self, plotDataItem, filename, dt=0, adcChannel=0, adcChannelTimeShift=0):
+    def __init__(self, plotDataItem, label, dt, adcChannel, adcChannelTimeShift):
         super(self.__class__, self).__init__()
-        self.initSelf(plotDataItem, filename, dt, adcChannel, adcChannelTimeShift)
+        self.initSelf(plotDataItem, label, dt, adcChannel, adcChannelTimeShift)
 
-    def initSelf(self, plotDataItem, filename, dt, adcChannel, adcChannelTimeShift):
+    def initSelf(self, plotDataItem, label, dt, adcChannel, adcChannelTimeShift):
         self.plotDataItem = plotDataItem
         self.dt = dt
         self.adcChannel = adcChannel
         self.adcChannelTimeShift = adcChannelTimeShift
-        self.dataModifiers = {'timeshift':0.0, 'datamultiplier':1.0, 'datashift':0.0}
-        self.fileName = filename
+        self.dataModifiers = {'timeshift':0.0, 'datamultiplier':1.0, 'datashift':0.0, 'independentvar':0.0,  'datatype':'whatever'}
+        self.label = label
         self.isVisible = False
 
     def getPlotDataItem(self):
@@ -71,23 +71,33 @@ class DataModel():
     def getAdcChannelTimeShift(self):
         return self.adcChannelTimeShift
 
-    def getFileName(self):
-        return self.fileName
+    def getLabel(self):
+        return self.label
+
+    def setVisible(self, isVisible):
+        self.isVisible = isVisible
+
+    def isVisible(self):
+        return self.isVisible
+
+    def setDataModifiers(self, newDataModifiers):
+        self.dataModifiers = newDataModifiers
+    def getDataModifiers(self):
+        return self.dataModifiers
 
     def applyDataModifiers(self):
         x, y = self.plotDataItem.getData()
         x = x + np.double(self.dataModifiers['timeshift'])
         y = np.multiply(y+np.double(self.dataModifiers['datashift']), np.double(self.dataModifiers['datamultiplier']))
         self.plotDataItem.setData(x, y)
+        self.independentVar = self.dataModifiers['independentvar']
 
-    def adcZeroShiftCompensation(self,zeroStartSecond,zeroEndSecond):
+    def compensateAdcZeroShift(self,zeroStartSecond,zeroEndSecond):
         x, y = self.plotDataItem.getData()
         start = zeroStartSecond
         end = zeroEndSecond
-        if zeroEndSecond < zeroStartSecond:
-            start = zeroEndSecond
-            end = zeroStartSecond
-        if start < 0 | end < 0 | end < self.dt | end > np.multiply(y.size, self.dt):
+
+        if start > end or start == end or start < 0 or end < 0 or end == 0 or end < self.dt or end > np.multiply(y.size, self.dt):
             print('enter proper time range')
             return
         startIndex = int(start/self.dt) if int(start/self.dt) < y.size else 0
@@ -97,11 +107,6 @@ class DataModel():
         y = y - np.average(y[startIndex:endIndex])
         self.plotDataItem.setData(x, y)
 
-    def setVisible(self, isVisible):
-        self.isVisible = isVisible
-
-    def isVisible(self):
-        return self.isVisible
 
 
 

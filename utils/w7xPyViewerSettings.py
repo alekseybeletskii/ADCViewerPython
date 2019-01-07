@@ -55,11 +55,11 @@ from os import path, makedirs
 
 class w7xPyViewerSettings(QtWidgets.QMainWindow, w7xPyViewerSettingsLayout.Ui_w7xPyViewerSettingsWidget):
 
-    def __init__(self, callingObj, parent):
+    def __init__(self, mainObject, parent):
         super(self.__class__, self).__init__(parent)
         self.setupUi(self)
         self.settings = {}
-        self.callingObj = callingObj
+        self.mainObject = mainObject
 
         self.here = path.dirname(path.realpath(__file__))
         self.settingsDirName = "settings"
@@ -164,5 +164,5 @@ class w7xPyViewerSettings(QtWidgets.QMainWindow, w7xPyViewerSettingsLayout.Ui_w7
 
         self.putSettingsToUi()
 
-        self.callingObj.settings = self.settings
+        self.mainObject.settings = self.settings
 

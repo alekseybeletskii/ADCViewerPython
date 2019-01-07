@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>dataModifierWidget</class>
+ <widget class="QWidget" name="dataModifierWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>320</width>
+    <height>100</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>320</width>
+    <height>100</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>320</width>
+    <height>100</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>dataModifier</string>
+  </property>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>9</y>
+     <width>301</width>
+     <height>83</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QSplitter" name="splitter_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QCheckBox" name="showSGF_ui">
+       <property name="toolTip">
+        <string>show Savitzky-Golay filter</string>
+       </property>
+       <property name="text">
+        <string>show SGFilter</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="subtractSGF_ui">
+       <property name="toolTip">
+        <string>subtract Savitzky-Golay filter</string>
+       </property>
+       <property name="text">
+        <string>-SGFilter</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="replaceWithSGF_ui">
+       <property name="toolTip">
+        <string>replace with Savitzky-Golay filter</string>
+       </property>
+       <property name="text">
+        <string>=SGFilter</string>
+       </property>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QPushButton" name="fixADC0_ui">
+       <property name="toolTip">
+        <string>fix ADC 0 error</string>
+       </property>
+       <property name="text">
+        <string>fix ADC 0</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="fixADC0start_ui">
+       <property name="placeholderText">
+        <string>start, sec</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="fixADC0end_ui">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="placeholderText">
+        <string>end, sec</string>
+       </property>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QSplitter" name="splitter_3">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QPushButton" name="useModifiers_ui">
+       <property name="text">
+        <string>use modifiers</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="reloadFromSource_ui">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background:blue</string>
+       </property>
+       <property name="text">
+        <string>reload from source</string>
+       </property>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

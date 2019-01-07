@@ -73,13 +73,13 @@ class XYPlotter:
         if isVisible:
             self.callingObj.mainPlotWidget.addItem(self.callingObj.allData[index].getPlotDataItem())
             # self.callingObj.allData[index].getPlotDataItem().curve.show()
-            self.callingObj.allData[index].getPlotDataItem().setVisible(True)
+            self.callingObj.allData[index].setVisible(True)
 
         else:
             self.callingObj.mainPlotWidget.removeItem(self.callingObj.allData[index].getPlotDataItem())
             # self.callingObj.allData[index].getPlotDataItem().curve.hide()
-            self.callingObj.allData[index].getPlotDataItem().setVisible(False)
-
+            self.callingObj.allData[index].setVisible(False)
+        # self.callingObj.mainPlotWidget.plotItem.enableAutoRange()
 
         # print('item status: ', index,' : ', self.callingObj.allData[index].getPlotDataItem().isVisible())
 
@@ -108,21 +108,8 @@ class XYPlotter:
 
             # print(self.callingObj.allData[i].getPlotDataItem().name())
 
-            if self.callingObj.applySGF.checkState():
-                time, signal = self.callingObj.allData[i].getPlotDataItem().getData()
-                dti = self.callingObj.allData[i].getDt()
-                axis = self.callingObj.mainPlotWidget.plotItem.getAxis('bottom')
-                self.dataXLimitsIndexes = DataLimits.getDataLimitsIndexes(axis, dti, len(signal))
-                minXindex = self.dataXLimitsIndexes.get("minIndex")
-                maxXindex = self.dataXLimitsIndexes.get("maxIndex")
-
-                signal = signal[minXindex:maxXindex]
-                time = time[minXindex:maxXindex]
-
-                dataFilters = DataFilters(self.callingObj)
-                smoothed = dataFilters.savitzky_golay_filt(signal,self.callingObj.settings["sgFilterWindow"],self.callingObj.settings["sgFilterPolyOrder"])
-                plt = self.callingObj.mainPlotWidget.plot(time, smoothed, pen=pg.mkPen(color='k'))
-                self.allSmoothedPlotItems.append(plt)
+            if self.callingObj.dataModifierWidget.showSGF_ui.checkState():
+                self.drawSGFilter(i)
             # print('samplingRate,Hz: ', np.double(self.callingObj.frq[i]))
             # print('size, points: ', np.double(len(signal)))
 
@@ -133,8 +120,20 @@ class XYPlotter:
         # print(x)
         # print(y)
 
-
-
+    def drawSGFilter(self, i):
+        time, signal = self.callingObj.allData[i].getPlotDataItem().getData()
+        dti = self.callingObj.allData[i].getDt()
+        axis = self.callingObj.mainPlotWidget.plotItem.getAxis('bottom')
+        self.dataXLimitsIndexes = DataLimits.getDataLimitsIndexes(axis, dti, len(signal))
+        minXindex = self.dataXLimitsIndexes.get("minIndex")
+        maxXindex = self.dataXLimitsIndexes.get("maxIndex")
+        signal = signal[minXindex:maxXindex]
+        time = time[minXindex:maxXindex]
+        dataFilters = DataFilters(self.callingObj)
+        smoothed = dataFilters.savitzky_golay_filt(signal, self.callingObj.settings["sgFilterWindow"],
+                                                   self.callingObj.settings["sgFilterPolyOrder"])
+        plt = self.callingObj.mainPlotWidget.plot(time, smoothed, pen=pg.mkPen(color='k'))
+        self.allSmoothedPlotItems.append(plt)
 
     def clearPlots(self):
         for itm in self.callingObj.allData:

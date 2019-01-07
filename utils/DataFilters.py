@@ -67,6 +67,8 @@ class DataFilters:
                                                 self.callingObj.settings["sgFilterPolyOrder"])
             signal[minXindex:maxXindex] = signal[minXindex:maxXindex] - smoothed
             self.callingObj.allData[i].getPlotDataItem().setData(time, signal)
+        if self.callingObj.dataModifierWidget.showSGF_ui.checkState():
+            self.callingObj.drawPlots()
 
     def replaceWithSGFilter(self):
         # self.callingObj.mainPlotWidget.clear()
@@ -82,6 +84,8 @@ class DataFilters:
                                                 self.callingObj.settings["sgFilterPolyOrder"])
             signal[minXindex:maxXindex] = smoothed
             self.callingObj.allData[i].getPlotDataItem().setData(time, signal)
+        if self.callingObj.dataModifierWidget.showSGF_ui.checkState():
+            self.callingObj.drawPlots()
 
 
     def savitzky_golay_filt(self,data, window_length=1001, polyorder=0, deriv=0, delta=1.0, axis=-1, mode='interp'):

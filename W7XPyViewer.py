@@ -64,9 +64,9 @@ from importExport.ImportFromMdsplus import ImportFromMdsplus
 from importExport.ImportFromLGraph import ImportFromLGraph
 from utils.XYPlotter import XYPlotter
 from importExport.ExportToTxtImg import ExportToTxtImg
-from utils.DataFilters import DataFilters
 from W7XSpectrogram import W7XSpectrogram
 from utils.w7xPyViewerSettings import w7xPyViewerSettings
+from utils.DataModifier import DataModifier
 from GUIs.LegendItem import LegendItem
 from os import path as ospath
 from utils.DataLimits import DataLimits
@@ -93,6 +93,8 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
         self.settings = {}
         self.w7xPyViewerSettingsWidget.setDefaultSettings()
 
+        self.dataModifierWidget = DataModifier(self)
+
         self.actionOpen_Source.triggered.connect(lambda: self.openDataSource())
 
         self.actionCheckUncheckAll.triggered.connect(self.checkUncheckAllItems)
@@ -106,9 +108,8 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
         self.drawSpectrogramUI.clicked.connect(self.drawSpectrogram)
         # self.settings_btn.clicked.connect(self.settingsUi)
-        self.applySGF.clicked.connect(self.drawPlots)
-        self.replaceWithSGF.clicked.connect(self.replaceWithSGFilter)
-        self.subtractSGF.clicked.connect(self.subtractSGFilter)
+        self.showDataModifier_ui.clicked.connect(self.dataModifierUi)
+
 
 
         self.hotkey = {}
@@ -129,17 +130,18 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
     def openDataSource(self):
 
-        self.allData.clear()
+        self.clearAllViewer()
         switcher = {
             'MDSplus': self.openMdsplus,
             'csv_txt': self.openCsv,
-            'LGraph2': self.openLGraph,
-
+            'LGraph2': self.openLGraph
         }
 
         f = switcher.get(self.settings["dataSource"], 'unknown')
         f()
         self.importFromSource = None
+
+        self.dataModifierWidget.createDefaultModifiersFile()
 
         self.populateListOfDataLables()
 
@@ -156,6 +158,11 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
     def settingsUi(self):
         self.w7xPyViewerSettingsWidget.show()
+
+    def dataModifierUi(self):
+        self.dataModifierWidget.show()
+
+
 
     def ui_hotkey(self, key_name, key_combo, func):
         self.hotkey[key_name] = QtWidgets.QShortcut(QtGui.QKeySequence(key_combo), self)
@@ -252,17 +259,6 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
             # print(self.listOfDataLablesWidget.itemWidget(self.listOfDataLablesWidget.item(index)).itemCheckbox.checkState())
 
 
-
-    def subtractSGFilter(self):
-
-        xyFilt = DataFilters(self)
-        xyFilt.subtractSGFilter()
-        xyFilt = None
-
-    def replaceWithSGFilter(self):
-        xyFilt = DataFilters(self)
-        xyFilt.replaceWithSGFilter()
-        xyFilt = None
 
 
     def exitApp(self):

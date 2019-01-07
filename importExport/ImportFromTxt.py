@@ -82,10 +82,14 @@ class ImportFromTxt(QtWidgets.QMainWindow):
             filename, _ = ospath.splitext(filename_and_ext)
 
             adcChannelTimeShift = 0
-            adcChannel = -1
+            adcChannel = 0
             time = np.arange(0, (data.size) * dti, dti) + adcChannelTimeShift
-            pdi = plotDataItem(time, data, name=filename)
-            dataModel = DataModel(pdi, filename,  dti, adcChannel, adcChannelTimeShift)
+            label = filename + '_ch#' + str(adcChannel)
+            pdi = plotDataItem(time, data, name=label)
+            dataModel = DataModel(pdi, label,  dti, adcChannel, adcChannelTimeShift)
+            dataModifiers = {'timeshift': 0.0, 'datamultiplier': 1.0, 'datashift': 0.0, 'independentvar': i,
+                                  'datatype': 'whatever'}
+            dataModel.setDataModifiers(dataModifiers)
 
             self.allData.append(dataModel)
 

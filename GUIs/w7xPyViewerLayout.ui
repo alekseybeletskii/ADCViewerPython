@@ -25,6 +25,17 @@
   <property name="windowTitle">
    <string>w7xPyViewer</string>
   </property>
+  <property name="windowIcon">
+   <iconset theme="w7x">
+    <normaloff>../../../../downloads/ipp/stellarator-Wendelstein-7-X.jpg</normaloff>
+    <normalon>../../../../downloads/ipp/stellarator-Wendelstein-7-X.jpg</normalon>
+    <disabledoff>../../../../downloads/ipp/stellarator-Wendelstein-7-X.jpg</disabledoff>
+    <disabledon>../../../../downloads/ipp/stellarator-Wendelstein-7-X.jpg</disabledon>
+    <activeoff>../../../../downloads/ipp/stellarator-Wendelstein-7-X.jpg</activeoff>
+    <activeon>../../../../downloads/ipp/stellarator-Wendelstein-7-X.jpg</activeon>
+    <selectedoff>../../../../downloads/ipp/stellarator-Wendelstein-7-X.jpg</selectedoff>
+    <selectedon>../../../../downloads/ipp/stellarator-Wendelstein-7-X.jpg</selectedon>../../../../downloads/ipp/stellarator-Wendelstein-7-X.jpg</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="enabled">
     <bool>true</bool>
@@ -49,56 +60,31 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QGroupBox" name="groupBox">
-      <property name="minimumSize">
-       <size>
-        <width>600</width>
-        <height>20</height>
-       </size>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
-      <property name="maximumSize">
-       <size>
-        <width>600</width>
-        <height>20</height>
-       </size>
-      </property>
-      <widget class="QPushButton" name="replaceWithSGF">
-       <property name="geometry">
-        <rect>
-         <x>150</x>
-         <y>0</y>
-         <width>40</width>
-         <height>20</height>
-        </rect>
-       </property>
+      <widget class="QPushButton" name="showDataModifier_ui">
        <property name="minimumSize">
         <size>
-         <width>40</width>
+         <width>70</width>
          <height>20</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>40</width>
+         <width>70</width>
          <height>20</height>
         </size>
        </property>
        <property name="toolTip">
-        <string>replace with Savitzky-Golay filter</string>
+        <string>show data modifier</string>
        </property>
        <property name="text">
-        <string>=SGF</string>
+        <string>data mod.</string>
        </property>
       </widget>
       <widget class="QPushButton" name="drawSpectrogramUI">
-       <property name="geometry">
-        <rect>
-         <x>2</x>
-         <y>0</y>
-         <width>50</width>
-         <height>20</height>
-        </rect>
-       </property>
        <property name="minimumSize">
         <size>
          <width>50</width>
@@ -115,71 +101,7 @@
         <string>spectr</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="subtractSGF">
-       <property name="geometry">
-        <rect>
-         <x>110</x>
-         <y>0</y>
-         <width>40</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>subtract Savitzky-Golay filter</string>
-       </property>
-       <property name="text">
-        <string>-SGF</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="applySGF">
-       <property name="geometry">
-        <rect>
-         <x>60</x>
-         <y>0</y>
-         <width>50</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>50</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>50</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>show Savitzky-Golay filter</string>
-       </property>
-       <property name="text">
-        <string>SGF</string>
-       </property>
-      </widget>
       <widget class="QLabel" name="mouseXY_UI">
-       <property name="geometry">
-        <rect>
-         <x>280</x>
-         <y>0</y>
-         <width>250</width>
-         <height>20</height>
-        </rect>
-       </property>
        <property name="minimumSize">
         <size>
          <width>250</width>
@@ -199,31 +121,30 @@
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="PlotWidget" name="mainPlotWidget">
-        <property name="baseSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QListWidget" name="listOfDataLablesWidget">
-        <property name="maximumSize">
-         <size>
-          <width>100</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="sizeAdjustPolicy">
-         <enum>QAbstractScrollArea::AdjustToContents</enum>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <widget class="QSplitter" name="splitter_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="PlotWidget" name="mainPlotWidget">
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
+      <widget class="QListWidget" name="listOfDataLablesWidget">
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="sizeAdjustPolicy">
+        <enum>QAbstractScrollArea::AdjustToContents</enum>
+       </property>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>
