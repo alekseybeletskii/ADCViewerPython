@@ -1,0 +1,9 @@
+{
+    "DET1CH30_ch#0": {
+        "timeshift": 0.0,
+        "datamultiplier": 1.0,
+        "datashift": 0.0,
+        "independentvar": 0,
+        "datatype": "whatever"
+    }
+}

@@ -132,7 +132,7 @@ class W7XPyViewer(QtWidgets.QMainWindow, w7xPyViewerLayout.Ui_w7xPyViewer):
 
         self.clearAllViewer()
         switcher = {
-            'MDSplus': self.openMdsplus,
+            'MDSPlus': self.openMdsplus,
             'csv_txt': self.openCsv,
             'LGraph2': self.openLGraph
         }
